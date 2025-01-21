@@ -13,7 +13,7 @@ The key features of the website include:
 The app combines ease of use with powerful features, creating a one-stop solution for travelers.
 
 Members:
-Palaque Sharma (83907444)
-Pragyna Abhishek Titty (64192812)
-Sanket Deshmukh (32226339)
-Shaurya Singh (69871462)
+1. Palaque Sharma (83907444)
+2. Pragyna Abhishek Titty (64192812)
+3. Sanket Deshmukh (32226339)
+4. Shaurya Singh (69871462)
