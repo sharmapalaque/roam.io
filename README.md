@@ -1,6 +1,6 @@
-# TripIt
+# Roam.io
 
-**TripIt** is a comprehensive travel tourism website designed to help users plan and book their trips with ease. It features an array of tools for trip planning, accommodation bookings, local event listings, and real-time navigation. The platform allows users to discover nearby activities, share reviews, rate accommodations and attractions, and upload travel photos, all within a seamless experience.
+**Roam.io** is a comprehensive travel tourism website designed to help users plan and book their trips with ease. It features an array of tools for trip planning, accommodation bookings, local event listings, and real-time navigation. The platform allows users to discover nearby activities, share reviews, rate accommodations and attractions, and upload travel photos, all within a seamless experience.
 
 ## Key Features
 
