@@ -2,48 +2,37 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import "./Register.css";
+import { Link } from "react-router-dom"; // Import Link for navigation
+import "../../styles/common.css";
 
-// Define the form data type
-type FormData = {
-  name: string;
-  dob: Date;
-  email: string;
-  password: string;
-};
-
-// Define the validation schema using Yup
 const schema = yup.object().shape({
   name: yup.string().required("Name is required"),
-  dob: yup
-    .date()
-    .required("Date of Birth is required")
-    .typeError("Invalid date"),
   email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
+  password: yup.string().required("Password is required"),
+  dob: yup.string().required("Date of birth is required"),
 });
 
 const Register: React.FC = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<any> = (data) => {
     console.log("Form Data:", data);
     alert("Registration successful!");
   };
 
   return (
-    <div className="registration-container">
-      <h2 className="registration-title">User Registration</h2>
-      <form className="registration-form" onSubmit={handleSubmit(onSubmit)}>
+    <div className="container">
+      <h2 className="title">User Registration</h2>
+      <form className="form" onSubmit={handleSubmit(onSubmit)}>
+
+         {/* Link to navigate back to Login page */}
+        <div className="nav-links">
+          <p>Already have an account?</p>
+          <Link to="/login" className="link">Login Here</Link>
+        </div>
+
         <div className="form-group">
           <label htmlFor="name">Name</label>
           <input id="name" {...register("name")} />
@@ -59,9 +48,7 @@ const Register: React.FC = () => {
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input id="password" type="password" {...register("password")} />
-          {errors.password && (
-            <p className="error-text">{errors.password.message}</p>
-          )}
+          {errors.password && <p className="error-text">{errors.password.message}</p>}
         </div>
 
         <div className="form-group">
@@ -70,9 +57,7 @@ const Register: React.FC = () => {
           {errors.dob && <p className="error-text">{errors.dob.message}</p>}
         </div>
 
-        <button type="submit" className="submit-button">
-          Register
-        </button>
+        <button type="submit" className="submit-button">Register</button>
       </form>
     </div>
   );
