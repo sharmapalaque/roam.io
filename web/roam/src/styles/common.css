@@ -1,5 +1,6 @@
-/* Registration.css */
-.registration-container {
+/* Common styles for Login and Register components */
+
+.container {
     max-width: 400px;
     margin: 50px auto;
     padding: 20px;
@@ -7,53 +8,53 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     font-family: Arial, sans-serif;
-  }
-  
-  .registration-title {
+}
+
+.title {
     text-align: center;
     font-size: 24px;
     font-weight: bold;
     color: #333;
     margin-bottom: 20px;
-  }
-  
-  .registration-form {
+}
+
+.form {
     display: flex;
     flex-direction: column;
-  }
-  
-  .form-group {
+}
+
+.form-group {
     margin-bottom: 15px;
-  }
-  
-  .form-group label {
+}
+
+.form-group label {
     font-size: 14px;
     font-weight: bold;
     color: #555;
     display: block;
     margin-bottom: 5px;
-  }
-  
-  .form-group input {
+}
+
+.form-group input {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
-  }
-  
-  .form-group input:focus {
+}
+
+.form-group input:focus {
     outline: none;
     border-color: #007bff;
-  }
-  
-  .error-text {
+}
+
+.error-text {
     color: red;
     font-size: 12px;
     margin-top: 5px;
-  }
-  
-  .submit-button {
+}
+
+.submit-button {
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -63,9 +64,27 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+.nav-links {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .link {
+    color: #0000EE;
+    text-decoration: none;
   }
   
-  .submit-button:hover {
-    background-color: #0056b3;
+  .link:visited {
+    color: #551A8B;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
   }
   

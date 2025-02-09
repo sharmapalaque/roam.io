@@ -1,11 +1,20 @@
-import "./App.css";
-import Register from "./components/Register/Register";
+import './App.css';
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout, Typography } from "antd";
 const { Header, Content } = Layout
 const {Title} = Typography
+import Register from './components/Register/Register';
+// import Login from './components/Login/Login';
 
 function App() {
   return (
+    // <Router>
+    //   <Routes>
+    //     <Route path="/login" element={<Login />} />
+    //     <Route path="/register" element={<Register />} />
+    //     <Route path="/" element={<Login />} /> {/* Default route */}
+    //   </Routes>
+    // </Router>
     <>
       <Register />
       <Layout>
