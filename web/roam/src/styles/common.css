@@ -69,3 +69,22 @@
 .submit-button:hover {
     background-color: #0056b3;
 }
+
+.nav-links {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .link {
+    color: #0000EE;
+    text-decoration: none;
+  }
+  
+  .link:visited {
+    color: #551A8B;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+  }
+  

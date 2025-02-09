@@ -2,40 +2,34 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import "./Login.css";
+import { Link } from "react-router-dom"; // Import Link for navigation
+import "../../styles/common.css"; 
 
-// Define the form data type
-type FormData = {
-  email: string;
-  password: string;
-};
-
-// Define the validation schema using Yup
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup
-    .string()
-    .required("Password is required"),
+  password: yup.string().required("Password is required"),
 });
 
-const Register: React.FC = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
+const Login: React.FC = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<any> = (data) => {
     console.log("Form Data:", data);
     alert("Login successful!");
   };
 
   return (
-    <div className="login-container">
-      <h2 className="login-title">User Login</h2>
-      <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
+    <div className="container">
+      <h2 className="title">User Login</h2>
+      <form className="form" onSubmit={handleSubmit(onSubmit)}>
+
+        {/* Link to navigate to Register page */}
+        <div className="nav-links">
+          <p>Don't have an account?</p>
+          <Link to="/register" className="link">Register Here</Link>
+        </div>
 
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -46,17 +40,13 @@ const Register: React.FC = () => {
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input id="password" type="password" {...register("password")} />
-          {errors.password && (
-            <p className="error-text">{errors.password.message}</p>
-          )}
+          {errors.password && <p className="error-text">{errors.password.message}</p>}
         </div>
 
-        <button type="submit" className="submit-button">
-          LOGIN
-        </button>
+        <button type="submit" className="submit-button">Login</button>
       </form>
     </div>
   );
 };
 
-export default Register;
+export default Login;
