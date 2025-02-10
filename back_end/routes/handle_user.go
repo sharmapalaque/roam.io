@@ -10,6 +10,8 @@ import (
 	"roam.io/models"
 )
 
+var currUserID string
+
 // CreateUserHandler handles the user creation logic
 func CreateUserHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

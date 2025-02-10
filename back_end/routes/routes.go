@@ -13,6 +13,7 @@ func NewRouter(db *gorm.DB) *mux.Router {
 	r.HandleFunc("/users/register", CreateUserHandler(db)).Methods("POST")
 	r.HandleFunc("/users/login", LoginHandler(db)).Methods("POST")
 	r.HandleFunc("/protected-endpoint", ProtectedEndpointHandler(db)).Methods("GET")
-
+	r.HandleFunc("/accommodations", FetchAccommodations(db)).Methods("GET")
+	r.HandleFunc("/accommodations", AddAccommodation(db)).Methods("PUT")
 	return r
 }
