@@ -24,10 +24,10 @@
 ### **7. Delete Accommodation Booking: Back End**
 - **As a developer**, I need to implement backend logic to handle accommodation booking deletions.
 
-### **8.Local Events & Activities: Front End**
+### **8. Local Events & Activities: Front End**
 - **As a user**, I want to browse real-time local events and activities, so I can discover things to do in my area.
 
-### **9.Local Events & Activities: Back End**
+### **9. Local Events & Activities: Back End**
 - **As a developer**, I need to implement a backend that scrapes, processes, and serves real-time local events and activities from popular event websites.
 
 ### **10. User Review System: Front End**
