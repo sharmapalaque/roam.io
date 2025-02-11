@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -38,6 +39,7 @@ func LoginHandler(db *gorm.DB) http.HandlerFunc {
 				return
 			} else {
 				http.Error(w, "Database error", http.StatusInternalServerError)
+				fmt.Println(result.Error)
 				return
 			}
 		}

@@ -39,8 +39,28 @@ func AddAccommodation(db *gorm.DB) http.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		db.Model(&models.User{}).Where("id = ?", 1).Updates(models.User{Bookings: *accommodation})
+		db.Model(&models.User{}).Where("id = ?", 1).Updates(models.User{Bookings: accommodation})
 
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(accommodation)
+	}
+}
+
+func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Parse the JSON body
+		var user models.Accommodation
+		err := json.NewDecoder(r.Body).Decode(&user)
+		if err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+		accommodation := models.Accommodation{Name: user.Name, Location: user.Location, ImageUrl: user.ImageUrl, UserReviews: user.UserReviews}
+		result := db.Create(&accommodation)
+		if result.Error != nil {
+			fmt.Println(result.Error)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(accommodation)
