@@ -55,10 +55,10 @@
 | **Serial No.** | **Description**                                                         | **Completion Status**     |
 |----------------|-------------------------------------------------------------------------|---------------------------|
 | **8**          | **Create Initial User Stories**                                          | Completed                 |
-| **1**          | **Create a folder structure for projects**                               | Completed                 |
-| **2**          | **Configure Database**                                                  | Completed                 |
+| **3**          | **Create a folder structure for projects**                               | Completed                 |
+| **1**          | **Configure Database**                                                  | Completed                 |
 | **14**         | **Design: Logo for the website and UI for the registration/login pages** | Completed                 |
-| **3**          | **Create interface for a new user to be able to register**               | Completed                 |
+| **2**          | **Create interface for a new user to be able to register**               | Completed                 |
 | **4**          | **Implement back-end for registration of a new user**                    | Completed                 |
 | **5**          | **Create interface for an existing user to login**                       | Completed                 |
 | **6**          | **Implement back-end for maintaining login system**                      | Closed (Duplicate)        |
@@ -67,15 +67,15 @@
 | **16**         | **User verification (Backend)**                                         | Completed                 |
 | **20**         | **Add navigation support to and fro login and registration pages**      | Completed                 |
 | **19**         | **Enhance UI for login and registration pages**                          | Completed                 |
-| **23**         | **Create rest API for listing and booking accommodations**               | Completed                 |
+| **17**         | **Create rest API for listing and booking accommodations**               | Completed                 |
 | **26**         | **Maintaining Login Session**                                           | Completed                 |
-| **17**         | **Create Listview template, for the accommodation booking page**        | In Progress               |
+| **23**         | **Create Listview template, for the accommodation booking page**        | In Progress               |
 
 ---
 
-## **Reasoning for Carrying Forward #17**
+## **Reasoning for Carrying Forward #23**
 
-- **Issue #17: Create Listview Template, for the Accommodation Booking Page** was picked up mid-sprint. 
+- **Issue #23: Create Listview Template, for the Accommodation Booking Page** was picked up mid-sprint. 
 - While the backend for the accommodation booking system was completed and functional, the front-end for the booking page had basic wireframes and design implemented but wasn't fully polished.
 - The **UI** needed further enhancements to improve user experience, such as better styling, design integration, and interactive components. This is planned for the **next sprint**, where additional work will be done to make the front-end more user-friendly and visually appealing.
 
