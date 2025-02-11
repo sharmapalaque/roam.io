@@ -24,22 +24,28 @@
 ### **7. Delete Accommodation Booking: Back End**
 - **As a developer**, I need to implement backend logic to handle accommodation booking deletions.
 
-### **8. User Review System: Front End**
+### **8.Local Events & Activities: Front End**
+- **As a user**, I want to browse real-time local events and activities, so I can discover things to do in my area.
+
+### **9.Local Events & Activities: Back End**
+- **As a developer**, I need to implement a backend that scrapes, processes, and serves real-time local events and activities from popular event websites.
+
+### **10. User Review System: Front End**
 - **As a user**, I want to share reviews for accommodations and activities, so I can provide feedback to the community.
 
-### **9. User Review System: Back End**
+### **11. User Review System: Back End**
 - **As a developer**, I need to implement the backend for handling reviews and ratings submitted by users.
 
-### **10. Photo Sharing: Front End**
+### **12. Photo Sharing: Front End**
 - **As a user**, I want to upload and share my travel photos, so I can document and showcase my trips.
 
-### **11. Photo Sharing: Back End**
+### **13. Photo Sharing: Back End**
 - **As a developer**, I need to implement a backend to store and serve user-uploaded photos.
 
-### **12. Navigation Support: Front End**
+### **14. Navigation Support: Front End**
 - **As a user**, I want real-time navigation to locate nearby attractions, hotels, and events.
 
-### **13. Navigation Support: Back End**
+### **15. Navigation Support: Back End**
 - **As a developer**, I need to integrate navigation and mapping services in the backend to support real-time maps.
 
 ---
