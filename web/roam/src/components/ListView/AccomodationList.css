@@ -1,0 +1,34 @@
+.list-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .list-title {
+    color: #1976d2; /* Blue color */
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .list-item {
+    transition: background-color 0.3s ease;
+  }
+  
+  .list-item:hover {
+    background-color: #e3f2fd; /* Light blue hover effect */
+  }
+  
+  .avatar {
+    border: 2px solid #1976d2; /* Blue border for avatar */
+  }
+  
+  .list-item-primary {
+    font-weight: bold;
+  }
+  
+  .list-item-secondary {
+    color: #757575; /* Grey color for secondary text */
+  }
+  

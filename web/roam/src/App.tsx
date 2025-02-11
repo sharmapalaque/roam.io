@@ -1,34 +1,21 @@
 import './App.css';
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Layout, Typography } from "antd";
-const { Header, Content } = Layout
-const {Title} = Typography
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Register from './components/Register/Register';
-// import Login from './components/Login/Login';
+import Login from './components/Login/Login';
+import AccomodationList from './components/ListView/AccomodationList'
+import AccommodationDetails from './components/ListView/AccomodationDetails';
 
 function App() {
   return (
-    // <Router>
-    //   <Routes>
-    //     <Route path="/login" element={<Login />} />
-    //     <Route path="/register" element={<Register />} />
-    //     <Route path="/" element={<Login />} /> {/* Default route */}
-    //   </Routes>
-    // </Router>
-    <>
-      <Register />
-      <Layout>
-        <Header className="header">
-          <Title
-            level={3}
-            style={{ color: "white", textAlign: "center", marginTop: "15px" }}
-          >
-            React Demo
-          </Title>
-        </Header>
-        <Layout style={{padding:""}}></Layout>
-      </Layout>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/accomodation" element={<AccomodationList />} />
+        <Route path="/details/:id" element={<AccommodationDetails />} />
+        <Route path="/" element={<Login />} /> {/* Default route */}
+      </Routes>
+    </Router>
   );
 }
 
