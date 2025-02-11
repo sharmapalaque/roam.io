@@ -11,6 +11,8 @@ func NewRouter(db *gorm.DB) *mux.Router {
 
 	// Define user-related routes
 	r.HandleFunc("/users/register", CreateUserHandler(db)).Methods("POST")
+	r.HandleFunc("/users/login", LoginHandler(db)).Methods("POST")
+	r.HandleFunc("/protected-endpoint", ProtectedEndpointHandler(db)).Methods("GET")
 
 	return r
 }
