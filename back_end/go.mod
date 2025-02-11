@@ -22,6 +22,7 @@ require (
 )
 
 require (
+	github.com/google/uuid v1.6.0
 	golang.org/x/crypto v0.32.0
 	gorm.io/driver/postgres v1.5.11
 )
