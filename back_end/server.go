@@ -9,6 +9,11 @@ import (
 	"roam.io/routes"
 )
 
+// @title Your API Title
+// @version 1.0
+// @description Your API Description
+// @host localhost:8080
+// @BasePath /
 func main() {
 	// Setup router
 	gormDb, err := db.Connect()
