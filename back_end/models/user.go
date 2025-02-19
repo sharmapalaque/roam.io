@@ -8,5 +8,4 @@ type User struct {
 	Email    string `gorm:"uniqueIndex"`
 	Age      int    `gorm:"not null"` // age cannot be null
 	Password string
-	Bookings *Accommodation `gorm:"type:json"` // One-to-Many Relationship
 }
