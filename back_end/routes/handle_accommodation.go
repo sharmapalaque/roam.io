@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -25,12 +26,12 @@ func FetchAccommodations(db *gorm.DB) http.HandlerFunc {
 
 		// Return response with the new user ID
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(accommodations)
 	}
 }
 
-func AddAccommodation(db *gorm.DB) http.HandlerFunc {
+func AddBooking(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Parse the JSON body
 		queryParams := r.URL.Query()
@@ -58,6 +59,7 @@ func AddAccommodation(db *gorm.DB) http.HandlerFunc {
 		// 	fmt.Println(err)
 		// 	return
 		// }
+
 		session, _ := store.Get(r, "session")
 
 		// Get user ID from session
@@ -74,6 +76,20 @@ func AddAccommodation(db *gorm.DB) http.HandlerFunc {
 		}
 
 		uintValue := uint(u)
+		bookings, err := GetBookingByUserID(int(userID), db)
+		if err != nil {
+			http.Error(w, "Failed to fetch user bookings", http.StatusInternalServerError)
+			fmt.Println(err)
+			return
+		}
+
+		for _, booking := range bookings {
+			if booking.AccommodationID == uintValue {
+				http.Error(w, "Booking already exists for user", http.StatusConflict)
+				return
+			}
+		}
+
 		bookingID, err := CreateBooking(userID, uintValue, checkInDate, checkOutDate, db)
 		if err != nil {
 			http.Error(w, "Failed to create booking", http.StatusInternalServerError)
@@ -87,8 +103,43 @@ func AddAccommodation(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func CreateBooking(userID, bookingID uint, checkinDate, checkoutDate time.Time, db *gorm.DB) (id int, err error) {
-	booking := models.Booking{UserID: userID, BookingID: bookingID, CheckinDate: checkinDate, CheckoutDate: checkoutDate}
+func RemoveBooking(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Parse the JSON body
+		queryParams := r.URL.Query()
+		accommodation_id := queryParams.Get("accommodation_id")
+
+		session, _ := store.Get(r, "session")
+
+		// Get user ID from session
+		userID, ok := session.Values["user_id"].(uint)
+		fmt.Println(userID)
+		if !ok {
+			http.Error(w, "Unauthorized: No session found", http.StatusUnauthorized)
+			return
+		}
+		u, err := strconv.ParseUint(accommodation_id, 10, 32) // base 10, uint32 max bits
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		uintValue := uint(u)
+
+		err = RemoveBookingByAccommodationID(int(uintValue), int(userID), db)
+		if err != nil {
+			http.Error(w, "Booking not found", http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode("Booking removed")
+	}
+}
+
+func CreateBooking(userID, accommodationID uint, checkinDate, checkoutDate time.Time, db *gorm.DB) (id int, err error) {
+	booking := models.Booking{UserID: userID, AccommodationID: accommodationID, CheckinDate: checkinDate, CheckoutDate: checkoutDate}
 	result := db.Create(&booking)
 	if result.Error != nil {
 		return 0, result.Error
@@ -97,6 +148,17 @@ func CreateBooking(userID, bookingID uint, checkinDate, checkoutDate time.Time, 
 		return int(booking.ID), nil
 	}
 }
+
+func GetBookingByUserID(userID int, db *gorm.DB) ([]models.Booking, error) {
+	bookings := []models.Booking{}
+	result := db.Where("user_id = ?", userID).Find(&bookings)
+	if result.Error != nil {
+		return nil, result.Error
+	} else {
+		return bookings, nil
+	}
+}
+
 func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Parse the JSON body
@@ -140,4 +202,16 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 	} else {
 		return accommodations, nil
 	}
+}
+
+func RemoveBookingByAccommodationID(accommodationID, userID int, db *gorm.DB) error {
+	var booking models.Booking
+	result := db.Where("accommodation_id = ? AND user_id = ?", accommodationID, userID).Delete(&booking)
+
+	if result.RowsAffected > 0 {
+		return nil
+	} else {
+		return errors.New("error removing booking")
+	}
+
 }
