@@ -21,30 +21,31 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <h2 className="title">User Login</h2>
-      <form className="form" onSubmit={handleSubmit(onSubmit)}>
+    <div className="background">
+      <div className="overlay-image"></div>
+      <div className="container">
+        <h2 className="title">Login</h2>
+        <form className="form" onSubmit={handleSubmit(onSubmit)}>
+          <div className="nav-links">
+            <p>Don't have an account? 
+            <Link to="/register" className="link"> Register Here</Link></p>
+          </div>
 
-        {/* Link to navigate to Register page */}
-        <div className="nav-links">
-          <p>Don't have an account?</p>
-          <Link to="/register" className="link">Register Here</Link>
-        </div>
+          <div className="form-group">
+            <label htmlFor="email">EMAIL</label>
+            <input id="email" type="email" {...register("email")} />
+            {errors.email && <p className="error-text">{errors.email.message}</p>}
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" {...register("email")} />
-          {errors.email && <p className="error-text">{errors.email.message}</p>}
-        </div>
+          <div className="form-group">
+            <label htmlFor="password">PASSWORD</label>
+            <input id="password" type="password" {...register("password")} />
+            {errors.password && <p className="error-text">{errors.password.message}</p>}
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input id="password" type="password" {...register("password")} />
-          {errors.password && <p className="error-text">{errors.password.message}</p>}
-        </div>
-
-        <button type="submit" className="submit-button">Login</button>
-      </form>
+          <button type="submit" className="submit-button">SIGN IN</button>
+        </form>
+      </div>
     </div>
   );
 };
