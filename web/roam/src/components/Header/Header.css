@@ -1,4 +1,14 @@
 /* Header.css */
+@import url('https://fonts.googleapis.com/css2?family=Petit+Formal+Script&display=swap');
+
+.header-slogan {
+    color: #000000;
+    font-size: 40px;
+    font-family: 'Petit Formal Script', cursive;
+    font-weight: 400;
+    letter-spacing: 0.8px;
+}
+
 .header {
     background: #fff;
     width: 100%;
@@ -54,7 +64,8 @@
 .header-slogan {
     color: #000000;
     font-size: 15px;
-    font-weight: 300;
+    font-weight: 500;
+    font-style: italic;
     font-family: "Poppins", sans-serif;
 }
 
