@@ -33,7 +33,7 @@ const Header: React.FC = () => {
         <nav className="header-nav">
           <div className="nav-rows">
             <div className="nav-row">
-              <span className="header-slogan">DREAM. EXPLORE. DISCOVER.</span>
+              <span className="header-slogan">Dream. Explore. Discover.</span>
             </div>
             <div className="nav-row">
               {navigationLinks.map(link => (
