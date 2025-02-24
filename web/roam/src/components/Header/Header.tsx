@@ -1,22 +1,20 @@
 // Header.tsx
-import React, { useState, useRef, useEffect } from 'react';
-import { User } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, ChevronDown } from 'lucide-react';
 import './Header.css';
 
 interface NavigationLink {
   text: string;
   href: string;
-  row: 2;
+  row: number;
 }
 
 const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const navigationLinks: NavigationLink[] = [
     { text: 'Accommodation', href: '/accommodation', row: 2 },
-    { text: 'Events', href: '/events ', row: 2 },
+    { text: 'Events', href: '/events', row: 2 },
     { text: 'Support', href: '/support', row: 2 },
     { text: 'FAQ', href: '/faq', row: 2 }
   ];
@@ -53,22 +51,15 @@ const Header: React.FC = () => {
             onMouseEnter={() => setIsDropdownOpen(true)}
             onMouseLeave={() => setIsDropdownOpen(false)}
           >
-            <button 
-              ref={buttonRef}
-              className="user-button"
-            >
+            <button className="user-button">
               <User className="user-icon" />
               <span className="user-greeting">Hi, User</span>
+              <ChevronDown className={`dropdown-arrow ${isDropdownOpen ? 'rotate' : ''}`} />
             </button>
-            {isDropdownOpen && (
-              <div 
-                ref={dropdownRef}
-                className="dropdown-menu"
-              >
-                <a href="/profile" className="dropdown-item">Your Profile</a>
-                <a href="/login" className="dropdown-item">Log Out</a>
-              </div>
-            )}
+            <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
+              <a href="/profile" className="dropdown-item">Your Profile</a>
+              <a href="/login" className="dropdown-item">Log Out</a>
+            </div>
           </div>
         </div>
       </div>
