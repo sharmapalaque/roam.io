@@ -6,18 +6,19 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
+import Header from '../Header/Header';
+import '../Header/Header.css';
 import "./AccomodationList.css"; // Import the CSS file
 
-// Define the type for accommodation data
+
 type Accommodation = {
   id: number;
   name: string;
   location: string;
   image: string;
-  description: string; // Added description for details page
+  description: string;
 };
 
-// Dummy data for accommodations
 const accommodations: Accommodation[] = [
   {
     id: 1,
@@ -31,59 +32,57 @@ const accommodations: Accommodation[] = [
     name: "Mountain Cabin",
     location: "Aspen, CO",
     image: "../../../public/Pasted image.png",
-    description:
-      "A cozy mountain cabin surrounded by nature in Aspen, Colorado.",
+    description: "A cozy mountain cabin surrounded by nature in Aspen, Colorado.",
   },
   {
     id: 3,
     name: "City Center Studio",
     location: "New York, NY",
     image: "../../../public/Pasted image.png",
-    description:
-      "A modern studio apartment located in the heart of New York City.",
+    description: "A modern studio apartment located in the heart of New York City.",
   },
 ];
 
 const AccommodationList: React.FC = () => {
   const navigate = useNavigate();
-
-  // Handle click event to navigate to details page
   const handleItemClick = (id: number) => {
     navigate(`/details/${id}`);
   };
 
   return (
-    <div className="list-container">
-      <h1 className="list-title">Available Accommodations</h1>
-      <List>
-        {accommodations.map((accommodation) => (
-          <React.Fragment key={accommodation.id}>
-            <ListItem
-              alignItems="flex-start"
-              button
-              className="list-item"
-              onClick={() => handleItemClick(accommodation.id)}
-            >
-              <ListItemAvatar>
-                <Avatar
-                  alt={accommodation.name}
-                  src={accommodation.image}
-                  className="avatar"
+    <div className="app">
+      <Header />
+      <main className="main-content">
+        <h1 className="page-title">Available Accommodations</h1>
+        <List className="accommodations-list">
+          {accommodations.map((accommodation) => (
+            <React.Fragment key={accommodation.id}>
+              <ListItem
+                button
+                className="accommodation-item"
+                onClick={() => handleItemClick(accommodation.id)}
+              >
+                <ListItemAvatar>
+                  <Avatar
+                    alt={accommodation.name}
+                    src={accommodation.image}
+                    className="accommodation-avatar"
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={accommodation.name}
+                  secondary={accommodation.location}
+                  classes={{
+                    primary: "item-title",
+                    secondary: "item-location",
+                  }}
                 />
-              </ListItemAvatar>
-              <ListItemText
-                primary={accommodation.name}
-                secondary={accommodation.location}
-                classes={{
-                  primary: "list-item-primary",
-                  secondary: "list-item-secondary",
-                }}
-              />
-            </ListItem>
-            <Divider variant="inset" component="li" />
-          </React.Fragment>
-        ))}
-      </List>
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </React.Fragment>
+          ))}
+        </List>
+      </main>
     </div>
   );
 };

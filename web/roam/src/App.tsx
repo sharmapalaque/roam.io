@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/accomodation" element={<AccomodationList />} />
+        <Route path="/accommodation" element={<AccomodationList />} />
         <Route path="/details/:id" element={<AccommodationDetails />} />
         <Route path="/" element={<Login />} /> {/* Default route */}
       </Routes>
