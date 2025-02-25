@@ -1,0 +1,39 @@
+.details-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for better appearance */
+  }
+  
+  .details-title {
+    color: #1976d2; /* Blue color */
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .details-image {
+    width: calc(100% - 40px); /* Adjust width to fit container */
+    max-height: 400px; /* Limit height for large images */
+    object-fit: cover; /* Ensure proper image scaling */
+    margin-bottom: 20px;
+    border-radius: 8px; /* Rounded corners for the image */
+  }
+  
+  .details-location {
+    color: #1976d2; /* Blue color for location text */
+    font-weight: bold;
+  }
+  
+  .details-description {
+    margin-top: 20px;
+    line-height: 1.6; /* Improve readability */
+    color: #424242; /* Dark grey for text */
+  }
+  
+  .not-found {
+    text-align: center;
+    color: red; /* Red color for error message */
+  }
+  

@@ -1,0 +1,213 @@
+.app {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #feffff, #ebebe8);
+  font-family: 'Poppins', sans-serif;
+}
+
+.main-content {
+  padding-top: 140px;  /* Adjust based on header height */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 40px;
+}
+
+.page-title {
+  color: #000000;
+  text-align: center;
+  margin-bottom: 30px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 500;
+  width: 100%;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 35%;
+  right: 35%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #a5e3de, transparent); /* Light teal gradient line */
+}
+
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(112, 201, 194, 0.1); /* Very light teal border */
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-icon {
+  color: #70c9c2;
+}
+
+.location-filter {
+  min-width: 200px;
+}
+
+/* Fix for the label overlap issue */
+.location-filter .MuiInputLabel-root {
+  background-color: white;
+  padding: 0 5px;
+  margin-left: -5px;
+  transform: translate(14px, -9px) scale(0.75) !important;
+  z-index: 1;
+}
+
+.location-filter .MuiOutlinedInput-notchedOutline legend {
+  max-width: 1000px !important;
+  width: auto !important;
+  padding: 0 8px;
+}
+
+.accommodations-grid {
+  margin-top: 20px;
+}
+
+.accommodation-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  position: relative;
+}
+
+.accommodation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 3px solid #70c9c2; /* Teal border on hover */
+}
+
+.accommodation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #70c9c2, #a5e3de); /* Gradient from teal to lighter teal */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.accommodation-card:hover::before {
+  opacity: 1;
+}
+
+.accommodation-image {
+  object-fit: cover;
+  border-bottom: 1px solid #ebebe8;
+}
+
+.card-content {
+  flex-grow: 1;
+  padding: 16px !important;
+}
+
+.accommodation-name {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 18px !important;
+  color: #000000 !important;
+  margin-bottom: 10px !important;
+  text-align: left;
+}
+
+.accommodation-location {
+  display: flex !important;
+  align-items: center !important;
+  font-family: 'Poppins', sans-serif !important;
+  color: #70c9c2 !important;
+  font-size: 14px !important;
+  margin-bottom: 12px !important;
+}
+
+.location-icon {
+  font-size: 18px !important;
+  margin-right: 4px !important;
+  color: #70c9c2 !important;
+}
+
+.accommodation-description {
+  font-family: 'Poppins', sans-serif !important;
+  color: #757575 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  text-align: left;
+}
+
+.no-results {
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 8px;
+  margin-top: 20px;
+  color: #757575;
+  border: 1px dashed rgba(112, 201, 194, 0.3); /* Light dashed teal border */
+  background-color: rgba(112, 201, 194, 0.03); /* Very light teal background */
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.no-results h6 {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+}
+
+/* Making the MUI components match our design */
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #70c9c2 !important;
+}
+
+.MuiFormLabel-root.Mui-focused {
+  color: #70c9c2 !important;
+}
+
+.MuiInputLabel-root {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.MuiMenuItem-root {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.MuiSelect-select {
+  font-family: 'Poppins', sans-serif !important;
+  padding-top: 17px !important;
+  padding-bottom: 13px !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 120px;
+  }
+  
+  .filter-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .search-input, .location-filter {
+    width: 100%;
+  }
+}
