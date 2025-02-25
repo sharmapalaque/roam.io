@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import "../../styles/common.css"; 
+import { alertClasses } from "@mui/material";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -15,9 +16,31 @@ const Login: React.FC = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<any> = (data) => {
-    console.log("Form Data:", data);
-    alert("Login successful!");
+  const onSubmit: SubmitHandler<any> = async (data) => {
+    try {
+      const response = await fetch('http://localhost:8080/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // Send form data
+      });
+
+      const result = await response.json() // rsponse is in json format
+
+      // Check if the response is successful or has an error
+      if (response.ok) {
+        alert('Success: ${result.message}');  // Success alert
+      } else {
+        alert('Error: ${result.message'); // Error alert
+      }
+    } catch (error) {
+      // Handle netowork errors
+      alert('There was an error with the request');
+      console.log(error)
+    }
+    // console.log("Form Data:", data);
+    // alert("Login successful!");
   };
 
   return (
