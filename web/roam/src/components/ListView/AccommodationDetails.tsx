@@ -2,7 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import "./AccomodationDetails.css"; // Import the CSS file
+import "./AccommodationDetails.css"; // Import the CSS file
 
 // Define the type for accommodation data
 type Accommodation = {
