@@ -1,39 +1,463 @@
+/* AccommodationDetails.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+body {
+  overflow-y: auto !important;
+}
+
+.details-page {
+  padding-bottom: 60px;
+  margin-top: 0;
+  color: #333;
+}
+
+/* Updated teal-header with adjusted gradient and padding */
+.teal-header {
+  color: white;
+  padding: 60px 0 20px 0; /* Increased top padding to push title down */
+  margin-top: 0px; /* Reduced from 80px to remove some empty space */
+  position: relative;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  /* Apply a more expanded gradient directly to the header */
+  background: linear-gradient(to bottom, 
+    #70c9c2 0%, 
+    #70c9c2 60%, 
+    rgba(112, 201, 194, 0.95) 75%,
+    rgba(112, 201, 194, 0.8) 85%,
+    rgba(112, 201, 194, 0.5) 92%,
+    rgba(112, 201, 194, 0.2) 96%,
+    rgba(112, 201, 194, 0) 100%
+  );
+  /* Adjust padding to expand the gradient area */
+  padding-bottom: 60px;
+}
+
+/* Remove the ::after pseudo-element completely */
+.teal-header::after {
+  display: none !important;
+}
+
 .details-container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 800px;
-    margin: auto;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for better appearance */
-  }
-  
-  .details-title {
-    color: #1976d2; /* Blue color */
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .details-image {
-    width: calc(100% - 40px); /* Adjust width to fit container */
-    max-height: 400px; /* Limit height for large images */
-    object-fit: cover; /* Ensure proper image scaling */
-    margin-bottom: 20px;
-    border-radius: 8px; /* Rounded corners for the image */
-  }
-  
-  .details-location {
-    color: #1976d2; /* Blue color for location text */
-    font-weight: bold;
-  }
-  
-  .details-description {
+  padding: 20px;
+  margin-top: -60px !important; /* Adjusted to position content better */
+  position: relative;
+  z-index: 1;
+  border: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+}
+
+/* Rating stars positioning */
+.rating-container {
+  float: left !important;
+  margin-left: 10px !important;
+  margin-top: 30px !important; /* Moved down to be below gradient area */
+  margin-bottom: 20px !important;
+  align-items: left;
+  margin-left: 0px;
+}
+
+/* Add this specific fix for the persistent line issue */
+.MuiContainer-root {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.details-container, .teal-header + .details-container {
+  border-top: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Add this to ensure any potential divider is removed */
+hr, .MuiDivider-root:not(.review-divider):not(.breakdown-divider) {
+  display: none !important;
+}
+
+/* Override any container borders */
+.main-content, .container, .MuiContainer-root {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Force Material UI to behave */
+.MuiPaper-root,
+.MuiBox-root,
+.MuiGrid-root {
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+.property-header {
+  margin-bottom: 20px;
+}
+
+/* Adjusted title position */
+.property-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  margin-bottom: 12px;
+  color: white;
+  text-transform: capitalize;
+  text-align: left;
+  padding-top: 10px; /* Added padding to move title down */
+}
+
+.property-location {
+  color: white;
+  font-weight: 400;
+  text-align: left;
+  margin-top: 0px;
+  margin-bottom: 15px; /* Added margin to create more space below location */
+}
+
+.property-subheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.property-rating {
+  display: flex;
+  align-items: center;
+}
+
+/* Image Gallery */
+.image-gallery {
+  margin-bottom: 30px;
+}
+
+.main-image-container {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f0f0;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.thumbnail-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 60px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s, border 0.3s;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+.thumbnail.selected {
+  opacity: 1;
+  border: 2px solid #70c9c2;
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Property Sections */
+.property-section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  margin-bottom: 16px;
+  color: #000000;
+  border-bottom: 1px solid #ebebe8;
+  padding-bottom: 8px;
+  text-transform: capitalize;
+  text-align: left;
+}
+
+.description-text {
+  padding-top: 10px;
+  line-height: 1.6;
+  color: #333;
+  text-align: left;
+}
+
+/* Facilities */
+.facilities-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.facility-chip {
+  background-color: #f5f5f5;
+  transition: background-color 0.3s;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.facility-chip:hover {
+  background-color: rgba(112, 201, 194, 0.2);
+  border-color: #70c9c2;
+}
+
+/* Host Details */
+.host-details {
+  padding-top: 10px;
+  padding-bottom: 0% !important;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.host-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+}
+
+.contact-icon {
+  color: #70c9c2;
+  font-size: 1.2rem;
+}
+
+/* Reviews */
+.reviews-container {
+  padding: 10px 0;
+}
+
+.overall-rating {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.star-icon {
+  color: #70c9c2;
+  font-size: 1.8rem;
+}
+
+.rating-number {
+  font-weight: 600;
+}
+
+.review-item {
+  margin: 16px 0;
+}
+
+.reviewer-name {
+  font-weight: 600 !important;
+  text-align: left;
+}
+
+.review-date {
+  text-align: right;
+}
+
+.review-comment {
+  margin-top: 8px;
+  font-weight: 590 !important;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.review-divider {
+  margin: 16px 0;
+}
+
+/* Booking Panel */
+.booking-panel {
+  padding: 24px;
+  position: sticky;
+  border-radius: 8px;
+  border: 1px solid #ebebe8;
+  top: 130px; /* Keep this as is */
+  z-index: 1; /* Ensures proper stacking */
+}
+
+.booking-panel-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  margin-bottom: 16px;
+  color: #000000;
+  text-transform: capitalize;
+}
+
+.price-container {
+  margin-bottom: 20px;
+}
+
+.price {
+  font-weight: 600;
+  color: #70c9c2;
+}
+
+.price-period {
+  color: #777;
+}
+
+/* Custom date input styles */
+.date-picker-container {
+  margin-bottom: 16px;
+}
+
+.date-field-container {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  border: 1px solid #70c9c2;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.date-field-container:hover {
+  border-color: #70c9c2;
+  background-color: rgba(112, 201, 194, 0.05);
+}
+
+.date-field-container.disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.custom-date-input {
+  width: 100%;
+  height: 100%;
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+}
+
+.custom-date-input:disabled {
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+/* Date error message */
+.date-error {
+  color: #c40000;
+  font-size: 0.5rem;
+  margin: 0 0 0 0;
+  padding-left: 0px;
+  text-align: center;
+  font-weight: 500;
+  padding-bottom: 20px;
+}
+
+.guests-container {
+  margin-bottom: 20px;
+}
+
+.price-breakdown {
+  margin: 20px 0;
+  padding: 16px 0;
+}
+
+.breakdown-row {
+  margin-bottom: 8px;
+}
+
+.breakdown-row.total {
+  margin-top: 8px;
+}
+
+.book-now-button {
+  background-color: #70c9c2;
+  color: white;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif !important;
+  padding: 12px;
+}
+
+.book-now-button:hover {
+  cursor: pointer;
+  background-color: #5bb8b1;
+}
+
+.book-now-button:disabled {
+  background-color: #cccccc;
+}
+
+/* Responsive Design */
+@media (max-width: 960px) {
+  .booking-panel {
+    position: static;
     margin-top: 20px;
-    line-height: 1.6; /* Improve readability */
-    color: #424242; /* Dark grey for text */
   }
   
-  .not-found {
-    text-align: center;
-    color: red; /* Red color for error message */
+  .main-image-container {
+    height: 350px;
   }
   
+  .property-subheader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-image-container {
+    height: 250px;
+  }
+  
+  .thumbnail {
+    width: 60px;
+    height: 45px;
+  }
+  
+  .facilities-container {
+    gap: 8px;
+  }
+  
+  .facility-chip {
+    margin-bottom: 4px;
+  }
+}

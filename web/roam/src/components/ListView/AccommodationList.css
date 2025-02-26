@@ -4,17 +4,53 @@
   font-family: 'Poppins', sans-serif;
 }
 
+
+/* Add the teal header gradient styling from AccommodationDetails.css, but adjusted to be shorter */
+.teal-header {
+  color: white;
+  padding: 20px 0;
+  margin-top: 0;
+  position: absolute;
+  width: 100%;
+  top: 62px; /* Position directly below the website header */
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  height: 150px; /* Increased height to be more visible */
+  /* Apply a shortened gradient that ends higher */
+  background: linear-gradient(to bottom, 
+    #70c9c2 0%, 
+    #70c9c2 40%, 
+    rgba(112, 201, 194, 0.95) 60%,
+    rgba(112, 201, 194, 0.8) 70%,
+    rgba(112, 201, 194, 0.5) 80%,
+    rgba(112, 201, 194, 0.2) 90%,
+    rgba(112, 201, 194, 0) 100%
+  );
+  z-index: 0;
+  left: 0;
+  right: 0;
+  max-width: 100%; /* Use full width for the gradient */
+  margin: 0 auto; /* Center the header */
+}
+
+.teal-header::after {
+  display: none !important;
+}
+
 .main-content {
-  padding-top: 140px;  /* Adjust based on header height */
+  padding-top: 140px;  /* Maintain original padding-top */
   max-width: 1200px;
   margin: 0 auto;
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 40px;
+  position: relative;
+  z-index: 1; /* Ensure all content is above the gradient */
 }
 
 .page-title {
-  color: #000000;
+  color: white; /* Changed to white to match screenshot */
   text-align: center;
   margin-bottom: 30px;
   font-family: 'Poppins', sans-serif;
@@ -23,8 +59,10 @@
   width: 100%;
   position: relative;
   padding-bottom: 12px;
+  z-index: 1; /* Ensure it displays above the gradient background */
 }
 
+/* Keep the original underline styling but make it white */
 .page-title::after {
   content: '';
   position: absolute;
@@ -32,7 +70,7 @@
   left: 35%;
   right: 35%;
   height: 2px;
-  background: linear-gradient(to right, transparent, #a5e3de, transparent); /* Light teal gradient line */
+  background: linear-gradient(to right, transparent, white, transparent); /* White gradient line */
 }
 
 .filter-container {
@@ -45,6 +83,10 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(112, 201, 194, 0.1); /* Very light teal border */
+  position: relative;
+  z-index: 1; /* Ensure it displays above the gradient */
+  width: 70%; /* Reduce width to show more of the gradient */
+  margin: 0 auto 30px; /* Center the container and keep bottom margin */
 }
 
 .search-input {
@@ -58,6 +100,14 @@
 
 .location-filter {
   min-width: 200px;
+  width: 200px; /* Set a fixed width to prevent resizing */
+  display: inline-flex;
+  position: relative;
+}
+
+body {
+  overflow: hidden; /* Prevents unwanted shifting */
+  padding-right: 0 !important; /* Ensures no forced padding changes */
 }
 
 /* Fix for the label overlap issue */
@@ -70,9 +120,11 @@
 }
 
 .location-filter .MuiOutlinedInput-notchedOutline legend {
+  
   max-width: 1000px !important;
   width: auto !important;
   padding: 0 8px;
+  text-align: left !important;
 }
 
 .accommodations-grid {
