@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
 	github.com/go-openapi/spec v0.21.0 // indirect
@@ -34,6 +35,7 @@ require (
 )
 
 require (
+	github.com/gorilla/handlers v1.5.2
 	github.com/swaggo/http-swagger v1.3.4
 	golang.org/x/crypto v0.33.0
 	gorm.io/driver/postgres v1.5.11
