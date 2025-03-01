@@ -4,7 +4,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import "../../styles/common.css"; 
-import { alertClasses } from "@mui/material";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -26,11 +25,10 @@ const Login: React.FC = () => {
         body: JSON.stringify(data), // Send form data
       });
 
-      const result = await response.json() // rsponse is in json format
+      const result = await response.json() // response is in json format
 
       // Check if the response is successful or has an error
       if (response.ok) {
-        // alert('Success: ${result.message}');  // Success alert
         window.location.href = "/accommodation";
       } else {
         alert('Error: ${result.message'); // Error alert
@@ -40,8 +38,6 @@ const Login: React.FC = () => {
       alert('There was an error with the request');
       console.log(error)
     }
-    // console.log("Form Data:", data);
-    // alert("Login successful!");
   };
 
   return (

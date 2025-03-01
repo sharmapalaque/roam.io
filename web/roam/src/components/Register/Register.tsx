@@ -18,8 +18,32 @@ const Register: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<any> = (data) => {
-    console.log("Form Data:", data);
-    alert("Registration successful!");
+    let body = JSON.stringify(data)
+    console.log(body)
+    // try {
+    //   const response = await fetch('http://localhost:8080/users/register', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(data), // Send form data
+    //   });
+
+    //   const result = await response.json() // response is in json format
+
+    //   // Check if the response is successful or has an error
+    //   if (response.ok) {
+    //     window.location.href = "/accommodation";
+    //   } else {
+    //     alert('Error: ${result.message'); // Error alert
+    //   }
+    // } catch (error) {
+    //   // Handle netowork errors
+    //   alert('There was an error with the request');
+    //   console.log(error)
+    // }
+    // console.log("Form Data:", data);
+    // alert("Registration successful!");
   };
 
   return (
