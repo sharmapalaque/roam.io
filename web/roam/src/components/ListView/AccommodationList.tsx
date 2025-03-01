@@ -12,6 +12,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import Header from '../Header/Header';
@@ -59,6 +60,25 @@ const AccommodationList: React.FC = () => {
   const [locationFilter, setLocationFilter] = useState("");
   const [filteredAccommodations, setFilteredAccommodations] = useState(accommodations);
 
+  // Enhanced styles to fix the line issue, similar to AccommodationDetails.tsx
+  const headerContainerStyle = {
+    border: 'none !important',
+    borderBottom: 'none !important',
+    boxShadow: 'none !important',
+    outline: 'none !important',
+    background: 'transparent !important'
+  };
+
+  const detailsContainerStyle = {
+    border: 'none !important',
+    borderTop: 'none !important',
+    marginTop: '-60px', // Adjusted to position content better
+    boxShadow: 'none !important',
+    outline: 'none !important',
+    position: 'relative' as 'relative',
+    zIndex: 1
+  };
+
   useEffect(() => {
     // Filter accommodations based on search term only
     // Location filtering will be handled on the backend
@@ -86,9 +106,23 @@ const AccommodationList: React.FC = () => {
   return (
     <div className="app">
       <Header />
+      
+      {/* Add the teal header as a background only */}
+      <Box className="teal-header" style={{
+        border: 'none', 
+        outline: 'none', 
+        boxShadow: 'none',
+        position: 'absolute',
+        zIndex: 0,
+        left: 0,
+        right: 0,
+        margin: '0 auto',
+        maxWidth: '1200px' /* Match main-content to keep consistent spacing */
+      }}>
+      </Box>
+      
       <main className="main-content">
         <h1 className="page-title">Find Your Perfect Stay</h1>
-        
         <Box className="filter-container">
           <TextField
             className="search-input"
