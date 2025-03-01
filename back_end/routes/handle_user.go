@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -19,19 +20,26 @@ func CreateUserHandler(db *gorm.DB) http.HandlerFunc {
 		var user models.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
-			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request payload"})
 			return
 		}
 
-		hashedPw, _ := HashPassword(user.Password)
+		hashedPw, err := HashPassword(user.Password)
 		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Error processing password"})
 			fmt.Println("error hashing password", err)
 			return
 		}
 
-		userID, err := CreateUser(user.Name, user.Email, user.Username, hashedPw, user.Age, db)
+		userID, err := CreateUser(user.Name, user.Email, user.Username, hashedPw, user.Dob, db)
 		if err != nil {
-			http.Error(w, "Failed to insert user", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to insert user"})
 			fmt.Println(err)
 			return
 		}
@@ -51,8 +59,8 @@ func HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func CreateUser(name, email, username, password string, age int, db *gorm.DB) (id int, err error) {
-	user := models.User{Name: name, Email: email, Username: username, Password: password, Age: age}
+func CreateUser(name, email, username, password string, dob time.Time, db *gorm.DB) (id int, err error) {
+	user := models.User{Name: name, Email: email, Username: username, Password: password, Dob: dob}
 	result := db.Create(&user)
 	if result.Error != nil {
 		return 0, result.Error
