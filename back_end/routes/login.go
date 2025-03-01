@@ -22,12 +22,16 @@ func LoginHandler(db *gorm.DB) http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
-			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request payload"})
 			return
 		}
 
 		if req.Email == "" || req.Password == "" {
-			http.Error(w, "Email and password are required", http.StatusBadRequest)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Email and password are required"})
 			return
 		}
 
@@ -35,17 +39,23 @@ func LoginHandler(db *gorm.DB) http.HandlerFunc {
 		result := db.Where("email = ?", req.Email).First(&user)
 		if result.Error != nil {
 			if result.Error == gorm.ErrRecordNotFound {
-				http.Error(w, "User not found", http.StatusNotFound)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusNotFound)
+				json.NewEncoder(w).Encode(map[string]string{"message": "User not found"})
 				return
 			} else {
-				http.Error(w, "Database error", http.StatusInternalServerError)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(map[string]string{"message": "Database error"})
 				fmt.Println(result.Error)
 				return
 			}
 		}
 
 		if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-			http.Error(w, "Invalid password", http.StatusUnauthorized)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid password"})
 			return
 		}
 
