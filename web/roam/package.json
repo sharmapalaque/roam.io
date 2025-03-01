@@ -13,6 +13,8 @@
     "@hookform/resolvers": "^3.10.0",
     "@mui/icons-material": "^6.4.3",
     "@mui/material": "^6.4.3",
+    "@mui/x-date-pickers": "^7.27.0",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.475.0",
     "mui": "^0.0.1",
     "react": "^18.3.1",
