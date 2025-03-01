@@ -30,7 +30,8 @@ const Login: React.FC = () => {
 
       // Check if the response is successful or has an error
       if (response.ok) {
-        alert('Success: ${result.message}');  // Success alert
+        // alert('Success: ${result.message}');  // Success alert
+        window.location.href = "/accommodation";
       } else {
         alert('Error: ${result.message'); // Error alert
       }
