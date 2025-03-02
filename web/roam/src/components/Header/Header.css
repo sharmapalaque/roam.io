@@ -108,9 +108,42 @@
     color: #70c9c2;
 }
 
+/* Old user icon styling (kept for fallback) */
 .user-icon {
     width: 24px;
     height: 24px;
+}
+
+/* New avatar styling to match profile page */
+.header-avatar-wrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.header-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background-color: #70c9c2;
 }
 
 .user-greeting {
