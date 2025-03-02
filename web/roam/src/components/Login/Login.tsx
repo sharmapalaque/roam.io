@@ -16,6 +16,7 @@ const Login: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<any> = async (data) => {
+    // try REST API call 
     try {
       const response = await fetch('http://localhost:8080/users/login', {
         method: 'POST',

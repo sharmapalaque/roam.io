@@ -24,8 +24,9 @@ const Register: React.FC = () => {
   const onSubmit: SubmitHandler<any> = async (data) => {
     // hardcoding just to make it work, as soon as it's remove from back end 
     // will remove this line from front end request body too.
-    data.username = "username"    
+    // data.username = "username"    
 
+    // try REST API call
     try {
       const response = await fetch("http://localhost:8080/users/register", {
         method: "POST",
@@ -40,7 +41,7 @@ const Register: React.FC = () => {
       // Check if the response is successful or has an error
       if (response.ok) {
         alert("Registration Successful! You will be redirected to login page shortly.")
-        window.location.href = "/users/login";
+        window.location.href = "/login";
       } else {
         alert(`Error: ${result.message}`); // Error alert
       }
