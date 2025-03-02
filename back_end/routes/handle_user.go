@@ -13,34 +13,61 @@ import (
 
 var currUserID string
 
+type UserRequest struct {
+	Name     string `json:"name"`     // Changed from "Name" to "name"
+	Username string `json:"username"` // Changed from "Username" to "username"
+	Email    string `json:"email"`    // Changed from "Email" to "email"
+	Password string `json:"password"` // Changed from "Password" to "password"
+	Dob      string `json:"dob"`      // Already using lowercase "dob"
+}
+
 // CreateUserHandler handles the user creation logic
 func CreateUserHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Parse the JSON body
-		var user models.User
-		err := json.NewDecoder(r.Body).Decode(&user)
-		if err != nil {
+		// Parse the incoming JSON into our custom request struct
+		var userReq UserRequest
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&userReq); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request payload"})
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid JSON format: " + err.Error()})
 			return
 		}
 
-		hashedPw, err := HashPassword(user.Password)
+		// Print the parsed request for debugging
+		fmt.Printf("Parsed request: %+v\n", userReq)
+
+		// Parse the date string into time.Time
+		// Try different formats, starting with the simple YYYY-MM-DD
+		dob, err := time.Parse("2006-01-02", userReq.Dob)
+		if err != nil {
+			// Try RFC3339 format as fallback
+			dob, err = time.Parse(time.RFC3339, userReq.Dob)
+			if err != nil {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(map[string]string{
+					"message": "Invalid date format. Please use YYYY-MM-DD format: " + err.Error(),
+				})
+				return
+			}
+		}
+
+		// Hash the password
+		hashedPw, err := HashPassword(userReq.Password)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(map[string]string{"message": "Error processing password"})
-			fmt.Println("error hashing password", err)
 			return
 		}
 
-		userID, err := CreateUser(user.Name, user.Email, user.Username, hashedPw, user.Dob, db)
+		// Create the user with our parsed values
+		userID, err := CreateUser(userReq.Name, userReq.Email, userReq.Username, hashedPw, dob, db)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to insert user"})
-			fmt.Println(err)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to insert user: " + err.Error()})
 			return
 		}
 

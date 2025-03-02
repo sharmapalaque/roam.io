@@ -13,13 +13,45 @@ const schema = yup.object().shape({
 });
 
 const Register: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<any> = (data) => {
-    console.log("Form Data:", data);
-    alert("Registration successful!");
+  const onSubmit: SubmitHandler<any> = async (data) => {
+    // hardcoding just to make it work, as soon as it's remove from back end 
+    // will remove this line from front end request body too.
+    // data.username = "username"    
+
+    // try REST API call
+    try {
+      const response = await fetch("http://localhost:8080/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data), // Send form data
+      });
+
+      const result = await response.json(); // response is in json format
+
+      // Check if the response is successful or has an error
+      if (response.ok) {
+        alert("Registration Successful! You will be redirected to login page shortly.")
+        window.location.href = "/login";
+      } else {
+        alert(`Error: ${result.message}`); // Error alert
+      }
+    } catch (error) {
+      // Handle netowork errors
+      alert("There was an error with the request");
+      console.log(error);
+    }
+    // console.log("Form Data:", data);
+    // alert("Registration successful!");
   };
 
   return (
@@ -34,35 +66,48 @@ const Register: React.FC = () => {
           <form className="form" onSubmit={handleSubmit(onSubmit)}>
             {/* Link to navigate back to Login page */}
             <div className="nav-links">
-              <p>Already registered?
-              <Link to="/login" className="link"> Login </Link></p>
+              <p>
+                Already registered?
+                <Link to="/login" className="link">
+                  {" "}
+                  Login{" "}
+                </Link>
+              </p>
             </div>
 
             <div className="form-group">
               <label htmlFor="name">NAME</label>
               <input id="name" {...register("name")} />
-              {errors.name && <p className="error-text">{errors.name.message}</p>}
+              {errors.name && (
+                <p className="error-text">{errors.name.message}</p>
+              )}
             </div>
 
             <div className="form-group">
               <label htmlFor="email">EMAIL</label>
               <input id="email" type="email" {...register("email")} />
-              {errors.email && <p className="error-text">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="error-text">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="form-group">
               <label htmlFor="password">PASSWORD</label>
               <input id="password" type="password" {...register("password")} />
-              {errors.password && <p className="error-text">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="error-text">{errors.password.message}</p>
+              )}
             </div>
 
-            <div className="form-group"> 
+            <div className="form-group">
               <label htmlFor="dob">DATE OF BIRTH</label>
               <input id="dob" type="date" {...register("dob")} />
               {errors.dob && <p className="error-text">{errors.dob.message}</p>}
             </div>
 
-            <button type="submit" className="submit-button">SIGN UP</button>
+            <button type="submit" className="submit-button">
+              SIGN UP
+            </button>
           </form>
         </div>
       </div>
