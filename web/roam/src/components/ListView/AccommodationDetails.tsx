@@ -223,14 +223,6 @@ const AccommodationDetails: React.FC = () => {
     marginBottom: '5px' // Reduced margin between title and location
   };
 
-  const locationTextStyle = {
-    textAlign: 'left' as 'left',
-    marginLeft: '15px',
-    marginBottom: '5px', // Reduced margin below location
-    color: 'white',
-    fontWeight: 400
-  };
-
   // Find the accommodation by ID
   const accommodation = accommodations.find(
     (item) => item.id === parseInt(id || "", 10)
