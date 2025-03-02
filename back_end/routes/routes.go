@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm" // This is needed to serve Swagger UI
 )
 
-func NewRouter(db *gorm.DB) {
+func NewRouter(db *gorm.DB) *mux.Router {
 	r := mux.NewRouter()
 
 	// Define user-related routes
@@ -46,5 +46,5 @@ func NewRouter(db *gorm.DB) {
 	// Start the server
 	fmt.Println("Server is running on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r)))
-	// return r;
+	return r;
 }
