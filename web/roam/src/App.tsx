@@ -4,7 +4,6 @@ import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import AccommodationList from './components/ListView/AccommodationList'
 import AccommodationDetails from './components/ListView/AccommodationDetails';
-import UserProfile from './components/UserProfile/UserProfile';
 
 function App() {
   return (
@@ -14,7 +13,6 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/accommodation" element={<AccommodationList />} />
         <Route path="/details/:id" element={<AccommodationDetails />} />
-        <Route path="/profile" element={<UserProfile />} />
         <Route path="/" element={<Login />} /> {/* Default route */}
       </Routes>
     </Router>
