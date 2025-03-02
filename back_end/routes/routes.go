@@ -20,10 +20,11 @@ func NewRouter(db *gorm.DB) {
 	r.HandleFunc("/users/register", CreateUserHandler(db)).Methods("POST")
 	r.HandleFunc("/users/login", LoginHandler(db)).Methods("POST")
 	r.HandleFunc("/protected-endpoint", ProtectedEndpointHandler(db)).Methods("GET")
+	r.HandleFunc("/accommodations/{id}", FetchAccommodationById(db)).Methods("GET")
 	r.HandleFunc("/accommodations", FetchAccommodations(db)).Methods("GET")
 	r.HandleFunc("/accommodations", AddBooking(db)).Methods("PUT")
 	r.HandleFunc("/accommodations", RemoveBooking(db)).Methods("DELETE")
-	r.HandleFunc("/create", CreateAccommodation(db)).Methods("POST")
+	r.HandleFunc("/accommodations", CreateAccommodation(db)).Methods("POST")
 
 	// Handle OPTIONS requests
 	r.Use(mux.CORSMethodMiddleware(r)) 
@@ -45,4 +46,5 @@ func NewRouter(db *gorm.DB) {
 	// Start the server
 	fmt.Println("Server is running on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r)))
+	// return r;
 }
