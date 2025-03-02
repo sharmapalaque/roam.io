@@ -31,7 +31,7 @@ const Login: React.FC = () => {
       if (response.ok) {
         window.location.href = "/accommodation";
       } else {
-        alert('Error: ${result.message'); // Error alert
+        alert(`Error: ${result.message}`); // Error alert
       }
     } catch (error) {
       // Handle netowork errors
