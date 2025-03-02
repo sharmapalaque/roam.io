@@ -8,27 +8,56 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/mux"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 	"roam.io/models"
 )
 
 func FetchAccommodations(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Parse the JSON body
-		queryParams := r.URL.Query()
-		location := queryParams.Get("location")
-		accommodations, err := GetAccommodationsByLocation(location, db)
-		if err != nil {
-			http.Error(w, "Failed to fetch accommodations", http.StatusInternalServerError)
-			fmt.Println(err)
-			return
+		{
+			queryParams := r.URL.Query()
+			location := queryParams.Get("location")
+			accommodations, err := GetAccommodationsByLocation(location, db)
+			if err != nil {
+				http.Error(w, "Failed to fetch accommodations", http.StatusInternalServerError)
+				fmt.Println(err)
+				return
+			}
+			// Return response with the new user ID
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(accommodations)
 		}
-
-		// Return response with the new user ID
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(accommodations)
 	}
+}
+
+func FetchAccommodationById(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		accommodation_id, exists := vars["id"]
+		if accommodation_id != "" || exists {
+			result, err := GetAccommodationsById(accommodation_id, db)
+			if err != nil {
+				if err == gorm.ErrRecordNotFound {
+					http.Error(w, "Accommodation not Found", http.StatusNotFound)
+					return
+				}
+				http.Error(w, "Failed to fetch accommodations", http.StatusInternalServerError)
+				fmt.Println(err)
+				return
+			}
+			// Return response with the new user ID
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(result)
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+		}
+	}
+
 }
 
 func AddBooking(db *gorm.DB) http.HandlerFunc {
@@ -162,13 +191,13 @@ func GetBookingByUserID(userID int, db *gorm.DB) ([]models.Booking, error) {
 func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Parse the JSON body
-		var user models.Accommodation
-		err := json.NewDecoder(r.Body).Decode(&user)
+		var payload models.Accommodation
+		err := json.NewDecoder(r.Body).Decode(&payload)
 		if err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
-		accommodation := models.Accommodation{Name: user.Name, Location: user.Location, ImageUrl: user.ImageUrl, UserReviews: user.UserReviews}
+		accommodation := models.Accommodation{Name: payload.Name, Location: payload.Location, ImageUrls: pq.StringArray(payload.ImageUrls), UserReviews: payload.UserReviews, Description: payload.Description, Facilities: payload.Facilities}
 		result := db.Create(&accommodation)
 		if result.Error != nil {
 			fmt.Println(result.Error)
@@ -201,6 +230,19 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 		return nil, result.Error
 	} else {
 		return accommodations, nil
+	}
+}
+
+func GetAccommodationsById(id string, db *gorm.DB) (*models.Accommodation, error) {
+	var accommodation models.Accommodation
+
+	result := db.First(&accommodation, id)
+
+	if result.Error != nil {
+
+		return nil, result.Error
+	} else {
+		return &accommodation, nil
 	}
 }
 

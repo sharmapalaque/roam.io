@@ -8,6 +8,6 @@ type User struct {
 	Name     string    `gorm:"size:100"`
 	Username string    `gorm:"size:50;uniqueIndex"` // unique username
 	Email    string    `gorm:"uniqueIndex"`
-	Dob      time.Time `gorm:"not null"` // date of birth cannot be null
+	Dob      time.Time `gorm:"not null" json:"dob"` // date of birth cannot be null
 	Password string
 }
