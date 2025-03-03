@@ -46,7 +46,7 @@ const Login: React.FC = () => {
       <div className="overlay-image"></div>
       <div className="container">
         <h2 className="title">Login</h2>
-        <form className="form" onSubmit={handleSubmit(onSubmit)}>
+        <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
           <div className="nav-links">
             <p>Don't have an account? 
             <Link to="/register" className="link"> Register Here</Link></p>
