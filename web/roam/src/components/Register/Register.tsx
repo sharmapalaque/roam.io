@@ -63,7 +63,7 @@ const Register: React.FC = () => {
       <div className="container">
         <div>
           <h2 className="title">Create New Account</h2>
-          <form className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
             {/* Link to navigate back to Login page */}
             <div className="nav-links">
               <p>
