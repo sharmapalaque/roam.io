@@ -1,0 +1,15 @@
+module.exports = {
+    User: () => 'User Icon',
+    ChevronDown: () => 'ChevronDown Icon',
+    Mail: () => 'Mail Icon',
+    Phone: () => 'Phone Icon',
+    Star: () => 'Star Icon',
+    Edit: () => 'Edit Icon',
+    Visibility: () => 'Visibility Icon',
+    VisibilityOff: () => 'VisibilityOff Icon',
+    Close: () => 'Close Icon',
+    LocationOn: () => 'LocationOn Icon',
+    CalendarToday: () => 'CalendarToday Icon',
+    Delete: () => 'Delete Icon',
+    Person: () => 'Person Icon',
+  };
