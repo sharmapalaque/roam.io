@@ -9,4 +9,5 @@ type Booking struct {
 	AccommodationID uint `gorm:"not null"`
 	CheckinDate     time.Time
 	CheckoutDate    time.Time
+	Guests          uint `gorm:"not null"`
 }
