@@ -1,4 +1,4 @@
-// To test, cd to back_end/routes and run: go test -v -run TestLoginHandler
+// To test, cd to back_end/tests and run: go test -v -run TestLoginHandler
 
 package routes
 

@@ -14,11 +14,11 @@ import (
 var currUserID string
 
 type UserRequest struct {
-	Name     string `json:"name"`     // Changed from "Name" to "name"
-	Username string `json:"username"` // Changed from "Username" to "username"
-	Email    string `json:"email"`    // Changed from "Email" to "email"
-	Password string `json:"password"` // Changed from "Password" to "password"
-	Dob      string `json:"dob"`      // Already using lowercase "dob"
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Dob      string `json:"dob"`
 }
 
 // CreateUserHandler handles the user creation logic
