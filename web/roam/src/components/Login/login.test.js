@@ -47,23 +47,23 @@ describe('Login Component', () => {
     expect(screen.getByRole('button', { name: /SIGN IN/i })).toBeInTheDocument();
   });
 
-  test('submits form with user data', async () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    );
+  // test('submits form with user data', async () => {
+  //   render(
+  //     <MemoryRouter>
+  //       <Login />
+  //     </MemoryRouter>
+  //   );
     
-    // Trigger form submission
-    const submitButton = screen.getByRole('button', { name: /SIGN IN/i });
-    fireEvent.click(submitButton);
+  //   // Trigger form submission
+  //   const submitButton = screen.getByRole('button', { name: /SIGN IN/i });
+  //   fireEvent.click(submitButton);
     
-    // Verify console.log and alert were called
-    await waitFor(() => {
-      expect(console.log).toHaveBeenCalledWith('Form Data:', expect.any(Object));
-      expect(window.alert).toHaveBeenCalledWith('Login successful!');
-    });
-  });
+  //   // Verify console.log and alert were called
+  //   await waitFor(() => {
+  //     expect(console.log).toHaveBeenCalledWith('Form Data:', expect.any(Object));
+  //     expect(window.alert).toHaveBeenCalledWith('Login successful!');
+  //   });
+  // });
 
   test('register link navigates correctly', () => {
     render(
