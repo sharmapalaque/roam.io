@@ -25,9 +25,10 @@ func NewRouter(db *gorm.DB) *mux.Router {
 	r.HandleFunc("/accommodations", AddBooking(db)).Methods("PUT")
 	r.HandleFunc("/accommodations", RemoveBooking(db)).Methods("DELETE")
 	r.HandleFunc("/accommodations", CreateAccommodation(db)).Methods("POST")
+	r.HandleFunc("/users/profile", GetUserProfileHandler(db)).Methods("GET")
 
 	// Handle OPTIONS requests
-	r.Use(mux.CORSMethodMiddleware(r)) 
+	r.Use(mux.CORSMethodMiddleware(r))
 
 	// Log incoming requests for debugging
 	r.Use(func(next http.Handler) http.Handler {
