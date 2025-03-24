@@ -11,6 +11,8 @@
     "test": "jest --config jest.config.cjs"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@hookform/resolvers": "^3.10.0",
     "@mui/icons-material": "^6.4.3",
     "@mui/material": "^6.4.3",
