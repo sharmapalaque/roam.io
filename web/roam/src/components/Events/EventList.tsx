@@ -24,7 +24,6 @@ import {
   Phone as PhoneIcon,
   Mail as MailIcon,
   Language as LanguageIcon,
-  OpenInNew as OpenInNewIcon
 } from "@mui/icons-material";
 import Header from "../Header/Header";
 import "./EventList.css";
