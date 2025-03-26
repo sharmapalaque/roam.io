@@ -6,6 +6,8 @@ import AccommodationList from './components/ListView/AccommodationList'
 import AccommodationDetails from './components/ListView/AccommodationDetails';
 import UserProfile from './components/UserProfile/UserProfile';
 import EventList from './components/Events/EventList';
+import FAQ from './components/FAQ/FAQ';
+import Support from './components/Support/Support';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/details/:id" element={<AccommodationDetails />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/events" element={<EventList />} />
+        <Route path="/FAQ" element={<FAQ />} />
+        <Route path="/Support" element={<Support />} />
         <Route path="/" element={<Login />} /> {/* Default route */}
       </Routes>
     </Router>
