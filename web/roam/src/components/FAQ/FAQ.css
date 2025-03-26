@@ -1,0 +1,364 @@
+/* FAQ.css - Completely isolated styles for FAQ page only */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* FAQ-specific wrapper to avoid leaking styles to other pages */
+
+
+div.faq-page-wrapper div.faq-page {
+  color: #444;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Teal header with gradient ending */
+div.faq-page-wrapper div.faq-page div.teal-header.faq-header {
+  color: white;
+  padding: 90px 0 30px;
+  margin-top: 0;
+  position: relative;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: linear-gradient(to bottom, 
+    #70c9c2 0%, 
+    #70c9c2 40%, 
+    rgba(112, 201, 194, 0.95) 60%,
+    rgba(112, 201, 194, 0.8) 70%,
+    rgba(112, 201, 194, 0.5) 80%,
+    rgba(112, 201, 194, 0.2) 90%,
+    rgba(112, 201, 194, 0) 100%
+  );
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-container {
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+  border: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-content-container {
+  padding: 0;
+  position: relative;
+  z-index: 1;
+  border: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-header-content {
+  text-align: center;
+  padding: 20px 0;
+  font-family: 'Poppins';
+}
+
+div.faq-page-wrapper div.faq-page h3.faq-page-title {
+  font-size: 2.7rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 10px;
+}
+
+div.faq-page-wrapper div.faq-page h6.faq-subtitle {
+  font-weight: 350;
+  color: white;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* FAQ Categories Tabs */
+div.faq-page-wrapper div.faq-page div.faq-tabs-container {
+  margin: 30px 0 20px;
+  position: relative;
+  align-items: center;
+}
+
+div.faq-page-wrapper div.faq-page div.category-tabs {
+  border-bottom: 1px solid #ebebe8;
+  border-top: none;
+  box-shadow: none;
+  background-color: white;
+  padding: 0;
+  border-radius: 5px;
+  align-items: center;
+  display: flex; 
+  justify-content: center; 
+}
+
+div.faq-page-wrapper div.faq-page div.category-tabs .MuiTabs-flexContainer {
+  display: flex;
+  justify-content: center;
+}
+
+div.faq-page-wrapper div.faq-page div.category-tabs::before {
+  display: none;
+}
+
+div.faq-page-wrapper div.faq-page div.category-tabs .MuiTabs-indicator {
+  background-color: #70c9c2;
+  height: 3px;
+}
+
+div.faq-page-wrapper div.faq-page button.category-tab {
+  text-transform: none;
+  font-weight: 500;
+  color: #444 !important;
+  min-width: 100px;
+  padding: 12px 16px;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+div.faq-page-wrapper div.faq-page button.category-tab:hover {
+  color: #70c9c2 !important;
+}
+
+div.faq-page-wrapper div.faq-page button.category-tab.Mui-selected {
+  color: #70c9c2 !important;
+  background-color: transparent;
+}
+
+div.faq-page-wrapper div.faq-page button.category-tab .MuiTab-wrapper {
+  flex-direction: column;
+}
+
+div.faq-page-wrapper div.faq-page button.category-tab .MuiSvgIcon-root {
+  margin-bottom: 5px;
+}
+
+/* FAQ Content */
+div.faq-page-wrapper div.faq-page div.faq-content {
+  margin: 0;
+  background-color: white;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(112, 201, 194, 0.2);
+  border-top: none;
+  border-radius: 5px;
+}
+
+div.faq-page-wrapper div.faq-page h6.active-category-title {
+  margin-bottom: 25px;
+  color: #008080;
+  font-weight: 500;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(112, 201, 194, 0.2);
+  position: relative;
+}
+
+div.faq-page-wrapper div.faq-page h6.active-category-title:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 60px;
+  height: 2px;
+  background-color: #70c9c2;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-accordion {
+  margin-bottom: 15px;
+  border: 1px solid rgba(112, 201, 194, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+div.faq-page-wrapper div.faq-page div.faq-accordion:before {
+  display: none;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-accordion.Mui-expanded {
+  margin-top: 0;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(112, 201, 194, 0.4);
+}
+
+div.faq-page-wrapper div.faq-page div.faq-question {
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease;
+  padding: 15px 20px;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-question:hover {
+  background-color: #f5f5f5;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-question.Mui-expanded {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid rgba(112, 201, 194, 0.2);
+}
+
+div.faq-page-wrapper div.faq-page div.faq-question .MuiTypography-subtitle1 {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+div.faq-page-wrapper div.faq-page svg.expand-icon {
+  color: #70c9c2;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-answer {
+  padding: 25px;
+  max-width: 100%;
+  text-align: left;
+  background-color: #ffffff;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-answer p,
+div.faq-page-wrapper div.faq-page div.faq-answer ol,
+div.faq-page-wrapper div.faq-page div.faq-answer ul {
+  text-align: left !important;
+  color: #445;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-answer ol, 
+div.faq-page-wrapper div.faq-page div.faq-answer ul {
+  margin-top: 0;
+  padding-left: 20px;
+}
+
+div.faq-page-wrapper div.faq-page div.faq-answer li {
+  margin-bottom: 10px;
+  text-align: left !important;
+}
+
+div.faq-page-wrapper div.faq-page a.github-link {
+  color: #70c9c2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+div.faq-page-wrapper div.faq-page a.github-link:hover {
+  color: #008080;
+  text-decoration: underline;
+}
+
+/* Still Need Help Section */
+div.faq-page-wrapper div.faq-page div.need-help-section {
+  margin: 40px 0 60px;
+  border-radius: 5px;
+}
+
+div.faq-page-wrapper div.faq-page div.need-help-card {
+  background-color: #f9f9f9;
+  border: 1px solid rgba(112, 201, 194, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+div.faq-page-wrapper div.faq-page div.need-help-card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: #70c9c2;
+}
+
+div.faq-page-wrapper div.faq-page div.need-help-content {
+  padding: 30px !important;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+div.faq-page-wrapper div.faq-page h5.need-help-title {
+  color: #008080;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  font-size: 1.5rem;
+}
+
+div.faq-page-wrapper div.faq-page p.need-help-text {
+  color: #555;
+  max-width: 500px;
+  margin: 0;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+div.faq-page-wrapper div.faq-page button.contact-support-button {
+  background-color: #70c9c2 !important;
+  color: white !important;
+  padding: 10px 30px !important;
+  font-size: 1.05rem !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  transition: background-color 0.3s ease !important;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+div.faq-page-wrapper div.faq-page button.contact-support-button:hover {
+  background-color: #008080 !important;
+}
+
+/* Responsive design */
+@media (max-width: 960px) {
+  div.faq-page-wrapper div.faq-page h3.faq-page-title {
+    font-size: 2.5rem;
+  }
+  
+  div.faq-page-wrapper div.faq-page button.category-tab {
+    min-width: 80px;
+    padding: 10px;
+  }
+  
+  div.faq-page-wrapper div.faq-page div.need-help-content {
+    padding: 25px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  div.faq-page-wrapper div.faq-page div.teal-header.faq-header {
+    padding-top: 70px;
+    padding-bottom: 20px;
+  }
+  
+  div.faq-page-wrapper div.faq-page h3.faq-page-title {
+    font-size: 2rem;
+  }
+  
+  div.faq-page-wrapper div.faq-page h6.faq-subtitle {
+    font-size: 1rem;
+  }
+  
+  div.faq-page-wrapper div.faq-page button.category-tab {
+    min-width: 70px;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  div.faq-page-wrapper div.faq-page div.faq-question {
+    padding: 12px 16px;
+  }
+  
+  div.faq-page-wrapper div.faq-page div.faq-answer {
+    padding: 16px;
+  }
+  
+  div.faq-page-wrapper div.faq-page div.need-help-content {
+    padding: 20px 15px !important;
+  }
+  
+  div.faq-page-wrapper div.faq-page h5.need-help-title {
+    font-size: 1.25rem;
+  }
+}
