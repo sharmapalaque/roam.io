@@ -57,20 +57,44 @@ const Header: React.FC = () => {
   // Simulate fetching user data from backend
   useEffect(() => {
     // In a real application, this would be an API call
-    const fetchUserData = () => {
+    const fetchUserData = async () => {
       setIsLoading(true);
       
-      // Simulating an API call with setTimeout
-      setTimeout(() => {
-        // Mock user data - this would come from backend
-        const mockUserData: UserData = {
-          name: 'Palaque Sharma',
-          avatarId: 'Marshmallow'
-        };
-        
-        setUserData(mockUserData);
-        setIsLoading(false);
-      }, 500);
+      try {
+        const response = await fetch(
+          `http://localhost:8080/users/profile?`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
+
+        // Check if response status is NOT ok
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        // Log the raw response text before parsing
+        // we are doing so that next part of code waits while we fetch response from server
+        const responseText = await response.text();
+        console.log("Raw response text:", responseText);
+
+        // Try to parse the response as JSON
+        try {
+          const result = JSON.parse(responseText);
+          console.log("lets' see response");
+          console.log(result);
+
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert("Failed to parse response");
+        }
+      } catch (error) {
+        alert(error);
+      }
     };
 
     fetchUserData();
