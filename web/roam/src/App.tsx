@@ -8,6 +8,7 @@ import UserProfile from './components/UserProfile/UserProfile';
 import EventList from './components/Events/EventList';
 import FAQ from './components/FAQ/FAQ';
 import Support from './components/Support/Support';
+import NotFound from './components/NotFound/NotFound';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/FAQ" element={<FAQ />} />
         <Route path="/Support" element={<Support />} />
         <Route path="/" element={<Login />} /> {/* Default route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
