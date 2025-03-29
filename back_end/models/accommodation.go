@@ -12,5 +12,4 @@ type Accommodation struct {
 	ImageUrls   pq.StringArray `gorm:"type:text[]"`
 	UserReviews pq.StringArray `gorm:"type:text[]"`
 	HostID      uint           `gorm:"not null"`
-	Guests      uint           `gorm:"not null"`
 }
