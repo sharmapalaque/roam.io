@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -184,6 +184,7 @@ const AccommodationDetails: React.FC = () => {
   const [guests, setGuests] = useState<number>(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const [dateError, setDateError] = useState<string>("");
+  const [accommodation, setAccommodation] = useState<Accommodation>(accommodations[0])
 
   // Enhanced styles to fix the line issue
   const headerContainerStyle = {
@@ -223,11 +224,58 @@ const AccommodationDetails: React.FC = () => {
     marginBottom: '5px' // Reduced margin between title and location
   };
 
-  // Find the accommodation by ID
-  const accommodation = accommodations.find(
-    (item) => item.ID === parseInt(id || "", 10)
-  );
+  // API call
+  useEffect(() => {
+    // get data from backend based on REST API call
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/accommodations/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
+        // Check if response status is NOT ok
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        // Log the raw response text before parsing
+        // we are doing so that next part of code waits while we fetch response from server
+        const responseText = await response.text();
+        console.log("Raw response text:", responseText);
+
+        // Try to parse the response as JSON
+        try {
+          let result = JSON.parse(responseText);
+          // console.log("lets' see response");
+          // console.log(result);
+
+          //setting the missing fields
+          result.PricePerNight = accommodation.PricePerNight;
+          result.Rating = accommodation.Rating;
+          result.UserReviews = accommodation.UserReviews;
+          result.Owner = accommodation.Owner;
+
+          setAccommodation(result)
+
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert("Failed to parse response");
+        }
+      } catch (error) {
+        alert(error);
+      }
+    };
+
+    // this method has been defined above which deals with REST API call
+    fetchData();
+  }, []);
+  
   // Handle check-in input click - focus on real input
   const handleCheckInClick = () => {
     if (checkInRef.current) {
@@ -283,7 +331,9 @@ const AccommodationDetails: React.FC = () => {
     }
   };
 
+  console.log("checking if accomo")
   if (!accommodation) {
+    console.log("helloooooo")
     return (
       <Box sx={{ mt: "120px", textAlign: "center", padding: "2rem" }}>
         <Typography variant="h5" className="not-found">
