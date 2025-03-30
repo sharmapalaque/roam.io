@@ -310,28 +310,28 @@ func TestRemoveBookingByAccommodationID(t *testing.T) {
 	}
 
 	t.Run("SuccessfulRemoval", func(t *testing.T) {
-		accommodationID, userID := 1, 1
+		bookingID, userID := 1, 1
 		mock.ExpectBegin()
 		mock.ExpectExec("DELETE FROM \"bookings\" WHERE accommodation_id = \\$1 AND user_id = \\$2").
-			WithArgs(accommodationID, userID).
+			WithArgs(bookingID, userID).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 
-		err := routes.RemoveBookingByAccommodationID(accommodationID, userID, db)
+		err := routes.RemoveBookingByBookingID(bookingID, db)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
 	})
 
 	t.Run("BookingNotFound", func(t *testing.T) {
-		accommodationID, userID := 2, 2
+		bookingID, userID := 2, 2
 		mock.ExpectBegin()
 		mock.ExpectExec("DELETE FROM \"bookings\" WHERE accommodation_id = \\$1 AND user_id = \\$2").
-			WithArgs(accommodationID, userID).
+			WithArgs(bookingID, userID).
 			WillReturnResult(sqlmock.NewResult(0, 0))
 		mock.ExpectRollback()
 
-		err := routes.RemoveBookingByAccommodationID(accommodationID, userID, db)
+		err := routes.RemoveBookingByBookingID(bookingID, db)
 		if err == nil {
 			t.Error("Expected an error, got nil")
 		}

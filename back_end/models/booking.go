@@ -10,4 +10,5 @@ type Booking struct {
 	CheckinDate     time.Time
 	CheckoutDate    time.Time
 	Guests          uint `gorm:"not null"`
+	TotalCost       uint `gorm:"not null"`
 }
