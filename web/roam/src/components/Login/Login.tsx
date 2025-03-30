@@ -24,6 +24,7 @@ const Login: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data), // Send form data
+        credentials: 'include',
       });
 
       const result = await response.json() // response is in json format
