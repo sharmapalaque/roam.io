@@ -68,32 +68,48 @@ const Header: React.FC = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            credentials: "include",
+            credentials: "include", // Ensure cookies (like session IDs) are sent
           }
         );
 
         // Check if response status is NOT ok
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          // Specifically handle 401 Unauthorized without an alert
+          if (response.status === 401) {
+            console.log("User not authenticated. Profile data not loaded.");
+            setUserData(null); // Ensure user data is cleared
+            setIsLoading(false); // Stop loading indicator
+            return; // Exit the function early
+          }
+          // For other errors, throw the error to be caught below
+          throw new Error(`Network response was not ok: ${response.statusText}`);
         }
 
         // Log the raw response text before parsing
-        // we are doing so that next part of code waits while we fetch response from server
         const responseText = await response.text();
-        console.log("Raw response text:", responseText);
+        console.log("Raw profile response text:", responseText);
 
         // Try to parse the response as JSON
         try {
           const result = JSON.parse(responseText);
-          console.log("lets' see response");
-          console.log(result);
+          console.log("User profile response:", result);
+          // Assuming the profile endpoint returns an object with name and avatarId
+          setUserData({ name: result.name, avatarId: result.avatar_url }); 
+          setIsLoading(false);
 
         } catch (error) {
-          console.error("Error parsing JSON:", error);
-          alert("Failed to parse response");
+          console.error("Error parsing profile JSON:", error);
+          // Optionally alert or handle JSON parsing error differently
+          // alert("Failed to parse profile response"); 
+          setIsLoading(false); 
         }
       } catch (error) {
-        alert(error);
+        // This will now catch network errors or non-401 HTTP errors
+        console.error("Error fetching user profile:", error);
+        // Avoid alerting for general fetch errors unless needed
+        // alert(error); 
+        setUserData(null);
+        setIsLoading(false);
       }
     };
 
