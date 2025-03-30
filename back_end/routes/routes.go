@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"gorm.io/gorm" // This is needed to serve Swagger UI
+	"gorm.io/gorm"
 )
 
 func NewRouter(db *gorm.DB) *mux.Router {
@@ -40,13 +40,18 @@ func NewRouter(db *gorm.DB) *mux.Router {
 		})
 	})
 
-	// Configure CORS
+	// Configure CORS - Modified for credential support
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-	originsOk := handlers.AllowedOrigins([]string{"*"}) // Change to "*" for testing
+	// Change from wildcard to specific origins
+	originsOk := handlers.AllowedOrigins([]string{"http://localhost:5173"}) // Frontend URL
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	// Add credentials allowed option
+	credentialsOk := handlers.AllowCredentials()
 
 	// Start the server
 	fmt.Println("Server is running on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r)))
+	// Add the credentials option to the CORS handler
+	corsHandler := handlers.CORS(originsOk, headersOk, methodsOk, credentialsOk)
+	log.Fatal(http.ListenAndServe(":8080", corsHandler(r)))
 	return r
 }
