@@ -69,7 +69,7 @@ func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
-		accommodation := models.Accommodation{Name: payload.Name, Location: payload.Location, ImageUrls: pq.StringArray(payload.ImageUrls), UserReviews: payload.UserReviews, Description: payload.Description, Facilities: payload.Facilities}
+		accommodation := models.Accommodation{Name: payload.Name, Location: payload.Location, ImageUrls: pq.StringArray(payload.ImageUrls), UserReviews: payload.UserReviews, Description: payload.Description, Facilities: payload.Facilities, HostID: payload.HostID}
 		result := db.Create(&accommodation)
 		if result.Error != nil {
 			fmt.Println(result.Error)
@@ -88,8 +88,9 @@ func AddBooking(db *gorm.DB) http.HandlerFunc {
 		checking_date := queryParams.Get("check_in_date")
 		checkout_date := queryParams.Get("check_out_date")
 		guests := queryParams.Get("guests")
+		total_cost := queryParams.Get("total_cost")
 		layout := "2006-01-02" // Date format (YYYY-MM-DD)
-		if accommodation_id == "" || checking_date == "" || checkout_date == "" || guests == "" {
+		if accommodation_id == "" || checking_date == "" || checkout_date == "" || guests == "" || total_cost == "" {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid JSON format:"})
@@ -140,6 +141,13 @@ func AddBooking(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 		guestsUintValue := uint(ui)
+
+		uit, err := strconv.ParseUint(total_cost, 10, 32) // base 10, uint32 max bits
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		totalcostUintValue := uint(uit)
 		bookings, err := GetBookingByUserID(int(userID), db)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
@@ -158,7 +166,7 @@ func AddBooking(db *gorm.DB) http.HandlerFunc {
 			}
 		}
 
-		bookingID, err := CreateBooking(userID, uintValue, checkInDate, checkOutDate, guestsUintValue, db)
+		bookingID, err := CreateBooking(userID, uintValue, checkInDate, checkOutDate, guestsUintValue, totalcostUintValue, db)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -173,8 +181,8 @@ func AddBooking(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func CreateBooking(userID, accommodationID uint, checkinDate, checkoutDate time.Time, guests uint, db *gorm.DB) (id int, err error) {
-	booking := models.Booking{UserID: userID, AccommodationID: accommodationID, CheckinDate: checkinDate, CheckoutDate: checkoutDate, Guests: guests}
+func CreateBooking(userID, accommodationID uint, checkinDate, checkoutDate time.Time, guests uint, total_cost uint, db *gorm.DB) (id int, err error) {
+	booking := models.Booking{UserID: userID, AccommodationID: accommodationID, CheckinDate: checkinDate, CheckoutDate: checkoutDate, Guests: guests, TotalCost: total_cost}
 	result := db.Create(&booking)
 	if result.Error != nil {
 		return 0, result.Error
@@ -232,7 +240,7 @@ func GetAccommodationsById(id string, db *gorm.DB) (*models.Accommodation, error
 	}
 }
 
-func RemoveBookingByAccommodationID(accommodationID, userID int, db *gorm.DB) error {
+func RemoveBookingByBookingID(bookingID int, db *gorm.DB) error {
 	tx := db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -240,7 +248,7 @@ func RemoveBookingByAccommodationID(accommodationID, userID int, db *gorm.DB) er
 		}
 	}()
 
-	result := tx.Where("accommodation_id = ? AND user_id = ?", accommodationID, userID).Delete(&models.Booking{})
+	result := tx.Where("booking_id = ?", bookingID).Delete(&models.Booking{})
 
 	if result.Error != nil {
 		tx.Rollback()
@@ -260,18 +268,9 @@ func RemoveBooking(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Parse the JSON body
 		queryParams := r.URL.Query()
-		accommodation_id := queryParams.Get("accommodation_id")
+		booking_id := queryParams.Get("booking_id")
 
-		session, _ := store.Get(r, "session")
-
-		// Get user ID from session
-		userID, ok := session.Values["user_id"].(uint)
-		fmt.Println(userID)
-		if !ok {
-			http.Error(w, "Unauthorized: No session found", http.StatusUnauthorized)
-			return
-		}
-		u, err := strconv.ParseUint(accommodation_id, 10, 32) // base 10, uint32 max bits
+		u, err := strconv.ParseUint(booking_id, 10, 32) // base 10, uint32 max bits
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
@@ -279,7 +278,7 @@ func RemoveBooking(db *gorm.DB) http.HandlerFunc {
 
 		uintValue := uint(u)
 
-		err = RemoveBookingByAccommodationID(int(uintValue), int(userID), db)
+		err = RemoveBookingByBookingID(int(uintValue), db)
 		if err != nil {
 			http.Error(w, "Booking not found", http.StatusNotFound)
 			return
