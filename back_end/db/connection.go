@@ -21,9 +21,10 @@ func Connect() (*gorm.DB, error) {
 }
 
 func MigrateDB(db *gorm.DB) {
-	err := db.AutoMigrate(&models.User{}, &models.Accommodation{}, &models.Booking{}, models.Host{}, models.Event{}, models.Organizer{}, models.EventBooking{})
+	err := db.AutoMigrate(&models.User{}, &models.Accommodation{}, &models.Booking{}, models.Owner{}, models.Event{}, models.Organizer{}, models.EventBooking{})
 	if err != nil {
 		panic("Failed to migrate database")
 	}
+
 	fmt.Println("Database migrated successfully")
 }
