@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
@@ -51,7 +52,7 @@ func FetchEventById(db *gorm.DB) http.HandlerFunc {
 				fmt.Println(err)
 				return
 			}
-			organizer, err := GetOrganizerByID(result.OrganizerID, db)
+			organizer, _ := GetOrganizerByID(result.OrganizerID, db)
 			event := models.EventResponse{ID: result.ID, Name: result.EventName, Location: result.Location, Images: pq.StringArray(result.Images), Description: result.Description, Date: result.Date, Time: result.Time, Price: result.Price, AvailableSeats: result.AvailableSeats, TotalSeats: result.TotalSeats, OfficialLink: result.OfficialLink, Organizer: *organizer}
 			// Return response with the new user ID
 			w.Header().Set("Content-Type", "application/json")
@@ -86,127 +87,149 @@ func CreateEvent(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-// func AddBooking(db *gorm.DB) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		// Parse the JSON body
-// 		queryParams := r.URL.Query()
-// 		accommodation_id := queryParams.Get("accommodation_id")
-// 		checking_date := queryParams.Get("check_in_date")
-// 		checkout_date := queryParams.Get("check_out_date")
-// 		guests := queryParams.Get("guests")
-// 		total_cost := queryParams.Get("total_cost")
-// 		layout := "2006-01-02" // Date format (YYYY-MM-DD)
-// 		if accommodation_id == "" || checking_date == "" || checkout_date == "" || guests == "" || total_cost == "" {
-// 			w.Header().Set("Content-Type", "application/json")
-// 			w.WriteHeader(http.StatusBadRequest)
-// 			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid JSON format:"})
-// 			return
-// 		}
-// 		// Convert string to time.Time
-// 		checkInDate, err := time.Parse(layout, checking_date)
-// 		if err != nil {
-// 			fmt.Println("Error parsing date:", err)
-// 			return
-// 		}
+func AddEventBooking(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Parse the JSON body
+		queryParams := r.URL.Query()
+		event_id := queryParams.Get("event_id")
+		guests := queryParams.Get("guests")
+		total_cost := queryParams.Get("total_cost")
 
-// 		// Convert string to time.Time
-// 		checkOutDate, err := time.Parse(layout, checkout_date)
-// 		if err != nil {
-// 			fmt.Println("Error parsing date:", err)
-// 			return
-// 		}
-// 		// accommodation, err := GetAccommodationsByID(accommodation_id, db)
-// 		// if err != nil {
-// 		// 	http.Error(w, "Failed to fetch accommodation", http.StatusInternalServerError)
-// 		// 	fmt.Println(err)
-// 		// 	return
-// 		// }
+		if event_id == "" || guests == "" || total_cost == "" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid JSON format"})
+			return
+		}
 
-// 		session, _ := store.Get(r, "session")
+		session, _ := store.Get(r, "session")
 
-// 		// Get user ID from session
-// 		userID, ok := session.Values["user_id"].(uint)
-// 		fmt.Print("USER ID: ")
-// 		fmt.Println(userID)
-// 		if !ok || userID == 0 {
-// 			w.Header().Set("Content-Type", "application/json")
-// 			w.WriteHeader(http.StatusUnauthorized)
-// 			json.NewEncoder(w).Encode(map[string]string{"message": "Unauthorized, no session found"})
-// 			return
-// 		}
-// 		u, err := strconv.ParseUint(accommodation_id, 10, 32) // base 10, uint32 max bits
-// 		if err != nil {
-// 			fmt.Println("Error:", err)
-// 			return
-// 		}
+		// Get user ID from session
+		userID, ok := session.Values["user_id"].(uint)
+		fmt.Print("USER ID: ")
+		fmt.Println(userID)
+		if !ok || userID == 0 {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Unauthorized, no session found"})
+			return
+		}
+		u, err := strconv.ParseUint(event_id, 10, 32) // base 10, uint32 max bits
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
 
-// 		uintValue := uint(u)
-// 		ui, err := strconv.ParseUint(guests, 10, 32) // base 10, uint32 max bits
-// 		if err != nil {
-// 			fmt.Println("Error:", err)
-// 			return
-// 		}
-// 		guestsUintValue := uint(ui)
+		uintValue := uint(u)
+		ui, err := strconv.ParseUint(guests, 10, 32) // base 10, uint32 max bits
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		guestsUintValue := uint(ui)
 
-// 		uit, err := strconv.ParseUint(total_cost, 10, 32) // base 10, uint32 max bits
-// 		if err != nil {
-// 			fmt.Println("Error:", err)
-// 			return
-// 		}
-// 		totalcostUintValue := uint(uit)
-// 		bookings, err := GetBookingByUserID(int(userID), db)
-// 		if err != nil {
-// 			w.Header().Set("Content-Type", "application/json")
-// 			w.WriteHeader(http.StatusInternalServerError)
-// 			json.NewEncoder(w).Encode(map[string]string{"message": "Internal server error"})
-// 			fmt.Println(err)
-// 			return
-// 		}
+		uit, err := strconv.ParseUint(total_cost, 10, 32) // base 10, uint32 max bits
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		totalcostUintValue := uint(uit)
+		bookings, err := GetEventBookingByUserID(int(userID), db)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Internal server error"})
+			fmt.Println(err)
+			return
+		}
 
-// 		for _, booking := range bookings {
-// 			if booking.AccommodationID == uintValue {
-// 				w.Header().Set("Content-Type", "application/json")
-// 				w.WriteHeader(http.StatusConflict)
-// 				json.NewEncoder(w).Encode(map[string]string{"message": "Booking Already exists for user"})
-// 				return
-// 			}
-// 		}
+		for _, booking := range bookings {
+			if booking.EventId == uintValue {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusConflict)
+				json.NewEncoder(w).Encode(map[string]string{"message": "Event Booking Already exists for user"})
+				return
+			}
+		}
+		event, err := GetEventByID(event_id, db)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to Fetch booking"})
+			fmt.Println(err)
+			return
+		}
+		if int(event.AvailableSeats)-int(guestsUintValue) < 0 {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Seats not available"})
+			fmt.Println(err)
+			return
+		}
+		bookingID, err := CreateEventBooking(userID, uintValue, guestsUintValue, totalcostUintValue, db)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to Create booking"})
+			fmt.Println(err)
+			return
+		}
 
-// 		bookingID, err := CreateBooking(userID, uintValue, checkInDate, checkOutDate, guestsUintValue, totalcostUintValue, db)
-// 		if err != nil {
-// 			w.Header().Set("Content-Type", "application/json")
-// 			w.WriteHeader(http.StatusInternalServerError)
-// 			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to Create booking"})
-// 			fmt.Println(err)
-// 			return
-// 		}
+		err = UpdateEventSeats(event_id, int(event.AvailableSeats)-int(guestsUintValue), db)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Error updating avaliable seats"})
+			fmt.Println(err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(map[string]int{"id": bookingID})
+	}
+}
 
-// 		w.Header().Set("Content-Type", "application/json")
-// 		w.WriteHeader(http.StatusCreated)
-// 		json.NewEncoder(w).Encode(map[string]int{"id": bookingID})
-// 	}
-// }
+func CreateEventBooking(userID, eventID uint, guests uint, total_cost uint, db *gorm.DB) (id int, err error) {
+	booking := models.EventBooking{UserID: userID, EventId: eventID, Guests: guests, TotalCost: total_cost}
+	result := db.Create(&booking)
+	if result.Error != nil {
+		return 0, result.Error
+	} else {
+		fmt.Println("Event Booking created successfully:", booking)
+		return int(booking.ID), nil
+	}
+}
 
-// func CreateBooking(userID, accommodationID uint, checkinDate, checkoutDate time.Time, guests uint, total_cost uint, db *gorm.DB) (id int, err error) {
-// 	booking := models.Booking{UserID: userID, AccommodationID: accommodationID, CheckinDate: checkinDate, CheckoutDate: checkoutDate, Guests: guests, TotalCost: total_cost}
-// 	result := db.Create(&booking)
-// 	if result.Error != nil {
-// 		return 0, result.Error
-// 	} else {
-// 		fmt.Println("Booking created successfully:", booking)
-// 		return int(booking.ID), nil
-// 	}
-// }
+func GetEventBookingByUserID(userID int, db *gorm.DB) ([]models.EventBooking, error) {
+	bookings := []models.EventBooking{}
+	result := db.Where("user_id = ?", userID).Find(&bookings)
+	if result.Error != nil {
+		return nil, result.Error
+	} else {
+		return bookings, nil
+	}
+}
 
-// func GetBookingByUserID(userID int, db *gorm.DB) ([]models.Booking, error) {
-// 	bookings := []models.Booking{}
-// 	result := db.Where("user_id = ?", userID).Find(&bookings)
-// 	if result.Error != nil {
-// 		return nil, result.Error
-// 	} else {
-// 		return bookings, nil
-// 	}
-// }
+func UpdateEventSeats(event_id string, availableSeats int, db *gorm.DB) error {
+	event := []models.Event{}
+	result := db.Model(&event).Where("id = ?", event_id).Update("available_seats", availableSeats)
+
+	if result.Error != nil {
+		return result.Error
+	} else {
+		return nil
+	}
+}
+
+func GetEventBookingByID(event_id int, db *gorm.DB) ([]models.EventBooking, error) {
+	bookings := []models.EventBooking{}
+	result := db.Where("event_id = ?", event_id).Find(&bookings)
+	if result.Error != nil {
+		return nil, result.Error
+	} else {
+		return bookings, nil
+	}
+}
 
 func GetEventByID(event_id string, db *gorm.DB) (*models.Event, error) {
 	var event models.Event
