@@ -156,7 +156,7 @@ func TestCreateAccommodation(t *testing.T) {
 		Facilities:    pq.StringArray{"WiFi", "Pool"},
 		ImageUrls:     pq.StringArray{"http://example.com/image.jpg"},
 		UserReviews:   []models.Review{},
-		HostID:        1,
+		OwnerID:       1,
 		PricePerNight: 149.99,
 		Rating:        4.5,
 	}

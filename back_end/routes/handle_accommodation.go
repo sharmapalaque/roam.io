@@ -69,36 +69,61 @@ func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
+		// Ensure OwnerID is provided
+		if payload.OwnerID == 0 {
+			http.Error(w, "OwnerID is required", http.StatusBadRequest)
+			return
+		}
+
 		accommodation := models.Accommodation{
 			Name:          payload.Name,
 			Location:      payload.Location,
 			ImageUrls:     pq.StringArray(payload.ImageUrls),
 			Description:   payload.Description,
 			Facilities:    payload.Facilities,
-			HostID:        payload.HostID,
+			OwnerID:       payload.OwnerID,
 			PricePerNight: payload.PricePerNight,
 			Rating:        payload.Rating,
+			// RawUserReviews field will be handled if review creation is implemented separately
 		}
 
-		// Convert reviews to strings for storage
-		if len(payload.UserReviews) > 0 {
-			rawReviews := make([]string, 0, len(payload.UserReviews))
-			for _, review := range payload.UserReviews {
-				reviewJSON, _ := json.Marshal(review)
-				rawReviews = append(rawReviews, string(reviewJSON))
-			}
-			accommodation.RawUserReviews = pq.StringArray(rawReviews)
-		}
+		// // Convert reviews to strings for storage - Removed as reviews are not handled during creation
+		// if len(payload.UserReviews) > 0 {
+		// 	rawReviews := make([]string, 0, len(payload.UserReviews))
+		// 	for _, review := range payload.UserReviews {
+		// 		reviewJSON, _ := json.Marshal(review)
+		// 		rawReviews = append(rawReviews, string(reviewJSON))
+		// 	}
+		// 	accommodation.RawUserReviews = pq.StringArray(rawReviews)
+		// }
 
 		result := db.Create(&accommodation)
 		if result.Error != nil {
+			// Check if the error is due to foreign key constraint (invalid OwnerID)
+			if errors.Is(result.Error, gorm.ErrForeignKeyViolated) {
+				http.Error(w, "Invalid OwnerID provided", http.StatusBadRequest)
+				return
+			}
 			fmt.Println(result.Error)
 			http.Error(w, "Failed to create accommodation", http.StatusInternalServerError)
 			return
 		}
 
-		// Add sample reviews and owner data for immediate response
-		enhanceAccommodationWithSampleData(&accommodation, db)
+		// Fetch the associated host details to populate the Owner field for the response
+		var host models.Host
+		if err := db.First(&host, accommodation.OwnerID).Error; err != nil {
+			// Log the error but proceed, as the accommodation was created
+			fmt.Printf("Warning: Failed to fetch host details for new accommodation %d: %v\n", accommodation.ID, err)
+		} else {
+			accommodation.Owner = models.Owner{
+				Name:  host.Name,
+				Email: host.Email,
+				Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+			}
+		}
+
+		// // Add sample reviews and owner data for immediate response - Removed
+		// enhanceAccommodationWithSampleData(&accommodation, db)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
@@ -233,11 +258,22 @@ func GetAccommodationsByID(booking_id string, db *gorm.DB) (*models.Accommodatio
 	result := db.Where("id = ?", booking_id).First(&accommodation)
 	if result.Error != nil {
 		return nil, result.Error
-	} else {
-		// Enhance accommodation with sample data
-		enhanceAccommodationWithSampleData(&accommodation, db)
-		return &accommodation, nil
 	}
+
+	// Fetch the associated host details
+	var host models.Host
+	if err := db.First(&host, accommodation.OwnerID).Error; err == nil {
+		accommodation.Owner = models.Owner{
+			Name:  host.Name,
+			Email: host.Email,
+			Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+		}
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		// Log error if it's not simply 'not found'
+		fmt.Printf("Error fetching host %d for accommodation %d: %v\n", accommodation.OwnerID, accommodation.ID, err)
+	}
+
+	return &accommodation, nil
 }
 
 func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommodation, error) {
@@ -250,66 +286,81 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 	}
 	if result.Error != nil {
 		return nil, result.Error
-	} else {
-		// Enhance accommodations with sample data
-		for i := range accommodations {
-			enhanceAccommodationWithSampleData(&accommodations[i], db)
-		}
-		return accommodations, nil
 	}
+
+	if len(accommodations) > 0 {
+		// Fetch host details efficiently
+		ownerIDs := make([]uint, 0, len(accommodations))
+		for _, acc := range accommodations {
+			if acc.OwnerID != 0 { // Avoid querying for owner ID 0
+				ownerIDs = append(ownerIDs, acc.OwnerID)
+			}
+		}
+
+		// Remove duplicates if any (though unlikely for primary keys)
+		uniqueOwnerIDs := make(map[uint]struct{})
+		distinctOwnerIDs := make([]uint, 0, len(ownerIDs))
+		for _, id := range ownerIDs {
+			if _, exists := uniqueOwnerIDs[id]; !exists {
+				uniqueOwnerIDs[id] = struct{}{}
+				distinctOwnerIDs = append(distinctOwnerIDs, id)
+			}
+		}
+
+		var hosts []models.Host
+		hostMap := make(map[uint]models.Host)
+		if len(distinctOwnerIDs) > 0 {
+			if err := db.Where("id IN ?", distinctOwnerIDs).Find(&hosts).Error; err != nil {
+				fmt.Printf("Error fetching hosts for accommodations: %v\n", err)
+				// Proceed without owner details if hosts can't be fetched
+			} else {
+				for _, h := range hosts {
+					hostMap[h.ID] = h
+				}
+			}
+		}
+
+		// Populate Owner field
+		for i := range accommodations {
+			if host, ok := hostMap[accommodations[i].OwnerID]; ok {
+				accommodations[i].Owner = models.Owner{
+					Name:  host.Name,
+					Email: host.Email,
+					Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+				}
+			}
+			// // Enhance accommodations with sample data - Removed
+			// enhanceAccommodationWithSampleData(&accommodations[i], db)
+		}
+	}
+	return accommodations, nil
 }
 
 func GetAccommodationsById(id string, db *gorm.DB) (*models.Accommodation, error) {
 	var accommodation models.Accommodation
 
-	result := db.First(&accommodation, id)
+	// Use Preload to potentially fetch related data if relationships were defined
+	// result := db.Preload("Owner").First(&accommodation, id) // Example if Owner had a direct GORM relation
+
+	result := db.First(&accommodation, id) // Fetch accommodation first
 
 	if result.Error != nil {
 		return nil, result.Error
-	} else {
-		// Enhance accommodation with sample data
-		enhanceAccommodationWithSampleData(&accommodation, db)
-		return &accommodation, nil
-	}
-}
-
-// enhanceAccommodationWithSampleData adds the required fields for the response format
-func enhanceAccommodationWithSampleData(accommodation *models.Accommodation, db *gorm.DB) {
-	// Set a price based on the ID (for demonstration purposes)
-	accommodation.PricePerNight = 199.0 + float64(accommodation.ID*10)
-
-	// Set a rating between 4.0 and 5.0
-	accommodation.Rating = 4.0 + (float64(accommodation.ID%10) / 10.0)
-	if accommodation.Rating > 5.0 {
-		accommodation.Rating = 5.0
 	}
 
-	// Use default owner data instead of trying to query the database
-	// This avoids "record not found" errors when no hosts exist yet
-	accommodation.Owner = models.Owner{
-		Name:         "Host Name",
-		Email:        "host@example.com",
-		Phone:        "+1 (555) 123-4567",
-		ResponseRate: "95% within 24 hours",
+	// Fetch the associated host details separately
+	var host models.Host
+	if err := db.First(&host, accommodation.OwnerID).Error; err == nil {
+		accommodation.Owner = models.Owner{
+			Name:  host.Name,
+			Email: host.Email,
+			Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+		}
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		// Log error if it's not simply 'not found'
+		fmt.Printf("Error fetching host %d for accommodation %d: %v\n", accommodation.OwnerID, accommodation.ID, err)
 	}
-
-	// Set sample reviews
-	accommodation.UserReviews = []models.Review{
-		{
-			ID:       100 + accommodation.ID,
-			UserName: "John D.",
-			Rating:   4.8,
-			Date:     "June 15, 2023",
-			Comment:  "Wonderful place to stay! Highly recommended.",
-		},
-		{
-			ID:       200 + accommodation.ID,
-			UserName: "Jane S.",
-			Rating:   4.5,
-			Date:     "July 22, 2023",
-			Comment:  "Great location and amenities. Would stay again.",
-		},
-	}
+	return &accommodation, nil
 }
 
 func RemoveBookingByBookingID(bookingID int, db *gorm.DB) error {
