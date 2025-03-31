@@ -248,7 +248,7 @@ func RemoveBookingByBookingID(bookingID int, db *gorm.DB) error {
 		}
 	}()
 
-	result := tx.Where("booking_id = ?", bookingID).Delete(&models.Booking{})
+	result := tx.Where("id = ?", bookingID).Delete(&models.Booking{})
 
 	if result.Error != nil {
 		tx.Rollback()

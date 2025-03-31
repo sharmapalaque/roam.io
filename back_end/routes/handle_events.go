@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -266,52 +267,52 @@ func GetEventsByLocation(location string, db *gorm.DB) ([]models.Event, error) {
 	}
 }
 
-// func RemoveBookingByBookingID(bookingID int, db *gorm.DB) error {
-// 	tx := db.Begin()
-// 	defer func() {
-// 		if r := recover(); r != nil {
-// 			tx.Rollback()
-// 		}
-// 	}()
+func RemoveEventBookingByID(id int, db *gorm.DB) error {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
-// 	result := tx.Where("booking_id = ?", bookingID).Delete(&models.Booking{})
+	result := tx.Where("id = ?", id).Delete(&models.EventBooking{})
 
-// 	if result.Error != nil {
-// 		tx.Rollback()
-// 		return result.Error
-// 	}
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
 
-// 	if result.RowsAffected == 0 {
-// 		tx.Rollback()
-// 		return errors.New("error removing booking")
-// 	}
+	if result.RowsAffected == 0 {
+		tx.Rollback()
+		return errors.New("error removing booking")
+	}
 
-// 	return tx.Commit().Error
+	return tx.Commit().Error
 
-// }
+}
 
-// func RemoveBooking(db *gorm.DB) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		// Parse the JSON body
-// 		queryParams := r.URL.Query()
-// 		booking_id := queryParams.Get("booking_id")
+func RemoveEventBooking(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Parse the JSON body
+		queryParams := r.URL.Query()
+		booking_id := queryParams.Get("event_booking_id")
 
-// 		u, err := strconv.ParseUint(booking_id, 10, 32) // base 10, uint32 max bits
-// 		if err != nil {
-// 			fmt.Println("Error:", err)
-// 			return
-// 		}
+		u, err := strconv.ParseUint(booking_id, 10, 32) // base 10, uint32 max bits
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
 
-// 		uintValue := uint(u)
+		uintValue := uint(u)
 
-// 		err = RemoveBookingByBookingID(int(uintValue), db)
-// 		if err != nil {
-// 			http.Error(w, "Booking not found", http.StatusNotFound)
-// 			return
-// 		}
+		err = RemoveEventBookingByID(int(uintValue), db)
+		if err != nil {
+			http.Error(w, "Event Booking not found", http.StatusNotFound)
+			return
+		}
 
-// 		w.Header().Set("Content-Type", "text/plain")
-// 		w.WriteHeader(http.StatusOK)
-// 		json.NewEncoder(w).Encode("Booking removed")
-// 	}
-// }
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode("Event Booking removed")
+	}
+}
