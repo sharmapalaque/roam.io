@@ -30,118 +30,118 @@ import "./EventList.css";
 
 // Event type definition
 type Event = {
-  id: number;
-  name: string;
-  organizer: {
-    name: string;
-    email: string;
-    phone: string;
+  ID: number;
+  Name: string;
+  Organizer: {
+    Name: string;
+    Email: string;
+    Phone: string;
   };
-  location: string;
-  date: string;
-  time: string;
-  images: string[];
-  description: string;
-  price: number;
-  availableSeats: number;
-  totalSeats: number;
-  officialLink: string;
+  Location: string;
+  Date: string;
+  Time: string;
+  Images: string[];
+  Description: string;
+  Price: number;
+  AvailableSeats: number;
+  TotalSeats: number;
+  OfficialLink: string;
 };
 
-// Dummy data for events
+// Dummy data for events (keeping it here just for backup and future reference)
 const eventsData: Event[] = [
   {
-    id: 1,
-    name: "Annual Tech Conference",
-    organizer: {
-      name: "TechCorp Inc.",
-      email: "events@techcorp.com",
-      phone: "+1 (555) 123-4567"
+    ID: 1,
+    Name: "Annual Tech Conference",
+    Organizer: {
+      Name: "TechCorp Inc.",
+      Email: "events@techcorp.com",
+      Phone: "+1 (555) 123-4567"
     },
-    location: "San Francisco, CA",
-    date: "2025-04-15",
-    time: "09:00 AM - 05:00 PM",
-    images: [
+    Location: "San Francisco, CA",
+    Date: "2025-04-15",
+    Time: "09:00 AM - 05:00 PM",
+    Images: [
       "../../../public/events/tech1.jpg",
       "../../../public/events/tech2.jpg",
       "../../../public/events/tech3.jpg"
     ],
-    description: "Join us for the biggest tech conference of the year! Featuring keynote speakers from leading tech companies, hands-on workshops, networking opportunities, and the latest in tech innovation. Perfect for professionals, enthusiasts, and anyone interested in the future of technology.",
-    price: 299,
-    availableSeats: 128,
-    totalSeats: 500,
-    officialLink: "https://techtalkconference.com"
+    Description: "Join us for the biggest tech conference of the year! Featuring keynote speakers from leading tech companies, hands-on workshops, networking opportunities, and the latest in tech innovation. Perfect for professionals, enthusiasts, and anyone interested in the future of technology.",
+    Price: 299,
+    AvailableSeats: 128,
+    TotalSeats: 500,
+    OfficialLink: "https://techtalkconference.com"
   },
   {
-    id: 2,
-    name: "Summer Music Festival",
-    organizer: {
-      name: "Melody Events",
-      email: "contact@melodyevents.com",
-      phone: "+1 (555) 987-6543"
+    ID: 2,
+    Name: "Summer Music Festival",
+    Organizer: {
+      Name: "Melody Events",
+      Email: "contact@melodyevents.com",
+      Phone: "+1 (555) 987-6543"
     },
-    location: "Austin, TX",
-    date: "2025-06-20",
-    time: "12:00 PM - 11:00 PM",
-    images: [
+    Location: "Austin, TX",
+    Date: "2025-06-20",
+    Time: "12:00 PM - 11:00 PM",
+    Images: [
       "../../../public/events/mf2.jpg",
       "../../../public/events/mf1.jpg",
       "../../../public/events/mf3.jpg"
     ],
-    description: "Experience three days of amazing live music across five stages featuring top artists from around the world. Food vendors, art installations, and camping options available. Don't miss the biggest music event of the summer!",
-    price: 149,
-    availableSeats: 2500,
-    totalSeats: 10000,
-    officialLink: "https://summermusicfest.com"
+    Description: "Experience three days of amazing live music across five stages featuring top artists from around the world. Food vendors, art installations, and camping options available. Don't miss the biggest music event of the summer!",
+    Price: 149,
+    AvailableSeats: 2500,
+    TotalSeats: 10000,
+    OfficialLink: "https://summermusicfest.com"
   },
   {
-    id: 3,
-    name: "Business Leadership Summit",
-    organizer: {
-      name: "Enterprise Growth Partners",
-      email: "info@egp.com",
-      phone: "+1 (555) 234-5678"
+    ID: 3,
+    Name: "Business Leadership Summit",
+    Organizer: {
+      Name: "Enterprise Growth Partners",
+      Email: "info@egp.com",
+      Phone: "+1 (555) 234-5678"
     },
-    location: "New York, NY",
-    date: "2025-05-10",
-    time: "08:30 AM - 04:30 PM",
-    images: [
+    Location: "New York, NY",
+    Date: "2025-05-10",
+    Time: "08:30 AM - 04:30 PM",
+    Images: [
       "../../../public/events/bls2.jpg",
       "../../../public/events/bls1.jpg",
       "../../../public/events/bls3.jpg"
     ],
-    description: "A premier gathering of business leaders and executives to discuss emerging trends, challenges, and opportunities in today's global marketplace. Features keynote speeches, panel discussions, and exclusive networking events.",
-    price: 499,
-    availableSeats: 75,
-    totalSeats: 200,
-    officialLink: "https://businessleadershipsummit.com"
+    Description: "A premier gathering of business leaders and executives to discuss emerging trends, challenges, and opportunities in today's global marketplace. Features keynote speeches, panel discussions, and exclusive networking events.",
+    Price: 499,
+    AvailableSeats: 75,
+    TotalSeats: 200,
+    OfficialLink: "https://businessleadershipsummit.com"
   },
   {
-    id: 4,
-    name: "Culinary Festival",
-    organizer: {
-      name: "Gourmet Events",
-      email: "taste@gourmetevents.com",
-      phone: "+1 (555) 876-5432"
+    ID: 4,
+    Name: "Culinary Festival",
+    Organizer: {
+      Name: "Gourmet Events",
+      Email: "taste@gourmetevents.com",
+      Phone: "+1 (555) 876-5432"
     },
-    location: "Chicago, IL",
-    date: "2025-07-08",
-    time: "11:00 AM - 08:00 PM",
-    images: [
+    Location: "Chicago, IL",
+    Date: "2025-07-08",
+    Time: "11:00 AM - 08:00 PM",
+    Images: [
       "../../../public/events/cf3.jpg",
       "../../../public/events/cf1.jpg",
       "../../../public/events/cf2.jpg"
     ],
-    description: "Celebrate the art of cooking with world-renowned chefs, cooking demonstrations, tastings, and food competitions. Explore cuisines from around the world and discover new flavors and techniques.",
-    price: 85,
-    availableSeats: 350,
-    totalSeats: 1000,
-    officialLink: "https://culinaryfestival.com"
+    Description: "Celebrate the art of cooking with world-renowned chefs, cooking demonstrations, tastings, and food competitions. Explore cuisines from around the world and discover new flavors and techniques.",
+    Price: 85,
+    AvailableSeats: 350,
+    TotalSeats: 1000,
+    OfficialLink: "https://culinaryfestival.com"
   }
 ];
 
 // Get unique locations for filter dropdown
-const locations = [...new Set(eventsData.map(event => event.location))];
+const locations = [...new Set(eventsData.map(event => event.Location))];
 
 const EventList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -159,26 +159,72 @@ const EventList: React.FC = () => {
 
   // Filter events based on search term only (location filtering handled by backend)
   useEffect(() => {
-    const filtered = eventsData.filter(event => {
-      const matchesSearch = 
-        event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      return matchesSearch;
+    // setup for doing a REST API call
+    // Construct query string with parameters
+    const queryParams = new URLSearchParams({
+      location: locationFilter,
     });
-    
-    setFilteredEvents(filtered);
-    
-    // If current selection is no longer in filtered list, clear selection
-    if (selectedEventId && !filtered.some(event => event.id === selectedEventId)) {
-      setSelectedEventId(null);
-    }
-    
-    // If this is initial load and we have events, select the first one
-    if (!selectedEventId && filtered.length > 0) {
-      setSelectedEventId(filtered[0].id);
-    }
-  }, [searchTerm, selectedEventId]);
+
+    // get data from backend based on REST API call
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/events?${queryParams.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // Check if response status is NOT ok
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        // Log the raw response text before parsing
+        // we are doing so that next part of code waits while we fetch response from server
+        const responseText = await response.text();
+        console.log("Raw response text:", responseText);
+
+        // Try to parse the response as JSON
+        try {
+          const result: Event[] = JSON.parse(responseText);
+          console.log("lets' see response");
+          console.log(result);
+
+          const filtered = result.filter(event => {
+            const matchesSearch = 
+              event.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              event.Description.toLowerCase().includes(searchTerm.toLowerCase());
+            
+            return matchesSearch;
+          });
+          
+          setFilteredEvents(filtered);
+          
+          // If current selection is no longer in filtered list, clear selection
+          if (selectedEventId && !filtered.some(event => event.ID === selectedEventId)) {
+            setSelectedEventId(null);
+          }
+          
+          // If this is initial load and we have events, select the first one
+          if (!selectedEventId && filtered.length > 0) {
+            setSelectedEventId(filtered[0].ID);
+          }
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert("Failed to parse response");
+        }
+      } catch (error) {
+        alert(error);
+      }
+    };
+
+    // this method has been defined above which deals with REST API call
+    fetchData();
+  }, [searchTerm, locationFilter]);
 
   // Handle location filter change - this would trigger a backend API call in a real app
   const handleLocationChange = (newLocation: string) => {
@@ -196,7 +242,7 @@ const EventList: React.FC = () => {
   
   // Get the currently selected event
   const selectedEvent = selectedEventId 
-    ? filteredEvents.find(event => event.id === selectedEventId) 
+    ? filteredEvents.find(event => event.ID === selectedEventId) 
     : null;
   
   // Handle booking button click
@@ -204,14 +250,14 @@ const EventList: React.FC = () => {
     if (!selectedEvent) return;
     
     // In a real app, this would send the booking data to a backend
-    alert(`Booked ${ticketCount} ticket(s) for ${selectedEvent.name}!`);
+    alert(`Booked ${ticketCount} ticket(s) for ${selectedEvent.Name}!`);
     
     // You could also navigate to a confirmation page:
     // navigate("/confirmation");
   };
   
   // Calculate if the book now button should be disabled
-  const isBookingDisabled = !selectedEvent || ticketCount <= 0 || ticketCount > (selectedEvent?.availableSeats || 0);
+  const isBookingDisabled = !selectedEvent || ticketCount <= 0 || ticketCount > (selectedEvent?.AvailableSeats || 0);
   
   // Format date to be more readable
   const formatDate = (dateString: string) => {
@@ -280,20 +326,20 @@ const EventList: React.FC = () => {
           <Grid item xs={12} md={4} className="events-list-container">
             <Grid container spacing={2} className="events-grid">
               {filteredEvents.map((event) => (
-                <Grid item xs={12} key={event.id}>
+                <Grid item xs={12} key={event.ID}>
                   <Card 
                     className="event-card" 
-                    onClick={() => handleEventCardClick(event.id)}
+                    onClick={() => handleEventCardClick(event.ID)}
                     sx={{
-                      border: selectedEventId === event.id ? `2px solid #70c9c2` : 'none',
-                      boxShadow: selectedEventId === event.id ? '0 0 8px rgba(112, 201, 194, 0.5)' : '0 2px 8px rgba(0, 0, 0, 0.1) !important',
+                      border: selectedEventId === event.ID ? `2px solid #70c9c2` : 'none',
+                      boxShadow: selectedEventId === event.ID ? '0 0 8px rgba(112, 201, 194, 0.5)' : '0 2px 8px rgba(0, 0, 0, 0.1) !important',
                     }}
                   >
                     <CardMedia
                       component="img"
                       height="160"
-                      image={event.images[0]}
-                      alt={event.name}
+                      image={event.Images[0]}
+                      alt={event.Name}
                       className="event-image"
                     />
                     <CardContent className="card-content">
@@ -302,21 +348,21 @@ const EventList: React.FC = () => {
                         component="div"
                         className="event-name"
                       >
-                        {event.name}
+                        {event.Name}
                       </Typography>
                       <Typography
                         variant="body2"
                         className="event-location"
                       >
                         <LocationOnIcon className="location-icon" />
-                        {event.location}
+                        {event.Location}
                       </Typography>
                       <Typography
                         variant="body2"
                         className="event-date"
                       >
                         <EventIcon className="date-icon" />
-                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {new Date(event.Date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </Typography>
                       <Typography
                         variant="body2"
@@ -329,14 +375,14 @@ const EventList: React.FC = () => {
                           WebkitBoxOrient: 'vertical'
                         }}
                       >
-                        {event.description}
+                        {event.Description}
                       </Typography>
                       <Box className="seats-info">
                         <Typography variant="body2" className="seats-available">
-                          {event.availableSeats} seats left
+                          {event.AvailableSeats} seats left
                         </Typography>
                         <Chip 
-                          label={`$${event.price}`} 
+                          label={`$${event.Price}`} 
                           size="small"
                           className="seats-badge"
                         />
@@ -365,16 +411,16 @@ const EventList: React.FC = () => {
                   {/* Event header info with improved formatting */}
                   <Box className="event-details-header">
                     <Typography variant="h5" className="event-details-title">
-                      {selectedEvent.name}
+                      {selectedEvent.Name}
                     </Typography>
                     <Box className="event-details-meta">
                       <Typography variant="body1" className="event-details-location">
                         <LocationOnIcon sx={{ mr: 1 }} />
-                        {selectedEvent.location}
+                        {selectedEvent.Location}
                       </Typography>
                       <Typography variant="body1" className="event-details-date">
                         <EventIcon sx={{ mr: 1 }} />
-                        {formatDate(selectedEvent.date)} • {selectedEvent.time}
+                        {formatDate(selectedEvent.Date)} • {selectedEvent.Time}
                       </Typography>
                     </Box>
                   </Box>
@@ -383,13 +429,13 @@ const EventList: React.FC = () => {
                   <Box className="image-gallery">
                     <Box className="main-image-container">
                       <img
-                        src={selectedEvent.images[selectedImageIndex]}
-                        alt={`${selectedEvent.name} - Large view`}
+                        src={selectedEvent.Images[selectedImageIndex]}
+                        alt={`${selectedEvent.Name} - Large view`}
                         className="main-image"
                       />
                     </Box>
                     <Box className="thumbnail-container">
-                      {selectedEvent.images.map((image, index) => (
+                      {selectedEvent.Images.map((image, index) => (
                         <Box
                           key={index}
                           className={`thumbnail ${selectedImageIndex === index ? 'selected' : ''}`}
@@ -397,7 +443,7 @@ const EventList: React.FC = () => {
                         >
                           <img
                             src={image}
-                            alt={`${selectedEvent.name} - Thumbnail ${index + 1}`}
+                            alt={`${selectedEvent.Name} - Thumbnail ${index + 1}`}
                             className="thumbnail-image"
                           />
                         </Box>
@@ -411,29 +457,29 @@ const EventList: React.FC = () => {
                       Description
                     </Typography>
                     <Typography variant="body1" className="description-text">
-                      {selectedEvent.description}
+                      {selectedEvent.Description}
                     </Typography>
                   </Box>
                   
                   {/* Organizer info */}
                   <Box className="event-section">
                     <Typography variant="h6" className="section-title">
-                      Organized by {selectedEvent.organizer.name}
+                      Organized by {selectedEvent.Organizer.Name}
                     </Typography>
                     <Box className="organizer-details">
                       <Box className="organizer-contact">
                         <Box className="contact-item">
                           <PhoneIcon className="contact-icon" />
-                          <Typography variant="body2" sx={{ ml: 1 }}>{selectedEvent.organizer.phone}</Typography>
+                          <Typography variant="body2" sx={{ ml: 1 }}>{selectedEvent.Organizer.Phone}</Typography>
                         </Box>
                         <Box className="contact-item">
                           <MailIcon className="contact-icon" />
-                          <Typography variant="body2" sx={{ ml: 1 }}>{selectedEvent.organizer.email}</Typography>
+                          <Typography variant="body2" sx={{ ml: 1 }}>{selectedEvent.Organizer.Email}</Typography>
                         </Box>
                         <Box className="contact-item">
                           <LanguageIcon className="contact-icon" />
                           <Typography variant="body2" sx={{ ml: 1 }}>
-                            <a href={selectedEvent.officialLink} target="_blank" rel="noopener noreferrer">
+                            <a href={selectedEvent.OfficialLink} target="_blank" rel="noopener noreferrer">
                               Official Event Website
                             </a>
                           </Typography>
@@ -452,7 +498,7 @@ const EventList: React.FC = () => {
                     
                     <Box className="price-container">
                       <Typography variant="h5" className="price" color="#70c9c2" fontWeight="bold">
-                        ${selectedEvent.price}
+                        ${selectedEvent.Price}
                       </Typography>
                       <Typography variant="body2" sx={{ ml: 1 }} color="text.secondary">
                         / ticket
@@ -465,7 +511,7 @@ const EventList: React.FC = () => {
                       </Typography>
                       <LinearProgress 
                         variant="determinate" 
-                        value={(selectedEvent.availableSeats / selectedEvent.totalSeats) * 100} 
+                        value={(selectedEvent.AvailableSeats / selectedEvent.TotalSeats) * 100} 
                         className="seats-progress"
                         sx={{
                           backgroundColor: '#e0e0e0',
@@ -475,7 +521,7 @@ const EventList: React.FC = () => {
                         }}
                       />
                       <Typography variant="body2" className="seats-text">
-                        {selectedEvent.availableSeats} out of {selectedEvent.totalSeats} seats available
+                        {selectedEvent.AvailableSeats} out of {selectedEvent.TotalSeats} seats available
                       </Typography>
                     </Box>
                     
@@ -494,7 +540,7 @@ const EventList: React.FC = () => {
                         size="small"
                       >
                         {/* Create options based on available seats, max 10 */}
-                        {[...Array(Math.min(10, selectedEvent.availableSeats))].map((_, i) => (
+                        {[...Array(Math.min(10, selectedEvent.AvailableSeats))].map((_, i) => (
                           <option key={i + 1} value={i + 1}>
                             {i + 1}
                           </option>
@@ -506,10 +552,10 @@ const EventList: React.FC = () => {
                       <Box className="price-breakdown">
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                           <Typography variant="body2">
-                            ${selectedEvent.price} x {ticketCount} ticket(s)
+                            ${selectedEvent.Price} x {ticketCount} ticket(s)
                           </Typography>
                           <Typography variant="body2">
-                            ${selectedEvent.price * ticketCount}
+                            ${selectedEvent.Price * ticketCount}
                           </Typography>
                         </Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -522,7 +568,7 @@ const EventList: React.FC = () => {
                             Total
                           </Typography>
                           <Typography variant="body1" fontWeight="bold">
-                            ${selectedEvent.price * ticketCount + 10 * ticketCount}
+                            ${selectedEvent.Price * ticketCount + 10 * ticketCount}
                           </Typography>
                         </Box>
                       </Box>
