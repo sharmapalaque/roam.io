@@ -109,17 +109,13 @@ func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		// Fetch the associated host details to populate the Owner field for the response
-		var host models.Host
-		if err := db.First(&host, accommodation.OwnerID).Error; err != nil {
+		// Fetch the associated owner details to populate the Owner field for the response
+		var ownerDetails models.Owner
+		if err := db.First(&ownerDetails, accommodation.OwnerID).Error; err != nil {
 			// Log the error but proceed, as the accommodation was created
-			fmt.Printf("Warning: Failed to fetch host details for new accommodation %d: %v\n", accommodation.ID, err)
+			fmt.Printf("Warning: Failed to fetch owner details for new accommodation %d: %v\n", accommodation.ID, err)
 		} else {
-			accommodation.Owner = models.Owner{
-				Name:  host.Name,
-				Email: host.Email,
-				Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
-			}
+			accommodation.Owner = ownerDetails
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -250,24 +246,30 @@ func GetBookingByUserID(userID int, db *gorm.DB) ([]models.Booking, error) {
 	}
 }
 
-func GetAccommodationsByID(booking_id string, db *gorm.DB) (*models.Accommodation, error) {
+func GetAccommodationsByID(id string, db *gorm.DB) (*models.Accommodation, error) {
 	var accommodation models.Accommodation
-	result := db.Where("id = ?", booking_id).First(&accommodation)
+	result := db.Where("id = ?", id).First(&accommodation)
 	if result.Error != nil {
+		// Log the error when fetching accommodation fails
+		fmt.Printf("Error fetching accommodation %s by ID: %v\n", id, result.Error)
 		return nil, result.Error
 	}
 
-	// Fetch the associated host details
-	var host models.Host
-	if err := db.First(&host, accommodation.OwnerID).Error; err == nil {
-		accommodation.Owner = models.Owner{
-			Name:  host.Name,
-			Email: host.Email,
-			Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+	// Fetch the associated owner details
+	var ownerDetails models.Owner
+	ownerResult := db.First(&ownerDetails, accommodation.OwnerID)
+	if ownerResult.Error == nil {
+		// Owner found
+		accommodation.Owner = ownerDetails
+		fmt.Printf("Successfully fetched owner %d for accommodation %d (ByID)\n", accommodation.OwnerID, accommodation.ID) // Log success
+	} else {
+		// Log the specific error when fetching owner fails
+		fmt.Printf("Failed to fetch owner %d for accommodation %d (ByID): %v\n", accommodation.OwnerID, accommodation.ID, ownerResult.Error)
+		// Only log as an application-level error if it's NOT ErrRecordNotFound
+		if !errors.Is(ownerResult.Error, gorm.ErrRecordNotFound) {
+			fmt.Printf("Error fetching owner %d for accommodation %d (ByID): %v\n", accommodation.OwnerID, accommodation.ID, ownerResult.Error)
 		}
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		// Log error if it's not simply 'not found'
-		fmt.Printf("Error fetching host %d for accommodation %d: %v\n", accommodation.OwnerID, accommodation.ID, err)
+		// Do not return an error here, just leave Owner as zero-value if not found
 	}
 
 	return &accommodation, nil
@@ -282,11 +284,12 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 		result = db.Where("location = ?", location).Find(&accommodations)
 	}
 	if result.Error != nil {
+		fmt.Printf("Error fetching accommodations by location '%s': %v\n", location, result.Error)
 		return nil, result.Error
 	}
 
 	if len(accommodations) > 0 {
-		// Fetch host details efficiently
+		// Fetch owner details efficiently
 		ownerIDs := make([]uint, 0, len(accommodations))
 		for _, acc := range accommodations {
 			if acc.OwnerID != 0 { // Avoid querying for owner ID 0
@@ -294,7 +297,7 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 			}
 		}
 
-		// Remove duplicates if any (though unlikely for primary keys)
+		// Remove duplicates if any
 		uniqueOwnerIDs := make(map[uint]struct{})
 		distinctOwnerIDs := make([]uint, 0, len(ownerIDs))
 		for _, id := range ownerIDs {
@@ -304,27 +307,30 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 			}
 		}
 
-		var hosts []models.Host
-		hostMap := make(map[uint]models.Host)
+		var owners []models.Owner
+		ownerMap := make(map[uint]models.Owner)
 		if len(distinctOwnerIDs) > 0 {
-			if err := db.Where("id IN ?", distinctOwnerIDs).Find(&hosts).Error; err != nil {
-				fmt.Printf("Error fetching hosts for accommodations: %v\n", err)
-				// Proceed without owner details if hosts can't be fetched
+			// Log the IDs we are searching for
+			fmt.Printf("Fetching owners with IDs: %v for location '%s'\n", distinctOwnerIDs, location)
+			if err := db.Where("id IN ?", distinctOwnerIDs).Find(&owners).Error; err != nil {
+				fmt.Printf("Error fetching owners for accommodations (location '%s'): %v\n", location, err)
+				// Proceed without owner details if owners can't be fetched
 			} else {
-				for _, h := range hosts {
-					hostMap[h.ID] = h
+				// Log how many owners were actually found
+				fmt.Printf("Found %d owners for location '%s'\n", len(owners), location)
+				for _, o := range owners {
+					ownerMap[o.ID] = o
 				}
 			}
 		}
 
 		// Populate Owner field
 		for i := range accommodations {
-			if host, ok := hostMap[accommodations[i].OwnerID]; ok {
-				accommodations[i].Owner = models.Owner{
-					Name:  host.Name,
-					Email: host.Email,
-					Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
-				}
+			if ownerDetails, ok := ownerMap[accommodations[i].OwnerID]; ok {
+				accommodations[i].Owner = ownerDetails
+			} else if accommodations[i].OwnerID != 0 {
+				// Log if an owner was expected but not found in the map (should have been caught by db query logging)
+				fmt.Printf("Owner %d for accommodation %d not found in map (location '%s')\n", accommodations[i].OwnerID, accommodations[i].ID, location)
 			}
 		}
 	}
@@ -334,26 +340,30 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 func GetAccommodationsById(id string, db *gorm.DB) (*models.Accommodation, error) {
 	var accommodation models.Accommodation
 
-	// Use Preload to potentially fetch related data if relationships were defined
-	// result := db.Preload("Owner").First(&accommodation, id) // Example if Owner had a direct GORM relation
-
 	result := db.First(&accommodation, id) // Fetch accommodation first
 
 	if result.Error != nil {
+		// Log the error when fetching accommodation fails
+		fmt.Printf("Error fetching accommodation %s: %v\n", id, result.Error)
 		return nil, result.Error
 	}
 
-	// Fetch the associated host details separately
-	var host models.Host
-	if err := db.First(&host, accommodation.OwnerID).Error; err == nil {
-		accommodation.Owner = models.Owner{
-			Name:  host.Name,
-			Email: host.Email,
-			Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+	// Fetch the associated owner details separately
+	var ownerDetails models.Owner
+	// Use a separate variable for the query result/error
+	ownerResult := db.First(&ownerDetails, accommodation.OwnerID)
+	if ownerResult.Error == nil {
+		// Owner found, assign it
+		accommodation.Owner = ownerDetails
+		fmt.Printf("Successfully fetched owner %d for accommodation %d\n", accommodation.OwnerID, accommodation.ID) // Log success
+	} else {
+		// Log the specific error when fetching owner fails
+		fmt.Printf("Failed to fetch owner %d for accommodation %d: %v\n", accommodation.OwnerID, accommodation.ID, ownerResult.Error)
+		// Only log as an application-level error if it's NOT ErrRecordNotFound
+		if !errors.Is(ownerResult.Error, gorm.ErrRecordNotFound) {
+			fmt.Printf("Error fetching owner %d for accommodation %d: %v\n", accommodation.OwnerID, accommodation.ID, ownerResult.Error)
 		}
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		// Log error if it's not simply 'not found'
-		fmt.Printf("Error fetching host %d for accommodation %d: %v\n", accommodation.OwnerID, accommodation.ID, err)
+		// Do not return an error here, just leave Owner as zero-value if not found
 	}
 	return &accommodation, nil
 }
