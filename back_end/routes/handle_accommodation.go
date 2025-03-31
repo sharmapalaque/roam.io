@@ -122,9 +122,6 @@ func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 			}
 		}
 
-		// // Add sample reviews and owner data for immediate response - Removed
-		// enhanceAccommodationWithSampleData(&accommodation, db)
-
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(accommodation)
@@ -329,8 +326,6 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 					Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
 				}
 			}
-			// // Enhance accommodations with sample data - Removed
-			// enhanceAccommodationWithSampleData(&accommodations[i], db)
 		}
 	}
 	return accommodations, nil
