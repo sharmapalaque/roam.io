@@ -28,6 +28,7 @@ func NewRouter(db *gorm.DB) *mux.Router {
 	r.HandleFunc("/events", FetchEvents(db)).Methods("GET")
 	r.HandleFunc("/accommodations", AddBooking(db)).Methods("PUT")
 	r.HandleFunc("/events", AddEventBooking(db)).Methods("PUT")
+	r.HandleFunc("/accommodations/{id}/reviews", AddReview(db)).Methods("POST")
 
 	r.HandleFunc("/accommodations", RemoveBooking(db)).Methods("DELETE")
 	r.HandleFunc("/events", RemoveEventBooking(db)).Methods("DELETE")
