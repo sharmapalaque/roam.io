@@ -18,7 +18,7 @@ func CreateHost(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
-		host := models.Host{Name: payload.Name, Email: payload.Email, Contact: payload.Contact}
+		host := models.Host{Name: payload.Name, Email: payload.Email, Phone: payload.Phone}
 		result := db.Create(&host)
 		if result.Error != nil {
 			fmt.Println(result.Error)
