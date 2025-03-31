@@ -118,7 +118,7 @@ func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 			accommodation.Owner = models.Owner{
 				Name:  host.Name,
 				Email: host.Email,
-				Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+				Phone: host.Phone, // Assuming Host.Phone maps to Owner.Phone
 			}
 		}
 
@@ -263,7 +263,7 @@ func GetAccommodationsByID(booking_id string, db *gorm.DB) (*models.Accommodatio
 		accommodation.Owner = models.Owner{
 			Name:  host.Name,
 			Email: host.Email,
-			Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+			Phone: host.Phone, // Assuming Host.Phone maps to Owner.Phone
 		}
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		// Log error if it's not simply 'not found'
@@ -323,7 +323,7 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 				accommodations[i].Owner = models.Owner{
 					Name:  host.Name,
 					Email: host.Email,
-					Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+					Phone: host.Phone, // Assuming Host.Contact maps to Owner.Phone
 				}
 			}
 		}
@@ -349,7 +349,7 @@ func GetAccommodationsById(id string, db *gorm.DB) (*models.Accommodation, error
 		accommodation.Owner = models.Owner{
 			Name:  host.Name,
 			Email: host.Email,
-			Phone: host.Contact, // Assuming Host.Contact maps to Owner.Phone
+			Phone: host.Phone, // Assuming Host.Phone maps to Owner.Phone
 		}
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		// Log error if it's not simply 'not found'
