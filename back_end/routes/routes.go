@@ -19,6 +19,7 @@ func NewRouter(db *gorm.DB) *mux.Router {
 
 	r.HandleFunc("/users/register", CreateUserHandler(db)).Methods("POST")
 	r.HandleFunc("/users/login", LoginHandler(db)).Methods("POST")
+	r.HandleFunc("/users/logout", LogoutHandler(db)).Methods("POST")
 	r.HandleFunc("/protected-endpoint", ProtectedEndpointHandler(db)).Methods("GET")
 	r.HandleFunc("/accommodations/{id}", FetchAccommodationById(db)).Methods("GET")
 	r.HandleFunc("/events", CreateEvent(db)).Methods("POST")
@@ -33,7 +34,8 @@ func NewRouter(db *gorm.DB) *mux.Router {
 	r.HandleFunc("/accommodations", RemoveBooking(db)).Methods("DELETE")
 	r.HandleFunc("/events", RemoveEventBooking(db)).Methods("DELETE")
 	r.HandleFunc("/users/profile", GetUserProfileHandler(db)).Methods("GET")
-	r.HandleFunc("/host", CreateOwner(db)).Methods("POST")
+	r.HandleFunc("/owner", CreateOwner(db)).Methods("POST")
+	r.HandleFunc("/organizer", CreateOrganizer(db)).Methods("POST")
 
 	// Handle OPTIONS requests
 	r.Use(mux.CORSMethodMiddleware(r))
