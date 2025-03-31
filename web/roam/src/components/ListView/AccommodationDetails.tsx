@@ -384,8 +384,49 @@ const AccommodationDetails: React.FC = () => {
 
     // Would normally send booking data to backend here
     // For now, just navigate to bookings page
-    navigate("/profile/bookings");
-  };
+    // navigate("/profile/bookings");
+    console.log(checkInDate, checkOutDate, guests)
+
+    const sendBookingData = async () => {
+      if (!id) {
+        console.error('ID is undefined');
+        alert('ID is missing');
+        return;
+      }
+    
+      // Create query parameters using URLSearchParams
+      const params = new URLSearchParams({
+        accommodation_id: id,
+        check_in_date: checkInDate,
+        check_out_date: checkOutDate,
+        guests: guests.toString(),
+        total_cost: totalPrice.toString()
+        // Add other parameters here if needed
+      });
+
+      console.log(`https://api.example.com/data/1?${params.toString()}`)
+  
+      try {
+        const response = await fetch(`http://localhost:8080/accommodations?${params.toString()}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: "include", // Ensure cookies (like session IDs) are sent
+        });
+  
+        if (response.ok) {
+          alert('Booking has been confirmed!!!');
+        } else {
+          alert('Failed to book your accomodation :(');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating data');
+      }
+    };
+    sendBookingData();
+  }
 
   // Map facility icons
   const getFacilityIcon = (facility: string) => {
