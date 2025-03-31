@@ -13,10 +13,9 @@ type Review struct {
 
 // Owner represents accommodation owner information
 type Owner struct {
-	Name         string `json:"Name"`
-	Email        string `json:"Email"`
-	Phone        string `json:"Phone"`
-	ResponseRate string `json:"ResponseRate"`
+	Name  string `json:"Name"`
+	Email string `json:"Email"`
+	Phone string `json:"Phone"`
 }
 
 // Accommodation represents an accommodation object in the system
@@ -28,7 +27,7 @@ type Accommodation struct {
 	Facilities    pq.StringArray `gorm:"type:text[]" json:"Facilities"`
 	ImageUrls     pq.StringArray `gorm:"type:text[]" json:"ImageUrls"`
 	UserReviews   []Review       `gorm:"-" json:"UserReviews"` // Using gorm:"-" to handle this separately
-	HostID        uint           `gorm:"not null" json:"-"`
+	OwnerID       uint           `gorm:"not null" json:"OwnerID"`
 	PricePerNight float64        `json:"PricePerNight"`
 	Rating        float64        `json:"Rating"`
 	Owner         Owner          `gorm:"-" json:"Owner"` // Using gorm:"-" to handle this separately
