@@ -70,3 +70,36 @@ func LoginHandler(db *gorm.DB) http.HandlerFunc {
 		})
 	}
 }
+
+// LogoutHandler clears the user session
+func LogoutHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := store.Get(r, "session")
+
+		// Check if user is actually logged in (optional, but good practice)
+		if _, ok := session.Values["user_id"]; !ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized) // Or BadRequest, depending on desired behavior
+			json.NewEncoder(w).Encode(map[string]string{"message": "Not logged in"})
+			return
+		}
+
+		// Clear the session value
+		delete(session.Values, "user_id")
+		// Set MaxAge to -1 to delete the cookie
+		session.Options.MaxAge = -1
+		err := session.Save(r, w)
+		if err != nil {
+			// Log the error appropriately
+			fmt.Println("Error saving session:", err)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to logout"})
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Logout successful"})
+	}
+}
