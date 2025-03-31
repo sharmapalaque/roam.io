@@ -255,12 +255,6 @@ const AccommodationDetails: React.FC = () => {
           // console.log("lets' see response");
           // console.log(result);
 
-          // //setting the missing fields
-          // result.PricePerNight = accommodation.PricePerNight;
-          // result.Rating = accommodation.Rating;
-          // result.UserReviews = accommodation.UserReviews;
-          // result.Owner = accommodation.Owner;
-
           setAccommodation(result)
 
         } catch (error) {
