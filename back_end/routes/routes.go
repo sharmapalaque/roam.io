@@ -19,6 +19,7 @@ func NewRouter(db *gorm.DB) *mux.Router {
 
 	r.HandleFunc("/users/register", CreateUserHandler(db)).Methods("POST")
 	r.HandleFunc("/users/login", LoginHandler(db)).Methods("POST")
+	r.HandleFunc("/users/logout", LogoutHandler(db)).Methods("POST")
 	r.HandleFunc("/protected-endpoint", ProtectedEndpointHandler(db)).Methods("GET")
 	r.HandleFunc("/accommodations/{id}", FetchAccommodationById(db)).Methods("GET")
 	r.HandleFunc("/events", CreateEvent(db)).Methods("POST")
