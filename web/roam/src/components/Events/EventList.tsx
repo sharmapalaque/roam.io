@@ -250,7 +250,45 @@ const EventList: React.FC = () => {
     if (!selectedEvent) return;
     
     // In a real app, this would send the booking data to a backend
-    alert(`Booked ${ticketCount} ticket(s) for ${selectedEvent.Name}!`);
+    console.log(selectedEventId, ticketCount, selectedEvent.Price * ticketCount + 10 * ticketCount)
+    // alert(`Booked ${ticketCount} ticket(s) for ${selectedEvent.Name}!`);
+    const total_cost = selectedEvent.Price * ticketCount + 10 * ticketCount;
+
+    const sendBookingData = async () => {
+      if (!selectedEventId) {
+        console.error('ID is undefined');
+        alert('ID is missing');
+        return;
+      }
+    
+      // Create query parameters using URLSearchParams
+      const params = new URLSearchParams({
+        event_id: selectedEventId.toString(),
+        guests: ticketCount.toString(),
+        total_cost: total_cost.toString()
+        // Add other parameters here if needed
+      });
+  
+      try {
+        const response = await fetch(`http://localhost:8080/events?${params.toString()}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: "include", // Ensure cookies (like session IDs) are sent
+        });
+  
+        if (response.ok) {
+          alert('Booking has been confirmed!!!');
+        } else {
+          alert('Failed to book your accomodation :(');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating data');
+      }
+    };
+    sendBookingData();
     
     // You could also navigate to a confirmation page:
     // navigate("/confirmation");
