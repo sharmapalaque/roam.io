@@ -7,7 +7,3 @@ type Owner struct {
 	Email string `gorm:"uniqueIndex" json:"Email"` // Added json tag
 	Phone string `json:"Phone"`                    // Renamed from Contact, added json tag
 }
-
-func (Owner) TableName() string {
-	return "hosts" // because the table name is hosts in the database
-}
