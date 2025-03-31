@@ -19,7 +19,7 @@ func FetchEvents(db *gorm.DB) http.HandlerFunc {
 			queryParams := r.URL.Query()
 			location := queryParams.Get("location")
 			events, err := GetEventsByLocation(location, db)
-			var response []models.EventResponse
+			response := []models.EventResponse{}
 			for _, event := range events {
 				organizer, _ := GetOrganizerByID(event.OrganizerID, db)
 				currEvent := models.EventResponse{ID: event.ID, Name: event.EventName, Location: event.Location, Images: pq.StringArray(event.Images), Description: event.Description, Date: event.Date, Time: event.Time, Price: event.Price, AvailableSeats: event.AvailableSeats, TotalSeats: event.TotalSeats, OfficialLink: event.OfficialLink, Organizer: *organizer}
@@ -222,13 +222,13 @@ func UpdateEventSeats(event_id string, availableSeats int, db *gorm.DB) error {
 	}
 }
 
-func GetEventBookingByID(event_id int, db *gorm.DB) ([]models.EventBooking, error) {
-	bookings := []models.EventBooking{}
-	result := db.Where("event_id = ?", event_id).Find(&bookings)
+func GetEventBookingByID(id string, db *gorm.DB) (*models.EventBooking, error) {
+	booking := models.EventBooking{}
+	result := db.Where("id = ?", id).Find(&booking)
 	if result.Error != nil {
 		return nil, result.Error
 	} else {
-		return bookings, nil
+		return &booking, nil
 	}
 }
 
@@ -304,6 +304,25 @@ func RemoveEventBooking(db *gorm.DB) http.HandlerFunc {
 		}
 
 		uintValue := uint(u)
+		booking, _ := GetEventBookingByID(booking_id, db)
+		num := uint(booking.EventId)
+		str := strconv.FormatUint(uint64(num), 10)
+		event, err := GetEventByID(str, db)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Error event booking not found"})
+			fmt.Println(err)
+			return
+		}
+		err = UpdateEventSeats(str, int(event.AvailableSeats)+int(booking.Guests), db)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Error updating avaliable seats"})
+			fmt.Println(err)
+			return
+		}
 
 		err = RemoveEventBookingByID(int(uintValue), db)
 		if err != nil {
