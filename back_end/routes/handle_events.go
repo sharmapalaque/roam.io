@@ -156,7 +156,7 @@ func AddEventBooking(db *gorm.DB) http.HandlerFunc {
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to Fetch booking"})
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to Event"})
 			fmt.Println(err)
 			return
 		}
