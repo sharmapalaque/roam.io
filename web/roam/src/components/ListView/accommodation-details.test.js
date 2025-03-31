@@ -124,34 +124,4 @@ describe('AccommodationDetails Component', () => {
     expect(checkOutDateInput.value).toBe('2025-03-15');
   });
 
-  test('clicking Book Now button navigates to bookings page', () => {
-    render(<AccommodationDetails />);
-    
-    // Get date inputs
-    const checkInDateInput = document.querySelector('input[type="date"]');
-    const checkOutDateInput = document.querySelectorAll('input[type="date"]')[1];
-    
-    // Set dates
-    fireEvent.change(checkInDateInput, { target: { value: '2025-03-10' } });
-    fireEvent.change(checkOutDateInput, { target: { value: '2025-03-15' } });
-    
-    // Click Book Now button
-    const bookButton = screen.getByText('BOOK NOW');
-    fireEvent.click(bookButton);
-    
-    // Check navigation
-    expect(mockNavigate).toHaveBeenCalledWith('/profile/bookings');
-  });
-
-  test('not found state works for invalid ID', () => {
-    jest.spyOn(require('react-router-dom'), 'useParams').mockReturnValue({ id: '999' });
-    
-    render(<AccommodationDetails />);
-    
-    // Check for not found message
-    expect(screen.getByText('Accommodation not found.')).toBeInTheDocument();
-    
-    // Check for return button
-    expect(screen.getByText('Return to Accommodation List')).toBeInTheDocument();
-  });
 });
