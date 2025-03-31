@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -29,144 +29,144 @@ import "./AccommodationDetails.css";
 
 // Define the type for accommodation data with expanded properties
 type Accommodation = {
-  id: number;
-  name: string;
-  location: string;
-  images: string[];
-  description: string;
-  pricePerNight: number;
-  rating: number;
-  reviews: Review[];
-  facilities: string[];
-  owner: {
-    name: string;
-    email: string;
-    phone: string;
-    responseRate: string;
+  ID: number;
+  Name: string;
+  Location: string;
+  ImageUrls: string[];
+  Description: string;
+  PricePerNight: number;
+  Rating: number;
+  UserReviews: Review[];
+  Facilities: string[];
+  Owner: {
+    Name: string;
+    Email: string;
+    Phone: string;
+    ResponseRate: string;
   };
 };
 
 // Define the type for reviews
 type Review = {
-  id: number;
-  userName: string;
-  rating: number;
-  date: string;
-  comment: string;
+  ID: number;
+  UserName: string;
+  Rating: number;
+  Date: string;
+  Comment: string;
 };
 
 // Enhanced dummy data for accommodations
 const accommodations: Accommodation[] = [
   {
-    id: 1,
-    name: "Ocean View Apartment",
-    location: "Miami, FL",
-    images: [
+    ID: 1,
+    Name: "Ocean View Apartment",
+    Location: "Miami, FL",
+    ImageUrls: [
       "../../../public/Pasted image.png",
       "../../../public/Pasted image.png",
       "../../../public/Pasted image.png",
       "../../../public/Pasted image.png",
     ],
-    description: 
+    Description: 
       "A beautiful ocean view apartment located in Miami, FL. This luxurious apartment offers stunning views of the Atlantic Ocean from its private balcony. The interior features modern furnishings, a fully equipped kitchen, and high-end appliances. Perfect for couples or small families looking for a beach getaway.",
-    pricePerNight: 249,
-    rating: 4.8,
-    reviews: [
+    PricePerNight: 249,
+    Rating: 4.8,
+    UserReviews: [
       {
-        id: 101,
-        userName: "Sarah J.",
-        rating: 5,
-        date: "August 15, 2023",
-        comment: "Absolutely spectacular views! The apartment was immaculately clean and had everything we needed. Will definitely return.",
+        ID: 101,
+        UserName: "Sarah J.",
+        Rating: 5,
+        Date: "August 15, 2023",
+        Comment: "Absolutely spectacular views! The apartment was immaculately clean and had everything we needed. Will definitely return.",
       },
       {
-        id: 102,
-        userName: "Michael T.",
-        rating: 4.5,
-        date: "July 22, 2023",
-        comment: "Great location, just steps from the beach. The kitchen was well-stocked and the bed was very comfortable.",
+        ID: 102,
+        UserName: "Michael T.",
+        Rating: 4.5,
+        Date: "July 22, 2023",
+        Comment: "Great location, just steps from the beach. The kitchen was well-stocked and the bed was very comfortable.",
       },
     ],
-    facilities: ["Wifi", "Parking", "Air Conditioning", "Full Kitchen", "Pool", "TV", "Ocean View"],
-    owner: {
-      name: "Jessica Miller",
-      email: "jessica@example.com",
-      phone: "+1 (305) 555-1234",
-      responseRate: "97% within 24 hours",
+    Facilities: ["Wifi", "Parking", "Air Conditioning", "Full Kitchen", "Pool", "TV", "Ocean View"],
+    Owner: {
+      Name: "Jessica Miller",
+      Email: "jessica@example.com",
+      Phone: "+1 (305) 555-1234",
+      ResponseRate: "97% within 24 hours",
     },
   },
   {
-    id: 2,
-    name: "Mountain Cabin",
-    location: "Aspen, CO",
-    images: [
+    ID: 2,
+    Name: "Mountain Cabin",
+    Location: "Aspen, CO",
+    ImageUrls: [
       "../../../public/Pasted image.png",
       "../../../public/Pasted image.png",
       "../../../public/Pasted image.png",
     ],
-    description:
+    Description:
       "A cozy mountain cabin surrounded by nature in Aspen, Colorado. This authentic log cabin offers a rustic yet comfortable retreat with breathtaking mountain views. Features include a stone fireplace, spacious deck, and modern amenities while maintaining its charming character. Perfect for outdoor enthusiasts in all seasons.",
-    pricePerNight: 319,
-    rating: 4.9,
-    reviews: [
+    PricePerNight: 319,
+    Rating: 4.9,
+    UserReviews: [
       {
-        id: 201,
-        userName: "Robert K.",
-        rating: 5,
-        date: "September 5, 2023",
-        comment: "The perfect mountain getaway! We loved the fireplace and the peaceful surroundings. Saw deer right from the deck!",
+        ID: 201,
+        UserName: "Robert K.",
+        Rating: 5,
+        Date: "September 5, 2023",
+        Comment: "The perfect mountain getaway! We loved the fireplace and the peaceful surroundings. Saw deer right from the deck!",
       },
       {
-        id: 202,
-        userName: "Emma L.",
-        rating: 4.7,
-        date: "August 3, 2023",
-        comment: "Very comfortable cabin with all the amenities we needed. Great location for hiking in summer.",
+        ID: 202,
+        UserName: "Emma L.",
+        Rating: 4.7,
+        Date: "August 3, 2023",
+        Comment: "Very comfortable cabin with all the amenities we needed. Great location for hiking in summer.",
       },
     ],
-    facilities: ["Wifi", "Parking", "Fireplace", "Full Kitchen", "Hot Tub", "Mountain View", "Hiking Trails"],
-    owner: {
-      name: "Daniel Thompson",
-      email: "daniel@example.com",
-      phone: "+1 (970) 555-6789",
-      responseRate: "95% within 24 hours",
+    Facilities: ["Wifi", "Parking", "Fireplace", "Full Kitchen", "Hot Tub", "Mountain View", "Hiking Trails"],
+    Owner: {
+      Name: "Daniel Thompson",
+      Email: "daniel@example.com",
+      Phone: "+1 (970) 555-6789",
+      ResponseRate: "95% within 24 hours",
     },
   },
   {
-    id: 3,
-    name: "City Center Studio",
-    location: "New York, NY",
-    images: [
+    ID: 3,
+    Name: "City Center Studio",
+    Location: "New York, NY",
+    ImageUrls: [
       "../../../public/Pasted image.png",
       "../../../public/Pasted image.png",
       "../../../public/Pasted image.png",
     ],
-    description:
+    Description:
       "A modern studio apartment located in the heart of New York City. This stylish studio offers the perfect base for exploring all that NYC has to offer. Recently renovated with high-end finishes, the space includes a queen-sized bed, a fully equipped kitchenette, and a modern bathroom. Walking distance to major attractions, restaurants, and public transportation.",
-    pricePerNight: 189,
-    rating: 4.6,
-    reviews: [
+    PricePerNight: 189,
+    Rating: 4.6,
+    UserReviews: [
       {
-        id: 301,
-        userName: "James B.",
-        rating: 4.8,
-        date: "October 12, 2023",
-        comment: "Fantastic location! We could walk to so many attractions. The apartment was clean and modern.",
+        ID: 301,
+        UserName: "James B.",
+        Rating: 4.8,
+        Date: "October 12, 2023",
+        Comment: "Fantastic location! We could walk to so many attractions. The apartment was clean and modern.",
       },
       {
-        id: 302,
-        userName: "Olivia P.",
-        rating: 4.5,
-        date: "September 28, 2023",
-        comment: "Perfect size for a couple, and so convenient to the subway. Loved our stay here!",
+        ID: 302,
+        UserName: "Olivia P.",
+        Rating: 4.5,
+        Date: "September 28, 2023",
+        Comment: "Perfect size for a couple, and so convenient to the subway. Loved our stay here!",
       },
     ],
-    facilities: ["Wifi", "Air Conditioning", "Kitchenette", "TV", "Washer/Dryer", "Subway Access"],
-    owner: {
-      name: "Rachel Green",
-      email: "rachel@example.com",
-      phone: "+1 (212) 555-4321",
-      responseRate: "98% within 24 hours",
+    Facilities: ["Wifi", "Air Conditioning", "Kitchenette", "TV", "Washer/Dryer", "Subway Access"],
+    Owner: {
+      Name: "Rachel Green",
+      Email: "rachel@example.com",
+      Phone: "+1 (212) 555-4321",
+      ResponseRate: "98% within 24 hours",
     },
   },
 ];
@@ -184,6 +184,7 @@ const AccommodationDetails: React.FC = () => {
   const [guests, setGuests] = useState<number>(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const [dateError, setDateError] = useState<string>("");
+  const [accommodation, setAccommodation] = useState<Accommodation>(accommodations[0])
 
   // Enhanced styles to fix the line issue
   const headerContainerStyle = {
@@ -223,11 +224,58 @@ const AccommodationDetails: React.FC = () => {
     marginBottom: '5px' // Reduced margin between title and location
   };
 
-  // Find the accommodation by ID
-  const accommodation = accommodations.find(
-    (item) => item.id === parseInt(id || "", 10)
-  );
+  // API call
+  useEffect(() => {
+    // get data from backend based on REST API call
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/accommodations/${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
+        // Check if response status is NOT ok
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        // Log the raw response text before parsing
+        // we are doing so that next part of code waits while we fetch response from server
+        const responseText = await response.text();
+        console.log("Raw response text:", responseText);
+
+        // Try to parse the response as JSON
+        try {
+          let result = JSON.parse(responseText);
+          // console.log("lets' see response");
+          // console.log(result);
+
+          //setting the missing fields
+          result.PricePerNight = accommodation.PricePerNight;
+          result.Rating = accommodation.Rating;
+          result.UserReviews = accommodation.UserReviews;
+          result.Owner = accommodation.Owner;
+
+          setAccommodation(result)
+
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          alert("Failed to parse response");
+        }
+      } catch (error) {
+        alert(error);
+      }
+    };
+
+    // this method has been defined above which deals with REST API call
+    fetchData();
+  }, []);
+  
   // Handle check-in input click - focus on real input
   const handleCheckInClick = () => {
     if (checkInRef.current) {
@@ -283,7 +331,9 @@ const AccommodationDetails: React.FC = () => {
     }
   };
 
+  console.log("checking if accomo")
   if (!accommodation) {
+    console.log("helloooooo")
     return (
       <Box sx={{ mt: "120px", textAlign: "center", padding: "2rem" }}>
         <Typography variant="h5" className="not-found">
@@ -311,7 +361,7 @@ const AccommodationDetails: React.FC = () => {
     const diffTime = Math.abs(new Date(checkOutDate).getTime() - new Date(checkInDate).getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    return diffDays * accommodation.pricePerNight;
+    return diffDays * accommodation.PricePerNight;
   };
 
   const totalNights = checkInDate && checkOutDate
@@ -380,10 +430,10 @@ const AccommodationDetails: React.FC = () => {
         <Box className="teal-header" style={tealHeaderStyle}>
           <Container maxWidth="lg" style={headerContainerStyle}>
             <Typography variant="h4" className="property-title" style={headerTextStyle}>
-              {accommodation.name}
+              {accommodation.Name}
             </Typography>
             <Typography variant="subtitle1" className="property-location" style={headerTextStyle}>
-              {accommodation.location}
+              {accommodation.Location}
             </Typography>
           </Container>
         </Box>
@@ -404,13 +454,13 @@ const AccommodationDetails: React.FC = () => {
                 boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
               }}>
                 <Rating
-                  value={accommodation.rating}
+                  value={accommodation.Rating}
                   precision={0.1}
                   readOnly
                   size="small"
                 />
                 <Typography variant="body2" className="rating-value" sx={{ ml: 1 }}>
-                  {accommodation.rating} ({accommodation.reviews.length} reviews)
+                  {accommodation.Rating} ({accommodation.UserReviews.length} UserReviews)
                 </Typography>
               </Box>
 
@@ -418,13 +468,13 @@ const AccommodationDetails: React.FC = () => {
               <Box className="image-gallery">
                 <Box className="main-image-container">
                   <img
-                    src={accommodation.images[selectedImageIndex]}
-                    alt={`${accommodation.name} - Large view`}
+                    src={accommodation.ImageUrls[selectedImageIndex]}
+                    alt={`${accommodation.Name} - Large view`}
                     className="main-image"
                   />
                 </Box>
                 <Box className="thumbnail-container">
-                  {accommodation.images.map((image, index) => (
+                  {accommodation.ImageUrls.map((image, index) => (
                     <Box
                       key={index}
                       className={`thumbnail ${selectedImageIndex === index ? 'selected' : ''}`}
@@ -432,7 +482,7 @@ const AccommodationDetails: React.FC = () => {
                     >
                       <img
                         src={image}
-                        alt={`${accommodation.name} - Thumbnail ${index + 1}`}
+                        alt={`${accommodation.Name} - Thumbnail ${index + 1}`}
                         className="thumbnail-image"
                       />
                     </Box>
@@ -446,7 +496,7 @@ const AccommodationDetails: React.FC = () => {
                   Description
                 </Typography>
                 <Typography variant="body1" className="description-text" align="left">
-                  {accommodation.description}
+                  {accommodation.Description}
                 </Typography>
               </Box>
 
@@ -456,7 +506,7 @@ const AccommodationDetails: React.FC = () => {
                   Facilities
                 </Typography>
                 <Box className="facilities-container">
-                  {accommodation.facilities.map((facility, index) => (
+                  {accommodation.Facilities.map((facility, index) => (
                     <Chip
                       key={index}
                       icon={getFacilityIcon(facility)}
@@ -470,17 +520,17 @@ const AccommodationDetails: React.FC = () => {
               {/* Host info */}
               <Box className="property-section">
                 <Typography variant="h6" className="section-title">
-                  Hosted by {accommodation.owner.name}
+                  Hosted by {accommodation.Owner.Name}
                 </Typography>
                 <Box className="host-details">
                   <Box className="host-contact">
                     <Box className="contact-item">
                       <Phone className="contact-icon" />
-                      <Typography variant="body2" sx={{ ml: 1 }}>{accommodation.owner.phone}</Typography>
+                      <Typography variant="body2" sx={{ ml: 1 }}>{accommodation.Owner.Phone}</Typography>
                     </Box>
                     <Box className="contact-item">
                       <Mail className="contact-icon" />
-                      <Typography variant="body2" sx={{ ml: 1 }}>{accommodation.owner.email}</Typography>
+                      <Typography variant="body2" sx={{ ml: 1 }}>{accommodation.Owner.Email}</Typography>
                     </Box>
                   </Box>
                   <Typography variant="body2" className="response-rate" sx={{ mt: 1 }}>
@@ -498,33 +548,33 @@ const AccommodationDetails: React.FC = () => {
                   <Box className="overall-rating">
                     <Star className="star-icon" />
                     <Typography variant="h4" className="rating-number">
-                      {accommodation.rating}
+                      {accommodation.Rating}
                     </Typography>
                     <Typography variant="body2" className="rating-count">
-                      ({accommodation.reviews.length} reviews)
+                      ({accommodation.UserReviews.length} UserReviews)
                     </Typography>
                   </Box>
                   <Divider className="review-divider" />
-                  {accommodation.reviews.map((review) => (
-                    <Box key={review.id} className="review-item">
+                  {accommodation.UserReviews.map((review) => (
+                    <Box key={review.ID} className="review-item">
                       <Box className="review-header" sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                         <Typography variant="subtitle2" className="reviewer-name">
-                          {review.userName}
+                          {review.UserName}
                         </Typography>
                         <Typography variant="body2" className="review-date" color="text.secondary">
-                          {review.date}
+                          {review.Date}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'left' }}>
                         <Rating
-                          value={review.rating}
+                          value={review.Rating}
                           precision={0.5}
                           readOnly
                           size="small"
                         />
                       </Box>
                       <Typography variant="body2" className="review-comment">
-                        {review.comment}
+                        {review.Comment}
                       </Typography>
                       <Divider className="review-divider" sx={{ mt: 2 }} />
                     </Box>
@@ -541,7 +591,7 @@ const AccommodationDetails: React.FC = () => {
                 </Typography>
                 <Box className="price-container" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'baseline', mb: 3 }}>
                   <Typography variant="h5" className="price" color="#70c9c2" fontWeight="bold">
-                    ${accommodation.pricePerNight}
+                    ${accommodation.PricePerNight}
                   </Typography>
                   <Typography variant="body2" className="price-period" sx={{ ml: 1 }} color="text.secondary">
                     / night
@@ -614,10 +664,10 @@ const AccommodationDetails: React.FC = () => {
                   <Box className="price-breakdown">
                     <Box className="breakdown-row" sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2">
-                        ${accommodation.pricePerNight} x {totalNights} nights
+                        ${accommodation.PricePerNight} x {totalNights} nights
                       </Typography>
                       <Typography variant="body2">
-                        ${accommodation.pricePerNight * totalNights}
+                        ${accommodation.PricePerNight * totalNights}
                       </Typography>
                     </Box>
                     <Box className="breakdown-row" sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
