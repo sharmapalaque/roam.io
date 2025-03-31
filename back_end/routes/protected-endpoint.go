@@ -6,16 +6,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 	"roam.io/models"
 )
 
-var cookieStore = sessions.NewCookieStore([]byte("secret-key"))
-
 func ProtectedEndpointHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, _ := cookieStore.Get(r, "session")
+		session, _ := getSession(r, "session")
 		userID, ok := session.Values["user_id"].(uint)
 		if !ok {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
