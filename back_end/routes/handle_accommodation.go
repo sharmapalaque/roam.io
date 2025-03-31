@@ -69,13 +69,47 @@ func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
-		accommodation := models.Accommodation{Name: payload.Name, Location: payload.Location, ImageUrls: pq.StringArray(payload.ImageUrls), UserReviews: payload.UserReviews, Description: payload.Description, Facilities: payload.Facilities, HostID: payload.HostID}
+		// Ensure OwnerID is provided
+		if payload.OwnerID == 0 {
+			http.Error(w, "OwnerID is required", http.StatusBadRequest)
+			return
+		}
+
+		accommodation := models.Accommodation{
+			Name:          payload.Name,
+			Location:      payload.Location,
+			ImageUrls:     pq.StringArray(payload.ImageUrls),
+			Description:   payload.Description,
+			Facilities:    payload.Facilities,
+			OwnerID:       payload.OwnerID,
+			PricePerNight: payload.PricePerNight,
+			Rating:        payload.Rating, // Initial rating, could be updated based on reviews later
+		}
+
 		result := db.Create(&accommodation)
 		if result.Error != nil {
+			// Check if the error is due to foreign key constraint (invalid OwnerID)
+			if errors.Is(result.Error, gorm.ErrForeignKeyViolated) {
+				http.Error(w, "Invalid OwnerID provided", http.StatusBadRequest)
+				return
+			}
 			fmt.Println(result.Error)
+			http.Error(w, "Failed to create accommodation", http.StatusInternalServerError)
+			return
 		}
+
+		// Fetch the associated owner details to populate the Owner field for the response
+		var ownerDetails models.Owner
+		if err := db.First(&ownerDetails, accommodation.OwnerID).Error; err != nil {
+			// Log the error but proceed, as the accommodation was created
+			fmt.Printf("Warning: Failed to fetch owner details for new accommodation %d: %v\n", accommodation.ID, err)
+		} else {
+			accommodation.Owner = ownerDetails
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
+		// Return the accommodation without reviews initially, as none exist yet.
 		json.NewEncoder(w).Encode(accommodation)
 	}
 }
@@ -202,42 +236,85 @@ func GetBookingByUserID(userID int, db *gorm.DB) ([]models.Booking, error) {
 	}
 }
 
-func GetAccommodationsByID(booking_id string, db *gorm.DB) (*models.Accommodation, error) {
+func GetAccommodationsByID(id string, db *gorm.DB) (*models.Accommodation, error) {
 	var accommodation models.Accommodation
-	result := db.Where("id = ?", booking_id).First(&accommodation)
+	// Use Preload to fetch associated Owner and UserReviews
+	result := db.Preload("Owner").Preload("UserReviews").First(&accommodation, id)
 	if result.Error != nil {
+		fmt.Printf("Error fetching accommodation %s by ID: %v\n", id, result.Error)
 		return nil, result.Error
-	} else {
-		return &accommodation, nil
 	}
+
+	// Owner details are now loaded via Preload, so manual fetching is not strictly needed
+	// unless you want separate error handling/logging for owner fetching.
+	// We keep the logging for demonstration.
+	if accommodation.Owner.ID == 0 && accommodation.OwnerID != 0 {
+		// Log if owner was expected but not loaded (e.g., issue with preload or data integrity)
+		fmt.Printf("Warning: Owner %d for accommodation %d was not preloaded.\n", accommodation.OwnerID, accommodation.ID)
+	} else if accommodation.OwnerID != 0 {
+		fmt.Printf("Successfully preloaded owner %d for accommodation %d\n", accommodation.OwnerID, accommodation.ID)
+	}
+
+	fmt.Printf("Successfully preloaded %d reviews for accommodation %d\n", len(accommodation.UserReviews), accommodation.ID)
+
+	return &accommodation, nil
 }
 
 func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommodation, error) {
 	var accommodations []models.Accommodation
+	query := db.Preload("Owner").Preload("UserReviews") // Preload Owner and UserReviews
+
 	var result *gorm.DB
 	if location == "" {
-		result = db.Find(&accommodations)
+		result = query.Find(&accommodations)
 	} else {
-		result = db.Where("location = ?", location).Find(&accommodations)
+		result = query.Where("location = ?", location).Find(&accommodations)
 	}
 	if result.Error != nil {
+		fmt.Printf("Error fetching accommodations by location '%s': %v\n", location, result.Error)
 		return nil, result.Error
-	} else {
-		return accommodations, nil
 	}
+
+	// Logging to check if owners/reviews were loaded
+	for i := range accommodations {
+		if accommodations[i].Owner.ID == 0 && accommodations[i].OwnerID != 0 {
+			fmt.Printf("Warning: Owner %d for accommodation %d (location '%s') was not preloaded.\n", accommodations[i].OwnerID, accommodations[i].ID, location)
+		} else if accommodations[i].OwnerID != 0 {
+			// Log successful preload if owner exists
+			// fmt.Printf("Successfully preloaded owner %d for accommodation %d (location '%s')\n", accommodations[i].OwnerID, accommodations[i].ID, location)
+		}
+		// Log how many reviews were loaded for each accommodation
+		// fmt.Printf("Preloaded %d reviews for accommodation %d (location '%s')\n", len(accommodations[i].UserReviews), accommodations[i].ID, location)
+	}
+
+	// The manual owner fetching logic below is now redundant due to Preload("Owner")
+	/*
+		if len(accommodations) > 0 {
+			// ... [existing efficient owner fetching logic removed for brevity as Preload handles it] ...
+		}
+	*/
+	return accommodations, nil
 }
 
 func GetAccommodationsById(id string, db *gorm.DB) (*models.Accommodation, error) {
 	var accommodation models.Accommodation
-
-	result := db.First(&accommodation, id)
+	// Use Preload here as well
+	result := db.Preload("Owner").Preload("UserReviews").First(&accommodation, id)
 
 	if result.Error != nil {
-
+		fmt.Printf("Error fetching accommodation %s: %v\n", id, result.Error)
 		return nil, result.Error
-	} else {
-		return &accommodation, nil
 	}
+
+	// Owner details are preloaded. Logging for verification:
+	if accommodation.Owner.ID == 0 && accommodation.OwnerID != 0 {
+		fmt.Printf("Warning: Owner %d for accommodation %d was not preloaded.\n", accommodation.OwnerID, accommodation.ID)
+	} else if accommodation.OwnerID != 0 {
+		fmt.Printf("Successfully preloaded owner %d for accommodation %d\n", accommodation.OwnerID, accommodation.ID)
+	}
+	fmt.Printf("Successfully preloaded %d reviews for accommodation %d\n", len(accommodation.UserReviews), accommodation.ID)
+
+	return &accommodation, nil
 }
 
 func RemoveBookingByBookingID(bookingID int, db *gorm.DB) error {
@@ -248,7 +325,7 @@ func RemoveBookingByBookingID(bookingID int, db *gorm.DB) error {
 		}
 	}()
 
-	result := tx.Where("booking_id = ?", bookingID).Delete(&models.Booking{})
+	result := tx.Where("id = ?", bookingID).Delete(&models.Booking{})
 
 	if result.Error != nil {
 		tx.Rollback()
@@ -287,5 +364,89 @@ func RemoveBooking(db *gorm.DB) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode("Booking removed")
+	}
+}
+
+func AddReview(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 1. Get Accommodation ID from URL path
+		vars := mux.Vars(r)
+		accommodationIDStr, ok := vars["id"]
+		if !ok {
+			http.Error(w, "Accommodation ID missing in URL path", http.StatusBadRequest)
+			return
+		}
+		accommodationID, err := strconv.ParseUint(accommodationIDStr, 10, 64)
+		if err != nil {
+			http.Error(w, "Invalid Accommodation ID format", http.StatusBadRequest)
+			return
+		}
+
+		// 2. Get User ID from session
+		session, _ := store.Get(r, "session")
+		userID, ok := session.Values["user_id"].(uint)
+		if !ok || userID == 0 {
+			http.Error(w, "Unauthorized: User not logged in", http.StatusUnauthorized)
+			return
+		}
+
+		// 3. Parse Review from request body
+		var reviewPayload models.Review
+		if err := json.NewDecoder(r.Body).Decode(&reviewPayload); err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+
+		// 4. Fetch User details (specifically UserName)
+		var user models.User
+		if err := db.First(&user, userID).Error; err != nil {
+			// Handle case where user might exist in session but not DB (unlikely but possible)
+			http.Error(w, "Failed to retrieve user details", http.StatusInternalServerError)
+			fmt.Printf("Error fetching user %d details for review: %v\n", userID, err)
+			return
+		}
+
+		// 5. Create the Review object
+		review := models.Review{
+			UserID:          userID,
+			AccommodationID: uint(accommodationID),
+			UserName:        user.Username, // Get username from logged-in user
+			Rating:          reviewPayload.Rating,
+			Date:            time.Now().Format("2006-01-02"), // Set current date
+			Comment:         reviewPayload.Comment,
+		}
+
+		// Basic Validation
+		if review.Rating < 1 || review.Rating > 5 {
+			http.Error(w, "Rating must be between 1 and 5", http.StatusBadRequest)
+			return
+		}
+		if review.Comment == "" {
+			http.Error(w, "Comment cannot be empty", http.StatusBadRequest)
+			return
+		}
+
+		// 6. Save the review to the database
+		result := db.Create(&review)
+		if result.Error != nil {
+			// Check if the error is due to foreign key constraint (invalid AccommodationID)
+			// Note: GORM might return a generic error, check the underlying error type if needed.
+			// Example check (may vary based on DB driver):
+			var pgErr *pq.Error
+			if errors.As(result.Error, &pgErr) && pgErr.Code == "23503" { // Foreign key violation
+				http.Error(w, "Invalid AccommodationID provided", http.StatusBadRequest)
+				return
+			}
+			fmt.Printf("Error creating review: %v\n", result.Error)
+			http.Error(w, "Failed to create review", http.StatusInternalServerError)
+			return
+		}
+
+		// Optional: Update Accommodation's average rating (more complex, involves calculating average)
+
+		// 7. Return success response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(review) // Return the created review
 	}
 }

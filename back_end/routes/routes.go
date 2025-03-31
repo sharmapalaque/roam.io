@@ -21,12 +21,19 @@ func NewRouter(db *gorm.DB) *mux.Router {
 	r.HandleFunc("/users/login", LoginHandler(db)).Methods("POST")
 	r.HandleFunc("/protected-endpoint", ProtectedEndpointHandler(db)).Methods("GET")
 	r.HandleFunc("/accommodations/{id}", FetchAccommodationById(db)).Methods("GET")
-	r.HandleFunc("/accommodations", FetchAccommodations(db)).Methods("GET")
-	r.HandleFunc("/accommodations", AddBooking(db)).Methods("PUT")
-	r.HandleFunc("/accommodations", RemoveBooking(db)).Methods("DELETE")
+	r.HandleFunc("/events", CreateEvent(db)).Methods("POST")
+	r.HandleFunc("/events/{id}", FetchEventById(db)).Methods("GET")
 	r.HandleFunc("/accommodations", CreateAccommodation(db)).Methods("POST")
+	r.HandleFunc("/accommodations", FetchAccommodations(db)).Methods("GET")
+	r.HandleFunc("/events", FetchEvents(db)).Methods("GET")
+	r.HandleFunc("/accommodations", AddBooking(db)).Methods("PUT")
+	r.HandleFunc("/events", AddEventBooking(db)).Methods("PUT")
+	r.HandleFunc("/accommodations/{id}/reviews", AddReview(db)).Methods("POST")
+
+	r.HandleFunc("/accommodations", RemoveBooking(db)).Methods("DELETE")
+	r.HandleFunc("/events", RemoveEventBooking(db)).Methods("DELETE")
 	r.HandleFunc("/users/profile", GetUserProfileHandler(db)).Methods("GET")
-	r.HandleFunc("/host", CreateHost(db)).Methods("POST")
+	r.HandleFunc("/host", CreateOwner(db)).Methods("POST")
 
 	// Handle OPTIONS requests
 	r.Use(mux.CORSMethodMiddleware(r))

@@ -78,11 +78,11 @@ func (m *MockDB) Create(value interface{}) *gorm.DB {
 func TestFetchAccommodations(t *testing.T) {
 	gormDB, mock := NewMockDB()
 
-	// Set up expectations
+	// Set up expectations for GetAccommodationsByLocation
 	mock.ExpectQuery("^SELECT \\* FROM `accommodations` WHERE location = \\?").
 		WithArgs("New York").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "location"}).
-			AddRow(1, "Hotel A", "Miami"))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "location", "description", "host_id"}).
+			AddRow(1, "Hotel A", "Miami", "Description", 1))
 
 	// Call the function under test
 	handler := routes.FetchAccommodations(gormDB)
@@ -105,8 +105,8 @@ func TestFetchAccommodationById(t *testing.T) {
 
 	mock.ExpectQuery("^SELECT \\* FROM `accommodations` WHERE `accommodations`.`id` = \\? ORDER BY `accommodations`.`id` LIMIT \\?").
 		WithArgs("1", 1).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "location"}).
-			AddRow(1, "Hotel A", "New York"))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "location", "description", "host_id"}).
+			AddRow(1, "Hotel A", "New York", "A nice hotel", 1))
 
 	req, err := http.NewRequest("GET", "/accommodations/1", nil)
 	assert.NoError(t, err)
@@ -139,18 +139,26 @@ func TestCreateAccommodation(t *testing.T) {
 			"A test hotel",
 			pq.Array([]string{"WiFi", "Pool"}),
 			pq.Array([]string{"http://example.com/image.jpg"}),
-			pq.Array([]string{"Great hotel!"}),
+			sqlmock.AnyArg(), // For RawUserReviews
+			1,                // HostID
+			149.99,           // PricePerNight
+			4.5,              // Rating
+			sqlmock.AnyArg(), // For Created At
+			sqlmock.AnyArg(), // For Updated At
 		).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
 	payload := models.Accommodation{
-		Name:        "Test Hotel",
-		Location:    "Test City",
-		Description: "A test hotel",
-		Facilities:  pq.StringArray{"WiFi", "Pool"},
-		ImageUrls:   pq.StringArray{"http://example.com/image.jpg"},
-		UserReviews: pq.StringArray{"Great hotel!"},
+		Name:          "Test Hotel",
+		Location:      "Test City",
+		Description:   "A test hotel",
+		Facilities:    pq.StringArray{"WiFi", "Pool"},
+		ImageUrls:     pq.StringArray{"http://example.com/image.jpg"},
+		UserReviews:   []models.Review{},
+		OwnerID:       1,
+		PricePerNight: 149.99,
+		Rating:        4.5,
 	}
 
 	body, _ := json.Marshal(payload)
@@ -167,6 +175,7 @@ func TestCreateAccommodation(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
+
 func TestAddBooking(t *testing.T) {
 	// Mock database
 	db, mock, err := sqlmock.New()
