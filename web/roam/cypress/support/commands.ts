@@ -35,3 +35,27 @@
 //     }
 //   }
 // }
+
+const COMMAND_DELAY = 3000;
+
+type CommandName = keyof Cypress.Chainable<undefined>;
+
+// Only delay normal commands (NOT queries like get/contains)
+const commandsToDelay: CommandName[] = [
+  'click',
+  'type',
+  'clear',
+  'select',
+  'check',
+  'uncheck',
+  'visit',
+];
+
+for (const command of commandsToDelay) {
+  Cypress.Commands.overwrite(command, (originalFn, ...args) => {
+    const result = originalFn(...args);
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(result), COMMAND_DELAY);
+    });
+  });
+}
