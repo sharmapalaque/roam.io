@@ -150,7 +150,7 @@ func AddBooking(db *gorm.DB) http.HandlerFunc {
 		// 	return
 		// }
 
-		session, _ := store.Get(r, "session")
+		session, _ := getSession(r, "session")
 
 		// Get user ID from session
 		userID, ok := session.Values["user_id"].(uint)
@@ -275,24 +275,21 @@ func GetAccommodationsByLocation(location string, db *gorm.DB) ([]models.Accommo
 		return nil, result.Error
 	}
 
-	// Logging to check if owners/reviews were loaded
-	for i := range accommodations {
-		if accommodations[i].Owner.ID == 0 && accommodations[i].OwnerID != 0 {
-			fmt.Printf("Warning: Owner %d for accommodation %d (location '%s') was not preloaded.\n", accommodations[i].OwnerID, accommodations[i].ID, location)
-		} else if accommodations[i].OwnerID != 0 {
-			// Log successful preload if owner exists
-			// fmt.Printf("Successfully preloaded owner %d for accommodation %d (location '%s')\n", accommodations[i].OwnerID, accommodations[i].ID, location)
+	// Check if any owners aren't loaded properly
+	for i, accommodation := range accommodations {
+		if accommodation.Owner.ID == 0 && accommodation.OwnerID != 0 {
+			// Owner wasn't properly preloaded, fetch manually
+			var owner models.Owner
+			if err := db.First(&owner, accommodation.OwnerID).Error; err != nil {
+				fmt.Printf("Warning: Could not load owner %d for accommodation %d: %v\n",
+					accommodation.OwnerID, accommodation.ID, err)
+			} else {
+				accommodations[i].Owner = owner
+				fmt.Printf("Manually loaded owner %d for accommodation %d\n", owner.ID, accommodation.ID)
+			}
 		}
-		// Log how many reviews were loaded for each accommodation
-		// fmt.Printf("Preloaded %d reviews for accommodation %d (location '%s')\n", len(accommodations[i].UserReviews), accommodations[i].ID, location)
 	}
 
-	// The manual owner fetching logic below is now redundant due to Preload("Owner")
-	/*
-		if len(accommodations) > 0 {
-			// ... [existing efficient owner fetching logic removed for brevity as Preload handles it] ...
-		}
-	*/
 	return accommodations, nil
 }
 
@@ -306,12 +303,18 @@ func GetAccommodationsById(id string, db *gorm.DB) (*models.Accommodation, error
 		return nil, result.Error
 	}
 
-	// Owner details are preloaded. Logging for verification:
+	// If owner not loaded but OwnerID exists, manually load the owner
 	if accommodation.Owner.ID == 0 && accommodation.OwnerID != 0 {
-		fmt.Printf("Warning: Owner %d for accommodation %d was not preloaded.\n", accommodation.OwnerID, accommodation.ID)
-	} else if accommodation.OwnerID != 0 {
-		fmt.Printf("Successfully preloaded owner %d for accommodation %d\n", accommodation.OwnerID, accommodation.ID)
+		var owner models.Owner
+		if err := db.First(&owner, accommodation.OwnerID).Error; err != nil {
+			fmt.Printf("Warning: Could not load owner %d for accommodation %d: %v\n",
+				accommodation.OwnerID, accommodation.ID, err)
+		} else {
+			accommodation.Owner = owner
+			fmt.Printf("Manually loaded owner %d for accommodation %d\n", owner.ID, accommodation.ID)
+		}
 	}
+
 	fmt.Printf("Successfully preloaded %d reviews for accommodation %d\n", len(accommodation.UserReviews), accommodation.ID)
 
 	return &accommodation, nil
@@ -383,7 +386,7 @@ func AddReview(db *gorm.DB) http.HandlerFunc {
 		}
 
 		// 2. Get User ID from session
-		session, _ := store.Get(r, "session")
+		session, _ := getSession(r, "session")
 		userID, ok := session.Values["user_id"].(uint)
 		if !ok || userID == 0 {
 			http.Error(w, "Unauthorized: User not logged in", http.StatusUnauthorized)

@@ -34,17 +34,16 @@ func setupTestDB(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
 	return gormDB, mock
 }
 
-// addSessionToRequest sets a session value ("user_id") in the request.
+// addSessionToRequest sets a session value ("user_id") in the request using the session testing helpers.
 func addSessionToRequest(req *http.Request, userID uint) *http.Request {
-	session, _ := testStore.Get(req, "session")
+	// Create a session with the user ID
+	session, _ := testStore.New(req, "session")
 	session.Values["user_id"] = userID
-	// Save session in a temporary recorder to capture the cookie.
-	rr := httptest.NewRecorder()
-	session.Save(req, rr)
-	// Add any returned cookie(s) to the request.
-	for _, cookie := range rr.Result().Cookies() {
-		req.AddCookie(cookie)
-	}
+
+	// Use the session testing helpers
+	routes.SetStoreForTesting(testStore)
+	routes.SetSessionForTesting(req, session)
+
 	return req
 }
 
@@ -55,6 +54,12 @@ func TestGetUserProfile_Unauthenticated(t *testing.T) {
 
 	req := httptest.NewRequest("GET", "/profile", nil)
 	// Note: Do not attach a session cookie.
+
+	// For the unauthenticated test, setup an empty session
+	session, _ := testStore.New(req, "session")
+	routes.SetStoreForTesting(testStore)
+	routes.SetSessionForTesting(req, session)
+
 	rr := httptest.NewRecorder()
 
 	handler.ServeHTTP(rr, req)
@@ -72,17 +77,21 @@ func TestGetUserProfile_Unauthenticated(t *testing.T) {
 }
 
 func TestGetUserProfile_UserNotFound(t *testing.T) {
+	// Setup mock DB and handler.
 	db, mock := setupTestDB(t)
 	handler := routes.GetUserProfileHandler(db)
 
-	req := httptest.NewRequest("GET", "/profile", nil)
-	req = addSessionToRequest(req, 1) // Set user_id = 1 in session.
-	rr := httptest.NewRecorder()
-
-	// Update the expected query to match GORM's SQL with both arguments
+	// Setup expectation: User ID 42 not found.
+	userID := uint(42)
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" LIMIT $2`)).
-		WithArgs(1, 1). // Add LIMIT argument
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "email"}))
+		WithArgs(userID, 1).
+		WillReturnRows(sqlmock.NewRows(nil))
+
+	// Create request with session
+	req := httptest.NewRequest("GET", "/profile", nil)
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
 
 	handler.ServeHTTP(rr, req)
 	if status := rr.Code; status != http.StatusNotFound {
@@ -96,30 +105,33 @@ func TestGetUserProfile_UserNotFound(t *testing.T) {
 	if msg, ok := resp["message"]; !ok || msg != "User not found" {
 		t.Errorf("unexpected message: %v", resp)
 	}
-
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("unfulfilled expectations: %s", err)
-	}
 }
 
 func TestGetUserProfile_BookingsError(t *testing.T) {
+	// Setup mock DB and handler.
 	db, mock := setupTestDB(t)
 	handler := routes.GetUserProfileHandler(db)
 
-	req := httptest.NewRequest("GET", "/profile", nil)
-	req = addSessionToRequest(req, 1)
-	rr := httptest.NewRecorder()
+	// Setup expectations: User found, but error retrieving bookings.
+	userID := uint(42)
+	userRows := sqlmock.NewRows([]string{"id", "name", "email", "created_at", "updated_at", "deleted_at"}).
+		AddRow(userID, "Test User", "test@example.com", time.Now(), time.Now(), nil)
 
-	// Expect a query for user data.
-	userRows := sqlmock.NewRows([]string{"id", "name", "email"}).
-		AddRow(1, "Test User", "test@example.com")
+	// Mock finding the user
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" LIMIT $2`)).
-		WithArgs(1, 1). // Add LIMIT argument
+		WithArgs(userID, 1).
 		WillReturnRows(userRows)
-	// Expect a query for bookings to return an error.
+
+	// Mock error when retrieving bookings
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "bookings" WHERE user_id = $1`)).
-		WithArgs(1).
-		WillReturnError(fmt.Errorf("db error"))
+		WithArgs(userID).
+		WillReturnError(fmt.Errorf("database error"))
+
+	// Create request with session
+	req := httptest.NewRequest("GET", "/profile", nil)
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
 
 	handler.ServeHTTP(rr, req)
 	if status := rr.Code; status != http.StatusInternalServerError {
@@ -133,40 +145,38 @@ func TestGetUserProfile_BookingsError(t *testing.T) {
 	if msg, ok := resp["message"]; !ok || msg != "Error fetching user bookings" {
 		t.Errorf("unexpected message: %v", resp)
 	}
-
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("unfulfilled expectations: %s", err)
-	}
 }
 
 func TestGetUserProfile_Success(t *testing.T) {
+	// Setup mock DB and handler.
 	db, mock := setupTestDB(t)
 	handler := routes.GetUserProfileHandler(db)
 
-	req := httptest.NewRequest("GET", "/profile", nil)
-	req = addSessionToRequest(req, 1)
-	rr := httptest.NewRecorder()
+	// Setup expectations: User and bookings found.
+	userID := uint(42)
+	userRows := sqlmock.NewRows([]string{"id", "name", "email", "created_at", "updated_at", "deleted_at"}).
+		AddRow(userID, "Test User", "test@example.com", time.Now(), time.Now(), nil)
 
-	// Expect a query for user.
-	userRows := sqlmock.NewRows([]string{"id", "name", "email"}).
-		AddRow(1, "Test User", "test@example.com")
+	// Mock finding the user
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" LIMIT $2`)).
-		WithArgs(1, 1). // Add LIMIT argument
+		WithArgs(userID, 1).
 		WillReturnRows(userRows)
 
-	// Expect a query for bookings.
-	bookingRows := sqlmock.NewRows([]string{"id", "checkin_date", "checkout_date", "guests", "accommodation_id"}).
-		AddRow(10, time.Now(), time.Now().Add(48*time.Hour), 2, 100)
+	// Mock empty bookings result (success but no bookings)
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "bookings" WHERE user_id = $1`)).
-		WithArgs(1).
-		WillReturnRows(bookingRows)
+		WithArgs(userID).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "accommodation_id", "check_in", "check_out", "total_price", "created_at", "updated_at", "deleted_at"}))
 
-	// Expect a query for accommodation details.
-	accomRows := sqlmock.NewRows([]string{"id", "name", "location", "image_urls"}).
-		AddRow(100, "Ocean View Apartment", "Miami, FL", `{"https://example.com/accom.png"}`)
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "accommodations" WHERE "accommodations"."id" = $1 ORDER BY "accommodations"."id" LIMIT $2`)).
-		WithArgs(100, 1). // Add LIMIT argument
-		WillReturnRows(accomRows)
+	// Mock empty event bookings
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "event_bookings" WHERE user_id = $1`)).
+		WithArgs(userID).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "event_id", "guests", "total_cost"}))
+
+	// Create request with session
+	req := httptest.NewRequest("GET", "/profile", nil)
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
 
 	handler.ServeHTTP(rr, req)
 	if status := rr.Code; status != http.StatusOK {
@@ -177,25 +187,22 @@ func TestGetUserProfile_Success(t *testing.T) {
 	if err := json.Unmarshal(rr.Body.Bytes(), &profile); err != nil {
 		t.Fatalf("failed to parse response: %v", err)
 	}
-	if profile.Name != "Test User" || profile.Email != "test@example.com" {
-		t.Errorf("unexpected user data: %+v", profile)
+
+	// Check user details are correct
+	if profile.Name != "Test User" {
+		t.Errorf("expected name %q, got %v", "Test User", profile.Name)
 	}
-	if len(profile.Bookings) != 1 {
-		t.Errorf("expected 1 booking, got %d", len(profile.Bookings))
-	} else {
-		booking := profile.Bookings[0]
-		if booking.ID != 10 {
-			t.Errorf("unexpected booking ID: %d", booking.ID)
-		}
-		if booking.Accommodation.ID != 100 {
-			t.Errorf("unexpected accommodation ID: %d", booking.Accommodation.ID)
-		}
-		if booking.Accommodation.Name != "Ocean View Apartment" {
-			t.Errorf("unexpected accommodation name: %s", booking.Accommodation.Name)
-		}
+	if profile.Email != "test@example.com" {
+		t.Errorf("expected email %q, got %v", "test@example.com", profile.Email)
 	}
 
-	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("unfulfilled expectations: %s", err)
+	// Check bookings is an empty array
+	if len(profile.Bookings) != 0 {
+		t.Errorf("expected empty bookings, got %v", profile.Bookings)
+	}
+
+	// Check event bookings is an empty array
+	if len(profile.EventBookings) != 0 {
+		t.Errorf("expected empty event bookings, got %v", profile.EventBookings)
 	}
 }

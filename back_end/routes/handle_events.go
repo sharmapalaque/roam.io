@@ -103,7 +103,7 @@ func AddEventBooking(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		session, _ := store.Get(r, "session")
+		session, _ := getSession(r, "session")
 
 		// Get user ID from session
 		userID, ok := session.Values["user_id"].(uint)
