@@ -4,7 +4,6 @@ import (
 	"github.com/lib/pq"
 )
 
-// User represents a user object in the system
 type Event struct {
 	ID             uint   `gorm:"primaryKey"`
 	EventName      string `gorm:"size:100"`
