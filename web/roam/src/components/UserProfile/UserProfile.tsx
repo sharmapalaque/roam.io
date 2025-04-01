@@ -87,7 +87,7 @@ interface UserData {
 // Avatar options
 const avatarOptions: AvatarOption[] = [
   { id: 'Bluey', src: '../../../public/avatars/Bluey.png', name: 'Bluey' },
-  { id: 'Marshmallow', src: '../../../public/avatars/Marshmallow.png', name: 'Marshmallow' },
+  { id: 'Marshmallow', src: 'https://i.imgur.com/EP6TJA7.png', name: 'Marshmallow' },
   { id: 'Mocha', src: '../../../public/avatars/Mocha.png', name: 'Mocha' },
   { id: 'Nugget', src: '../../../public/avatars/Nugget.png', name: 'Nugget' },
   { id: 'Pearl', src: '../../../public/avatars/Pearl.png', name: 'Pearl' },

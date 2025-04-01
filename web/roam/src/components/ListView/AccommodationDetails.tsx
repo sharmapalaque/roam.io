@@ -62,10 +62,10 @@ const accommodations: Accommodation[] = [
     Name: "Ocean View Apartment",
     Location: "Miami, FL",
     ImageUrls: [
-      "../../../public/Pasted image.png",
-      "../../../public/Pasted image.png",
-      "../../../public/Pasted image.png",
-      "../../../public/Pasted image.png",
+      "https://i.imgur.com/fHyx1wv.png",
+      "https://i.imgur.com/fHyx1wv.png",
+      "https://i.imgur.com/fHyx1wv.png",
+      "https://i.imgur.com/fHyx1wv.png",
     ],
     Description: 
       "A beautiful ocean view apartment located in Miami, FL. This luxurious apartment offers stunning views of the Atlantic Ocean from its private balcony. The interior features modern furnishings, a fully equipped kitchen, and high-end appliances. Perfect for couples or small families looking for a beach getaway.",
@@ -100,9 +100,9 @@ const accommodations: Accommodation[] = [
     Name: "Mountain Cabin",
     Location: "Aspen, CO",
     ImageUrls: [
-      "../../../public/Pasted image.png",
-      "../../../public/Pasted image.png",
-      "../../../public/Pasted image.png",
+      "https://i.imgur.com/fHyx1wv.png",
+      "https://i.imgur.com/fHyx1wv.png",
+      "https://i.imgur.com/fHyx1wv.png",
     ],
     Description:
       "A cozy mountain cabin surrounded by nature in Aspen, Colorado. This authentic log cabin offers a rustic yet comfortable retreat with breathtaking mountain views. Features include a stone fireplace, spacious deck, and modern amenities while maintaining its charming character. Perfect for outdoor enthusiasts in all seasons.",
@@ -137,9 +137,9 @@ const accommodations: Accommodation[] = [
     Name: "City Center Studio",
     Location: "New York, NY",
     ImageUrls: [
-      "../../../public/Pasted image.png",
-      "../../../public/Pasted image.png",
-      "../../../public/Pasted image.png",
+      "https://i.imgur.com/fHyx1wv.png",
+      "https://i.imgur.com/fHyx1wv.png",
+      "https://i.imgur.com/fHyx1wv.png",
     ],
     Description:
       "A modern studio apartment located in the heart of New York City. This stylish studio offers the perfect base for exploring all that NYC has to offer. Recently renovated with high-end finishes, the space includes a queen-sized bed, a fully equipped kitchenette, and a modern bathroom. Walking distance to major attractions, restaurants, and public transportation.",

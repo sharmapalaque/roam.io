@@ -56,37 +56,4 @@ describe("Register Component", () => {
       "Registration Successful! You will be redirected to login page shortly."
     );
   });
-
-  // it("should show an error alert if registration fails", () => {
-  //   cy.window().then((win) => {
-  //     cy.stub(win, "fetch").resolves({
-  //       ok: false,
-  //       json: () => Promise.resolve({ message: "Email already exists" }),
-  //     });
-  //     cy.stub(win, "alert").as("alertStub");
-  //   });
-
-  //   cy.get("#name").type("Test User");
-  //   cy.get("#email").type("test@example.com");
-  //   cy.get("#password").type("password123");
-  //   cy.get("#dob").type("2000-01-01");
-  //   cy.get(".submit-button").click();
-
-  //   cy.get("@alertStub").should("have.been.calledWith", "Error: Email already exists");
-  // });
-
-  // it("should handle network errors gracefully", () => {
-  //   cy.window().then((win) => {
-  //     cy.stub(win, "fetch").rejects(new Error("Network Error"));
-  //     cy.stub(win, "alert").as("alertStub");
-  //   });
-
-  //   cy.get("#name").type("Test User");
-  //   cy.get("#email").type("test@example.com");
-  //   cy.get("#password").type("password123");
-  //   cy.get("#dob").type("2000-01-01");
-  //   cy.get(".submit-button").click();
-
-  //   cy.get("@alertStub").should("have.been.calledWith", "There was an error with the request");
-  // });
 });

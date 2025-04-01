@@ -62,9 +62,9 @@ const eventsData: Event[] = [
     Date: "2025-04-15",
     Time: "09:00 AM - 05:00 PM",
     Images: [
-      "../../../public/events/tech1.jpg",
-      "../../../public/events/tech2.jpg",
-      "../../../public/events/tech3.jpg"
+      "https://i.imgur.com/YXEVTDa.jpeg",
+      "https://i.imgur.com/RA4oaru.jpeg",
+      "https://i.imgur.com/dokBiQF.jpeg"
     ],
     Description: "Join us for the biggest tech conference of the year! Featuring keynote speakers from leading tech companies, hands-on workshops, networking opportunities, and the latest in tech innovation. Perfect for professionals, enthusiasts, and anyone interested in the future of technology.",
     Price: 299,
@@ -84,9 +84,9 @@ const eventsData: Event[] = [
     Date: "2025-06-20",
     Time: "12:00 PM - 11:00 PM",
     Images: [
-      "../../../public/events/mf2.jpg",
-      "../../../public/events/mf1.jpg",
-      "../../../public/events/mf3.jpg"
+      "https://i.imgur.com/Ca0jj7R.jpeg",
+      "https://i.imgur.com/zR8atqt.jpeg",
+      "https://i.imgur.com/UQS4MnK.jpeg"
     ],
     Description: "Experience three days of amazing live music across five stages featuring top artists from around the world. Food vendors, art installations, and camping options available. Don't miss the biggest music event of the summer!",
     Price: 149,
@@ -106,9 +106,9 @@ const eventsData: Event[] = [
     Date: "2025-05-10",
     Time: "08:30 AM - 04:30 PM",
     Images: [
-      "../../../public/events/bls2.jpg",
-      "../../../public/events/bls1.jpg",
-      "../../../public/events/bls3.jpg"
+      "https://i.imgur.com/lycQOFd.jpeg",
+      "https://i.imgur.com/3plJ3Tm.jpeg",
+      "https://i.imgur.com/7S1j0w0.jpeg"
     ],
     Description: "A premier gathering of business leaders and executives to discuss emerging trends, challenges, and opportunities in today's global marketplace. Features keynote speeches, panel discussions, and exclusive networking events.",
     Price: 499,
@@ -128,9 +128,9 @@ const eventsData: Event[] = [
     Date: "2025-07-08",
     Time: "11:00 AM - 08:00 PM",
     Images: [
-      "../../../public/events/cf3.jpg",
-      "../../../public/events/cf1.jpg",
-      "../../../public/events/cf2.jpg"
+      "https://i.imgur.com/ygKZrG7.jpeg",
+      "http://i.imgur.com/DVgKgcv.jpeg",
+      "https://i.imgur.com/7w61fts.jpeg"
     ],
     Description: "Celebrate the art of cooking with world-renowned chefs, cooking demonstrations, tastings, and food competitions. Explore cuisines from around the world and discover new flavors and techniques.",
     Price: 85,
