@@ -287,16 +287,16 @@ const UserProfile: React.FC = () => {
             })
 
             // add event bookings
-            result.bookings.map((currentBooking: any) => {
+            result.event_bookings.map((currentBooking: any) => {
               console.log(currentBooking.id);
 
               const newBooking: Booking = {
                 id: currentBooking.id,
                 type: "event",
-                name: currentBooking.event_bookings.name,
-                location: currentBooking.event_bookings.location,
-                image: currentBooking.event_bookings.image_url,
-                date: new Date().toISOString().split('T')[0],
+                name: currentBooking.event.name,
+                location: currentBooking.event.location,
+                image: currentBooking.event.image,
+                date: '2025-04-15',
                 status: 'upcoming',
                 organizer: 'Unknown',
                 seats: 10,
