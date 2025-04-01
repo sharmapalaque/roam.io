@@ -47,7 +47,7 @@ type EventDetails struct {
 
 func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, err := store.Get(r, "session")
+		session, err := getSession(r, "session")
 		if err != nil {
 			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
 			return
