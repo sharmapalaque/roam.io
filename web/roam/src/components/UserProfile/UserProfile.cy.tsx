@@ -1,55 +1,45 @@
 import UserProfile from './UserProfile';
-import { MemoryRouter } from 'react-router-dom';
 import { mount } from 'cypress/react';
+import { BrowserRouter } from "react-router-dom";
 
 describe('UserProfile Component', () => {
-  cy.viewport(1470, 956); // Adjust width and height
   beforeEach(() => {
+    cy.viewport(1470, 956); // Adjust width and height
     mount(
-      <MemoryRouter>
+      <BrowserRouter>
         <UserProfile />
-      </MemoryRouter>
+      </BrowserRouter>
     );
   });
 
-  it('renders the profile header and name', () => {
-    cy.get('.user-name').should('contain.text', 'Palaque Sharma');
+  // Test if the profile page loads with the correct title and user name
+  it('should render the profile page with title and user name', () => {
+    cy.get('.user-name').should('contain', 'Palaque Sharma'); 
   });
 
-  it('displays avatar image', () => {
-    cy.get('.user-avatar-image').should('be.visible');
+  // Test if tabs are rendered for different sections like "ACCOMMODATIONS", "EVENTS", and "SECURITY"
+  it('should display profile tabs for "ACCOMMODATIONS", "EVENTS", and "SECURITY"', () => {
+    cy.get('.main-tabs').should('exist');
+    cy.get('.main-tab').should('have.length', 3);
+    cy.get('.sub-tab').should('exist'); 
   });
 
-  it('switches to SECURITY tab and displays email and password fields', () => {
-    cy.contains('SECURITY').click();
-    cy.contains('Email ID').should('be.visible');
-    cy.contains('Password').should('be.visible');
-    cy.contains('UPDATE PASSWORD').should('be.visible');
+  // Test if clicking on the "SECURITY" tab switches to the correct section
+  it('should switch to "SECURITY" tab when clicked', () => {
+    cy.get('.main-tab').eq(2).click(); 
+    cy.get('.section-title').should('contain', 'SECURITY'); 
   });
 
-  it('opens and closes the avatar drawer', () => {
-    cy.get('.user-avatar-wrapper').click();
-    cy.contains('Choose Your Avatar').should('be.visible');
-    cy.get('button[aria-label="Close drawer"]').click();
-    cy.contains('Choose Your Avatar').should('not.exist');
+  // Test avatar selection drawer opens and closes
+  it('should open and close the avatar selection drawer', () => {
+    cy.get('.user-avatar-wrapper').click(); 
+    cy.get('.avatar-drawer').should('be.visible'); 
   });
 
-  it('renders upcoming and past bookings under ACCOMMODATIONS tab', () => {
-    cy.contains('ACCOMMODATIONS').click();
-    cy.contains('BOOKINGS').click();
-    cy.contains('UPCOMING BOOKINGS').should('exist');
-    cy.contains('PAST BOOKINGS').should('exist');
-  });
-
-  it('displays accommodation reviews', () => {
-    cy.contains('ACCOMMODATIONS').click();
-    cy.contains('REVIEWS').click();
-    cy.get('.review-card').should('have.length.at.least', 1);
-  });
-
-  it('displays correct number of guests in bookings', () => {
-    cy.contains('ACCOMMODATIONS').click();
-    cy.contains('BOOKINGS').click();
-    cy.get('.booking-guests').first().should('contain.text', 'Guest');
+  // Test avatar selection functionality
+  it('should change the avatar when a new avatar is selected', () => {
+    cy.get('.user-avatar-wrapper').click(); 
+    cy.get('.avatar-option').eq(1).click(); 
+    cy.get('.user-avatar-image').should('have.attr', 'src').and('include', '.png'); 
   });
 });

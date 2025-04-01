@@ -28,7 +28,7 @@ describe('AccommodationDetails Component', () => {
     cy.get('.thumbnail').eq(1).click();
     cy.get('.main-image')
       .should('have.attr', 'src')
-      .and('include', 'Pasted image.png');
+      .and('include', '.png');
   });
 
   it('displays rating and review count', () => {

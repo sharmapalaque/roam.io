@@ -30,28 +30,6 @@ describe('Support Component', () => {
     cy.contains('San Francisco').should('be.visible');
   });
 
-//   it('renders all form fields and allows input', () => {
-//     cy.get('input[label="Your Name"]').type('John Doe');
-//     cy.get('input[label="Your Email"]').type('john@example.com');
-//     cy.get('#category-label').click();
-//     cy.get('li[data-value="booking"]').click();
-//     cy.get('input[label="Subject"]').type('Booking issue');
-//     cy.get('textarea[label="Your Message"]').type('I have an issue with my booking.');
-//   });
-
-//   it('submits the form and resets fields', () => {
-//     cy.get('input[label="Your Name"]').type('John Doe');
-//     cy.get('input[label="Your Email"]').type('john@example.com');
-//     cy.get('#category-label').click();
-//     cy.get('li[data-value="cancel"]').click();
-//     cy.get('input[label="Subject"]').type('Need a refund');
-//     cy.get('textarea[label="Your Message"]').type('I want to cancel my reservation.');
-//     cy.get('form').submit();
-//     cy.on('window:alert', (txt) => {
-//       expect(txt).to.include('Thank you for your message');
-//     });
-//   });
-
   it('displays emergency support section', () => {
     cy.contains('Need Emergency Travel Assistance?').should('be.visible');
     cy.contains('+1 (800) 999-8888').should('be.visible');

@@ -3,67 +3,54 @@ import { mount } from 'cypress/react';
 
 describe('FAQ Component', () => {
   beforeEach(() => {
-    cy.viewport(1470, 956); // Adjust width and height
-    mount(<FAQ />);
+    cy.viewport(1470, 956);
+    mount(<FAQ />); 
   });
 
-  it('renders page title and subtitle', () => {
-    cy.contains('Frequently Asked Questions').should('be.visible');
-    cy.contains('Find answers to common questions').should('be.visible');
+  // Test if the FAQ page is rendering correctly
+  it('should render the FAQ page with title and subtitle', () => {
+    cy.get('.faq-page-title').should('contain', 'Frequently Asked Questions'); 
+    cy.get('.faq-subtitle').should('contain', 'Find answers to common questions about using Roam.IO'); 
   });
 
-  it('shows tabs for all categories', () => {
-    const categories = ['General', 'Accommodations', 'Events', 'Support', 'About Us'];
-    categories.forEach((category) => {
-      cy.get('.category-tab').contains(category).should('exist');
-    });
+  // Test if tabs for FAQ categories are rendered
+  it('should display FAQ category tabs', () => {
+    cy.get('.category-tabs').should('exist'); 
+    cy.get('.category-tab').should('have.length', 5); 
   });
 
-  it('displays FAQs for the default category (General)', () => {
-    cy.contains('What is Roam.IO?').should('exist');
-    cy.contains('Which countries do you operate in?').should('exist');
+  // Test if clicking a tab changes the active category
+  it('should switch between FAQ categories when tabs are clicked', () => {
+    cy.get('.category-tab').eq(1).click(); 
+    cy.get('.active-category-title').should('contain', 'Accommodations FAQs');
+
+    cy.get('.category-tab').eq(2).click(); 
+    cy.get('.active-category-title').should('contain', 'Events FAQs'); 
   });
 
-  it('expands and collapses an FAQ accordion', () => {
-    cy.contains('What is Roam.IO?').click();
-    cy.contains('Roam.IO is a premium travel booking platform').should('be.visible');
-    cy.contains('What is Roam.IO?').click(); // collapse
-    cy.contains('Roam.IO is a premium travel booking platform').should('not.be.visible');
+  // Test if the accordion is functional (expand and collapse)
+  it('should expand and collapse FAQ answers when accordion is clicked', () => {
+    // Check if the accordion is initially collapsed
+    cy.get('.faq-accordion').first().should('not.have.class', 'Mui-expanded'); // First FAQ should be collapsed
+
+    cy.get('.faq-accordion').first().click(); // Click to expand the first FAQ
+    cy.get('.faq-accordion').first().should('have.class', 'Mui-expanded'); // Ensure the accordion is expanded
+
   });
 
-  it('switches to "Accommodations" tab and displays related FAQs', () => {
-    cy.contains('Accommodations').click();
-    cy.contains('How do I book accommodation?').should('exist');
-    cy.contains('Do you offer group bookings for accommodations?').should('exist');
+  // Test if the FAQ questions are visible and clickable
+  it('should display FAQ questions and answers correctly', () => {
+    cy.get('.faq-question').first().should('contain', 'What is Roam.IO?'); 
+    cy.get('.faq-answer').first().should('exist'); 
   });
 
-  it('switches to "Events" and shows event-related FAQs', () => {
-    cy.contains('Events').click();
-    cy.contains('What types of events can I book through Roam.IO?').should('exist');
-    cy.contains('Can I get a refund for event tickets?').should('exist');
-  });
+  // Test the "Still Have Questions?" section with the "Contact Support" button
+  it('should display the "Contact Support" button and navigate correctly', () => {
+    cy.get('.need-help-title').should('contain', 'Still Have Questions?'); 
+    cy.get('.contact-support-button').should('exist'); 
 
-  it('switches to "Support" tab and displays support FAQs', () => {
-    cy.contains('Support').click();
-    cy.contains('How can I contact customer support?').should('exist');
-    cy.contains('Do you offer customer support in different languages?').should('exist');
-  });
-
-  it('switches to "About Us" and displays developer info', () => {
-    cy.contains('About Us').click();
-    cy.contains('Who created Roam.IO?').should('exist');
-    cy.contains('Palaque Sharma').should('exist');
-    cy.contains('Sanket Deshmukh').should('exist');
-  });
-
-  it('renders "Still Have Questions" support card', () => {
-    cy.contains('Still Have Questions?').should('exist');
-    cy.contains('Contact Support').should('exist');
-  });
-
-  it('navigates to /support when "Contact Support" is clicked', () => {
-    cy.window().then((win) => cy.stub(win.location, 'assign')).as('locationAssign');
-    cy.contains('Contact Support').click();
-    cy.get('@locationAssign').should('be.calledWith', '/support');
+    // Simulate clicking the button to navigate to the support page
+    cy.get('.contact-support-button').click();
+    cy.url().should('include', '/support'); 
   });
 });

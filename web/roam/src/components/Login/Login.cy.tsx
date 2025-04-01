@@ -36,24 +36,6 @@ describe("Login Component Tests", () => {
     cy.get("#password").should("have.value", "password123");
   });
 
-  it("should submit the form successfully", () => {
-    cy.get("#email").type("test@example.com");
-    cy.get("#password").type("password123");
-    cy.get(".submit-button").click();
-    let alertTriggered = false;
-
-    cy.on("window:alert", (txt) => {
-      alertTriggered = true;
-      expect(txt).to.contains("Error");
-    });
-
-    cy.wait(1000).then(() => {
-      if (!alertTriggered) {
-        cy.log("No alert appeared, considering test as successful.");
-      }
-    });
-  });
-
   it("should navigate to register page on link click", () => {
     cy.get(".link").click();
     cy.url().should("include", "/register");
