@@ -13,6 +13,14 @@ import (
 
 var store = sessions.NewCookieStore([]byte("secret-key"))
 
+// getSession returns a session from the store, using test helpers if in test mode
+func getSession(r *http.Request, name string) (*sessions.Session, error) {
+	if testStoreSet {
+		return GetSessionForTesting(r, name)
+	}
+	return store.Get(r, name)
+}
+
 func LoginHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
@@ -59,7 +67,7 @@ func LoginHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		session, _ := store.Get(r, "session")
+		session, _ := getSession(r, "session")
 		session.Values["user_id"] = user.ID
 		session.Save(r, w)
 
@@ -74,7 +82,7 @@ func LoginHandler(db *gorm.DB) http.HandlerFunc {
 // LogoutHandler clears the user session
 func LogoutHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, _ := store.Get(r, "session")
+		session, _ := getSession(r, "session")
 
 		// Check if user is actually logged in (optional, but good practice)
 		if _, ok := session.Values["user_id"]; !ok {

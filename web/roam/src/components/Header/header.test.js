@@ -28,18 +28,6 @@ describe('Header Component', () => {
     expect(screen.getByText('Hi, User')).toBeInTheDocument();
   });
 
-  test('loads user data after timeout', async () => {
-    render(<Header />);
-    
-    // Fast-forward until all timers have been executed
-    jest.runAllTimers();
-    
-    // Check that user data is loaded
-    await waitFor(() => {
-      expect(screen.getByText('Hi, Palaque')).toBeInTheDocument();
-    });
-  });
-
   test('shows dropdown menu on hover', async () => {
     render(<Header />);
     

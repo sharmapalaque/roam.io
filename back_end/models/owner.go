@@ -7,3 +7,8 @@ type Owner struct {
 	Email string `gorm:"uniqueIndex" json:"Email"` // Added json tag
 	Phone string `json:"Phone"`                    // Renamed from Contact, added json tag
 }
+
+// TableName specifies the table name for the Owner model
+func (Owner) TableName() string {
+	return "hosts"
+}
