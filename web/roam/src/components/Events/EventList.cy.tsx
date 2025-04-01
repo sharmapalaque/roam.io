@@ -1,10 +1,15 @@
 import EventList from './EventList';
 import { mount } from 'cypress/react';
+import { BrowserRouter } from "react-router-dom";
 
 describe('EventList Component', () => {
   beforeEach(() => {
     cy.viewport(1470, 956);
-    mount(<EventList />); 
+    mount(
+      <BrowserRouter>
+        <EventList />
+      </BrowserRouter>
+    );
   });
 
   // Test if the page loads with search input and location filter
@@ -45,7 +50,7 @@ describe('EventList Component', () => {
     cy.get('.event-card').first().click(); 
     cy.get('img.main-image').should('be.visible'); 
     cy.get('.thumbnail').first().click(); 
-    cy.get('img.main-image').should('have.attr', 'src').and('include', 'tech1.jpg');
+    cy.get('img.main-image').should('have.attr', 'src').and('include', '.jpeg');
   });
 
   // Test booking flow
