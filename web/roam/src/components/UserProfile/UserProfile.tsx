@@ -189,6 +189,9 @@ const UserProfile: React.FC = () => {
   const [subtabValue, setSubtabValue] = useState(0);
   const [isAvatarDrawerOpen, setIsAvatarDrawerOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // for updating data based on API response
+  const [bookings, setBookings] = useState<Booking[]>([]);
   
   // User data (this would come from a backend)
   const [userData, setUserData] = useState<UserData>({
@@ -205,6 +208,121 @@ const UserProfile: React.FC = () => {
     const avatar = avatarOptions.find(avatar => avatar.id === userData.avatarId);
     setCurrentAvatar(avatar || avatarOptions[0]);
   }, [userData.avatarId]);
+
+  function isDateOlderThanCurrent(givenDate: string) {
+    const currentDate = new Date();
+    const dateToCheck = new Date(givenDate);
+  
+    if (dateToCheck < currentDate) {
+      return 'past';
+    } else {
+      return 'upcoming';
+    }
+  }
+  
+
+  // to get data from server (keep it separate, else with avatar change it will be called every single time)
+    useEffect(() => {
+      // In a real application, this would be an API call
+      const fetchUserData = async () => {        
+        try {
+          const response = await fetch(
+            `http://localhost:8080/users/profile?`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include", // Ensure cookies (like session IDs) are sent
+            }
+          );
+  
+          // Check if response status is NOT ok
+          if (!response.ok) {
+            // Specifically handle 401 Unauthorized without an alert
+            if (response.status === 401) {
+              console.log("User not authenticated. Profile data not loaded.");
+              // setUserData(null); // Ensure user data is cleared
+              return; // Exit the function early
+            }
+            // For other errors, throw the error to be caught below
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+          }
+  
+          // Log the raw response text before parsing
+          const responseText = await response.text();
+          console.log("Raw profile response text:", responseText);
+  
+          // Try to parse the response as JSON
+          try {
+            const result = JSON.parse(responseText);
+            console.log("User profile response:", result);
+            // Assuming the profile endpoint returns an object with name and avatarId
+            // setUserData({ name: result.name, avatarId: result.avatar_url }); 
+
+            console.log(result.bookings);
+            console.log(result.event_bookings);
+
+            console.log(result.bookings.length)
+
+            // add accomodation bookings
+            result.bookings.map((currentBooking: any) => {
+              console.log(currentBooking.id);
+              const given_date = currentBooking.checkin_date.split('T')[0];
+
+              const newBooking: Booking = {
+                id: currentBooking.id,
+                type: "accommodation",
+                name: currentBooking.accommodation.name,
+                location: currentBooking.accommodation.location,
+                image: currentBooking.accommodation.image_url,
+                checkIn: given_date,
+                checkOut: currentBooking.checkout_date.split('T')[0],
+                date: new Date().toISOString().split('T')[0],
+                status: isDateOlderThanCurrent(given_date),
+                guests: currentBooking.guests 
+              };
+
+              setBookings(bookings => [...bookings, newBooking]);
+            })
+
+            // add event bookings
+            result.bookings.map((currentBooking: any) => {
+              console.log(currentBooking.id);
+
+              const newBooking: Booking = {
+                id: currentBooking.id,
+                type: "event",
+                name: currentBooking.event_bookings.name,
+                location: currentBooking.event_bookings.location,
+                image: currentBooking.event_bookings.image_url,
+                date: new Date().toISOString().split('T')[0],
+                status: 'upcoming',
+                organizer: 'Unknown',
+                seats: 10,
+                availableSeats: 10
+              };
+
+              setBookings(bookings => [...bookings, newBooking]);
+            })
+            
+  
+          } catch (error) {
+            console.error("Error parsing profile JSON:", error);
+            // Optionally alert or handle JSON parsing error differently
+            // alert("Failed to parse profile response"); 
+          }
+        } catch (error) {
+          // This will now catch network errors or non-401 HTTP errors
+          console.error("Error fetching user profile:", error);
+          // Avoid alerting for general fetch errors unless needed
+          // alert(error); 
+          // setUserData(null);
+        }
+      };
+  
+      fetchUserData();
+    }, []);
 
   const [securityData, setSecurityData] = useState({
     currentPassword: '',
@@ -327,7 +445,7 @@ const UserProfile: React.FC = () => {
 
   // Filter bookings by type and status
   const getBookingsByType = (type: 'accommodation' | 'event', status?: 'upcoming' | 'past') => {
-    return dummyBookings.filter(booking => 
+    return bookings.filter(booking => 
       booking.type === type && 
       (status ? booking.status === status : true)
     );
@@ -569,14 +687,35 @@ const UserProfile: React.FC = () => {
                   <Tab label="BOOKINGS" className="sub-tab" />
                   <Tab label="REVIEWS" className="sub-tab" />
                 </Tabs>
-                
-                {/* Event Bookings - Empty placeholder for now */}
+
+                {/* Event Bookings */}
                 <TabPanel value={subtabValue} index={0}>
                   <Box className="bookings-container">
-                    <Typography variant="h6" className="section-title">
-                      BOOKINGS
-                    </Typography>
-                    {renderEmptyState("You don't have any event bookings yet.")}
+                    {getBookingsByType('event', 'upcoming').length > 0 && (
+                      <Box className="bookings-section">
+                        <Typography variant="h6" className="section-title">
+                          UPCOMING BOOKINGS
+                        </Typography>
+                        <Box className="bookings-list">
+                          {getBookingsByType('event', 'upcoming').map(renderBookingCard)}
+                        </Box>
+                      </Box>
+                    )}
+                    
+                    {getBookingsByType('event', 'past').length > 0 && (
+                      <Box className="bookings-section">
+                        <Typography variant="h6" className="section-title">
+                          PAST BOOKINGS
+                        </Typography>
+                        <Box className="bookings-list">
+                          {getBookingsByType('event', 'past').map(renderBookingCard)}
+                        </Box>
+                      </Box>
+                    )}
+                    
+                    {getBookingsByType('event').length === 0 && (
+                      renderEmptyState("You don't have any accommodation bookings yet.")
+                    )}
                   </Box>
                 </TabPanel>
                 
