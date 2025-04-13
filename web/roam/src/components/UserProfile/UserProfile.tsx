@@ -746,25 +746,7 @@ const UserProfile: React.FC = () => {
                       {userData.email}
                     </Typography>
                   </Box>
-                  
-                  <Box className="security-field">
-                    <Typography variant="body1" className="security-label">
-                      Password
-                    </Typography>
-                    <Box className="password-display">
-                      <Typography variant="body1" className="security-value">
-                        {showPassword ? "MySecretPassword123" : "•••••••••••••••"}
-                      </Typography>
-                      <IconButton 
-                        className="toggle-password-button" 
-                        onClick={handleTogglePasswordVisibility}
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </Box>
-                  </Box>
-                  
+                                    
                   <Box className="update-password-container">
                     <Typography variant="h6" className="update-password-title">
                       UPDATE PASSWORD
