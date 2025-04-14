@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -20,6 +20,7 @@ const Register: React.FC = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     // hardcoding just to make it work, as soon as it's remove from back end 
@@ -52,6 +53,10 @@ const Register: React.FC = () => {
     }
     // console.log("Form Data:", data);
     // alert("Registration successful!");
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -93,7 +98,21 @@ const Register: React.FC = () => {
 
             <div className="form-group">
               <label htmlFor="password">PASSWORD</label>
-              <input id="password" type="password" {...register("password")} />
+              <div className="password-field">
+                <input 
+                  id="password" 
+                  type={showPassword ? "text" : "password"} 
+                  {...register("password")} 
+                />
+                <button 
+                  type="button"
+                  className="toggle-password-btn"
+                  onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  <i className={`password-icon ${showPassword ? "visible" : "hidden"}`}></i>
+                </button>
+              </div>
               {errors.password && (
                 <p className="error-text">{errors.password.message}</p>
               )}
