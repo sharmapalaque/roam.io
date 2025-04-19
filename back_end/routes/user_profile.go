@@ -44,6 +44,12 @@ type EventDetails struct {
 	Location  string `json:"location"`
 	Image     string `json:"image"`
 }
+type UserReviewDetails struct {
+	AccommodationName string  `json:"accommodation_name"`
+	ReviewText        string  `json:"review_text"`
+	ReviewRating      float64 `json:"review_rating"`
+	ReviewDate        string  `json:"review_date"`
+}
 
 func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -147,6 +153,56 @@ func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(profile); err != nil {
+			http.Error(w, "Error encoding response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func GetUserReviewsHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := getSession(r, "session")
+		if err != nil {
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			return
+		}
+
+		userID, ok := session.Values["user_id"].(uint)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"message": "User not authenticated"})
+			return
+		}
+
+		var reviews []models.Review
+		// Get reviews for the current user, ordered by newest first
+		if result := db.Where("user_id = ?", userID).Order("id desc").Find(&reviews); result.Error != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Error fetching user reviews"})
+			return
+		}
+
+		userReviews := make([]UserReviewDetails, 0, len(reviews))
+		for _, review := range reviews {
+			var accommodation models.Accommodation
+			if result := db.First(&accommodation, review.AccommodationID); result.Error != nil {
+				// Skip this review if we can't find its accommodation
+				continue
+			}
+
+			userReviews = append(userReviews, UserReviewDetails{
+				AccommodationName: accommodation.Name,
+				ReviewText:        review.Comment,
+				ReviewRating:      review.Rating,
+				ReviewDate:        review.Date,
+			})
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(userReviews); err != nil {
 			http.Error(w, "Error encoding response", http.StatusInternalServerError)
 			return
 		}
