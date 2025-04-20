@@ -268,7 +268,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Name\": \"Marriott\",\r\n    \"Location\": \"Miami\",\r\n    \"ImageUrls\": [\"image1\", \"image2\", \"image3\"],\r\n    \"Description\": \"Description of the hotel\",\r\n    \"Facilities\": [\"Swimming pool\", \"Gym\", \"Traveling\"],\r\n    \"UserReviews\": [],\r\n    \"OwnerID\": 1\r\n}",
+					"raw": "{\r\n    \"Name\": \"Marriott\",\r\n    \"Location\": \"Miami\",\r\n    \"ImageUrls\": [\"image1\", \"image2\", \"image3\"],\r\n    \"Description\": \"Description of the hotel\",\r\n    \"Facilities\": [\"Swimming pool\", \"Gym\", \"Traveling\"],\r\n    \"UserReviews\": [],\r\n    \"OwnerID\": 1,\r\n    \"Coordinates\": \"41.40338, 2.17403\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
