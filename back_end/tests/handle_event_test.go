@@ -58,11 +58,15 @@ func TestCreateEvent(t *testing.T) {
 				TotalSeats:   100,
 				OfficialLink: "https://test-event.com",
 				OrganizerID:  1,
+				Coordinates:  "41.003, 32.002",
 			},
 			mockSetup: func() {
-				// Expect the INSERT query
 				mock.ExpectBegin()
 				mock.ExpectQuery(`INSERT INTO "events"`).
+					WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
+						sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
+						sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
+						sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 				mock.ExpectCommit()
 			},
@@ -191,8 +195,16 @@ func TestFetchEventById(t *testing.T) {
 			name:    "Successful event fetch",
 			eventID: "1",
 			mockSetup: func() {
-				eventRows := sqlmock.NewRows([]string{"id", "event_name", "location", "images", "description", "date", "time", "price", "available_seats", "total_seats", "official_link", "organizer_id"}).
-					AddRow(1, "Test Event", "Test Location", pq.StringArray{"image1.jpg", "image2.jpg"}, "Test Description", "2025-04-15", "18:00", "100", 100, 100, "https://test-event.com", 1)
+				eventRows := sqlmock.NewRows([]string{
+					"id", "event_name", "location", "images", "description",
+					"date", "time", "price", "available_seats", "total_seats",
+					"official_link", "organizer_id", "coordinates", // Add coordinates column
+				}).AddRow(
+					1, "Test Event", "Test Location",
+					pq.StringArray{"image1.jpg", "image2.jpg"}, "Test Description",
+					"2025-04-15", "18:00", "100", 100, 100,
+					"https://test-event.com", 1, "21.004, 32.003", // Add coordinates value
+				)
 
 				mock.ExpectQuery(`SELECT \* FROM "events" WHERE id = \$1 ORDER BY "events"."id" LIMIT \$2`).
 					WithArgs("1", 1).
@@ -216,7 +228,7 @@ func TestFetchEventById(t *testing.T) {
 				Time:           "18:00",
 				Price:          "100",
 				AvailableSeats: 100,
-				Coordinates:    "21.004, 32.003",
+				Coordinates:    "21.004, 32.003", // Ensure this matches the AddRow value
 				TotalSeats:     100,
 				OfficialLink:   "https://test-event.com",
 				Organizer: models.Organizer{
@@ -796,8 +808,8 @@ func TestRemoveEventBooking(t *testing.T) {
 					WillReturnRows(bookingRows)
 
 				// Mock GetEventByID
-				eventRows := sqlmock.NewRows([]string{"id", "event_name", "location", "date", "time", "description", "price", "available_seats", "total_seats", "official_link", "organizer_id", "images"}).
-					AddRow(2, "Test Event", "Test Location", "2025-04-15", "18:00", "Test Description", "100", 7, 10, "https://test-event.com", 1, pq.StringArray{"image1.jpg"})
+				eventRows := sqlmock.NewRows([]string{"id", "event_name", "location", "images", "description", "date", "time", "price", "available_seats", "total_seats", "official_link", "organizer_id"}).
+					AddRow(2, "Test Event", "Test Location", pq.StringArray{"image1.jpg"}, "Test Description", "2025-04-15", "18:00", "100", 7, 10, "https://test-event.com", 1)
 
 				mock.ExpectQuery(`SELECT \* FROM "events" WHERE id = \$1 ORDER BY "events"."id" LIMIT \$2`).
 					WithArgs("2", 1).

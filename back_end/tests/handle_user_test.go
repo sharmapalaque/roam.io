@@ -116,7 +116,7 @@ func TestCreateUser(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `users`").WithArgs(
 		sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
-		sqlmock.AnyArg(), sqlmock.AnyArg(),
+		sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), // Added extra arg for avatar_id
 	).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
