@@ -263,7 +263,7 @@ const UserProfile: React.FC = () => {
             const currentUser: UserData = {
               name: result.name,
               email: result.email,
-              avatarId: 'Marshmallow'
+              avatarId: result.avatar_id
             }
             setUserData(currentUser)
 
