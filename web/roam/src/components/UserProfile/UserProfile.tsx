@@ -363,23 +363,36 @@ const UserProfile: React.FC = () => {
     };
     setUserData(updatedUserData);
     setIsAvatarDrawerOpen(false);
+
+    console.log(avatar.id)
     
-    /*
-    fetch('/api/user/update-avatar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ avatarId: avatar.id }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Avatar updated successfully:', data);
-      })
-      .catch(error => {
-        console.error('Error updating avatar:', error);
-      });
-    */
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/users/avatar`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              avatar_id: avatar.id
+            }),
+            credentials: 'include'
+          }
+        );
+
+        // Check if response status is NOT ok
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+      } catch (error) {
+        alert(error);
+      }
+    };
+
+    // this method has been defined above which deals with REST API call
+    fetchData();
     
     console.log('API call would be made to update avatar to:', avatar.id);
   };
