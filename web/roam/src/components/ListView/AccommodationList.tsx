@@ -12,7 +12,6 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import Header from "../Header/Header";
@@ -75,26 +74,6 @@ const AccommodationList: React.FC = () => {
   const [filteredAccommodations, setFilteredAccommodations] = useState<
     AccommodationUpdated[]
   >([]);
-
-  // Enhanced styles to fix the line issue, similar to AccommodationDetails.tsx
-  const headerContainerStyle = {
-    border: "none !important",
-    borderBottom: "none !important",
-    boxShadow: "none !important",
-    outline: "none !important",
-    background: "transparent !important",
-  };
-
-  const detailsContainerStyle = {
-    border: "none !important",
-    borderTop: "none !important",
-    marginTop: "-60px", // Adjusted to position content better
-    boxShadow: "none !important",
-    outline: "none !important",
-    position: "relative" as "relative",
-    zIndex: 1,
-  };
-
   useEffect(() => {
     // setup for doing a REST API call
     // Construct query string with parameters
