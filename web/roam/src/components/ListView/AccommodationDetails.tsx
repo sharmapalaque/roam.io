@@ -23,6 +23,7 @@ import {
   Star,
   Phone,
   Mail,
+  LocationOn,
 } from "@mui/icons-material";
 import Header from "../Header/Header";
 import "./AccommodationDetails.css";
@@ -33,6 +34,7 @@ type Accommodation = {
   ID: number;
   Name: string;
   Location: string;
+  Coordinates: string; // Added for navigation functionality
   ImageUrls: string[];
   Description: string;
   PricePerNight: number;
@@ -68,6 +70,7 @@ const accommodations: Accommodation[] = [
     ID: 1,
     Name: "Ocean View Apartment",
     Location: "Miami, FL",
+    Coordinates: "25.7617,-80.1918", // Added coordinates for Miami
     ImageUrls: [
       "https://i.imgur.com/fHyx1wv.png",
       "https://i.imgur.com/fHyx1wv.png",
@@ -116,6 +119,7 @@ const accommodations: Accommodation[] = [
     ID: 2,
     Name: "Mountain Cabin",
     Location: "Aspen, CO",
+    Coordinates: "39.1911,-106.8175", // Added coordinates for Aspen
     ImageUrls: [
       "https://i.imgur.com/fHyx1wv.png",
       "https://i.imgur.com/fHyx1wv.png",
@@ -163,6 +167,7 @@ const accommodations: Accommodation[] = [
     ID: 3,
     Name: "City Center Studio",
     Location: "New York, NY",
+    Coordinates: "40.7128,-74.0060", // Added coordinates for New York
     ImageUrls: [
       "https://i.imgur.com/fHyx1wv.png",
       "https://i.imgur.com/fHyx1wv.png",
@@ -263,6 +268,18 @@ const AccommodationDetails: React.FC = () => {
     marginBottom: "5px", // Reduced margin between title and location
   };
 
+  // Style for the Navigate Me button
+  const navigateButtonStyle = {
+    backgroundColor: "#70c9c2",
+    color: "white",
+    marginTop: "5px",
+    marginRight: "15px",
+    textTransform: "none" as "none",
+    "&:hover": {
+      backgroundColor: "#5bb8b1",
+    },
+  };
+
   // New state variables for review functionality
   const [newReview, setNewReview] = useState<NewReview>({
     rating: 5,
@@ -271,6 +288,15 @@ const AccommodationDetails: React.FC = () => {
   const [isSubmittingReview, setIsSubmittingReview] = useState<boolean>(false);
   const [reviewSubmitted, setReviewSubmitted] = useState<boolean>(false);
   const [showReviewForm, setShowReviewForm] = useState<boolean>(false);
+
+  // Function to handle Navigate Me button click
+  const handleNavigateMe = () => {
+    if (accommodation.Coordinates) {
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${accommodation.Coordinates}`, '_blank');
+    } else {
+      alert("Navigation coordinates are not available for this property.");
+    }
+  };
 
   // API call
   useEffect(() => {
@@ -374,7 +400,7 @@ const AccommodationDetails: React.FC = () => {
 
   // Handle changing review rating
   const handleRatingChange = (
-    event: React.SyntheticEvent,
+    _event: React.SyntheticEvent,
     newValue: number | null
   ) => {
     setNewReview({
@@ -642,20 +668,35 @@ const AccommodationDetails: React.FC = () => {
         {/* Teal header background with the matching gradient style */}
         <Box className="teal-header" style={tealHeaderStyle}>
           <Container maxWidth="lg" style={headerContainerStyle}>
-            <Typography
-              variant="h4"
-              className="property-title"
-              style={headerTextStyle}
-            >
-              {accommodation.Name}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              className="property-location"
-              style={headerTextStyle}
-            >
-              {accommodation.Location}
-            </Typography>
+            {/* Title section */}
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+              <Box>
+                <Typography
+                  variant="h4"
+                  className="property-title"
+                  style={headerTextStyle}
+                >
+                  {accommodation.Name}
+                </Typography>
+                <Typography
+                  variant="subtitle1"
+                  className="property-location"
+                  style={headerTextStyle}
+                >
+                  {accommodation.Location}
+                </Typography>
+              </Box>
+              
+              {/* Navigate Me Button */}
+              <Button
+                variant="contained"
+                startIcon={<LocationOn />}
+                onClick={handleNavigateMe}
+                sx={navigateButtonStyle}
+              >
+                Navigate Me
+              </Button>
+            </Box>
           </Container>
         </Box>
 
@@ -909,11 +950,12 @@ const AccommodationDetails: React.FC = () => {
 
             {/* Right column: Booking panel - now starting at the same level as stars */}
             <Grid item xs={12} md={4}>
-              <Paper
-                elevation={3}
-                className="booking-panel"
-                sx={{ marginTop: 0 }}
-              >
+              <Box sx={{ position: "sticky", top: "130px", zIndex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+                <Paper
+                  elevation={3}
+                  className="booking-panel"
+                  sx={{ marginTop: 0 }}
+                >
                 <Typography
                   variant="h6"
                   className="booking-panel-title"
@@ -1094,6 +1136,33 @@ const AccommodationDetails: React.FC = () => {
                   BOOK NOW
                 </Button>
               </Paper>
+              
+              {/* Navigate Me button that matches booking panel width and floats with it */}
+              <Paper
+                elevation={3}
+                sx={{
+                  padding: "16px",
+                  borderRadius: "8px",
+                  border: "1px solid #ebebe8",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  fullWidth
+                  startIcon={<LocationOn />}
+                  onClick={handleNavigateMe}
+                  sx={{
+                    backgroundColor: "#70c9c2",
+                    "&:hover": { backgroundColor: "#5bb8b1" },
+                    py: 1.5,
+                    textTransform: "uppercase",
+                    fontWeight: 500,
+                  }}
+                >
+                  NAVIGATE ME
+                </Button>
+              </Paper>
+              </Box>
             </Grid>
           </Grid>
         </Container>
