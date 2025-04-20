@@ -450,19 +450,30 @@ const UserProfile: React.FC = () => {
   // Delete booking
   const handleDeleteBooking = (bookingId: number) => {
     // In a real app, this would call an API to delete the booking
-    // alert(`Booking ${bookingId} would be deleted`);
     
     // setup for doing a REST API call
     // Construct query string with parameters
-    const queryParams = new URLSearchParams({
+    let queryParams = new URLSearchParams({
       booking_id: bookingId.toString(),
     });
+
+    // check if we are deleting accomodation or event booking
+    // set url accordingly
+    const item = bookings.find(obj => obj.id === bookingId)
+    let request_url = `http://localhost:8080/accommodations?${queryParams.toString()}`
+    if (item?.type === 'event') {
+      queryParams = new URLSearchParams({
+        event_booking_id: bookingId.toString(),
+      });
+
+      request_url = `http://localhost:8080/events?${queryParams.toString()}`
+    }
 
     // get data from backend based on REST API call
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/accommodations?${queryParams.toString()}`,
+          request_url,
           {
             method: "DELETE",
             headers: {
@@ -481,7 +492,7 @@ const UserProfile: React.FC = () => {
         const responseText = await response.text();
         console.log("Raw response text:", responseText);
 
-        alert(`Booking ${bookingId} would be deleted`);
+        alert(`Booking ID ${bookingId} has been deleted`);
         setBookings(prev => prev.filter(b => b.id !== bookingId))
       } catch (error) {
         alert(error);
@@ -673,7 +684,6 @@ const UserProfile: React.FC = () => {
             >
               <Tab label="ACCOMMODATIONS" className="main-tab" />
               <Tab label="EVENTS" className="main-tab" />
-              <Tab label="SECURITY" className="main-tab" />
             </Tabs>
             
             {/* Accommodation Tab */}
@@ -744,53 +754,11 @@ const UserProfile: React.FC = () => {
                   className="sub-tabs"
                 >
                   <Tab label="BOOKINGS" className="sub-tab" />
-                  <Tab label="REVIEWS" className="sub-tab" />
                 </Tabs>
-
-                {/* Event Bookings */}
-                <TabPanel value={subtabValue} index={0}>
-                  <Box className="bookings-container">
-                    {getBookingsByType('event', 'upcoming').length > 0 && (
-                      <Box className="bookings-section">
-                        <Typography variant="h6" className="section-title">
-                          UPCOMING BOOKINGS
-                        </Typography>
-                        <Box className="bookings-list">
-                          {getBookingsByType('event', 'upcoming').map(renderBookingCard)}
-                        </Box>
-                      </Box>
-                    )}
-                    
-                    {getBookingsByType('event', 'past').length > 0 && (
-                      <Box className="bookings-section">
-                        <Typography variant="h6" className="section-title">
-                          PAST BOOKINGS
-                        </Typography>
-                        <Box className="bookings-list">
-                          {getBookingsByType('event', 'past').map(renderBookingCard)}
-                        </Box>
-                      </Box>
-                    )}
-                    
-                    {getBookingsByType('event').length === 0 && (
-                      renderEmptyState("You don't have any accommodation bookings yet.")
-                    )}
-                  </Box>
-                </TabPanel>
-                
-                {/* Event Reviews - Empty placeholder for now */}
-                <TabPanel value={subtabValue} index={1}>
-                  <Box className="reviews-container">
-                    <Typography variant="h6" className="section-title">
-                      REVIEWS
-                    </Typography>
-                    {renderEmptyState("You haven't submitted any event reviews yet.")}
-                  </Box>
-                </TabPanel>
               </Box>
             </TabPanel>
 
-            {/* Security Tab */}
+            {/* Security Tab commented out
             <TabPanel value={tabValue} index={2}>
               <Box className="tab-content">
                 <Typography variant="h6" className="section-title">
@@ -805,7 +773,8 @@ const UserProfile: React.FC = () => {
                       {userData.email}
                     </Typography>
                   </Box>
-                                    
+                  
+                  {/* Password update section commented out
                   <Box className="update-password-container">
                     <Typography variant="h6" className="update-password-title">
                       UPDATE PASSWORD
@@ -891,9 +860,10 @@ const UserProfile: React.FC = () => {
                       Update Password
                     </Button>
                   </Box>
+                  
                 </Box>
               </Box>
-            </TabPanel>
+            </TabPanel>*/}
           </Box>
         </Container>
       </Box>
