@@ -24,6 +24,7 @@ import {
   Phone as PhoneIcon,
   Mail as MailIcon,
   Language as LanguageIcon,
+  Navigation as NavigationIcon,
 } from "@mui/icons-material";
 import Header from "../Header/Header";
 import "./EventList.css";
@@ -38,6 +39,7 @@ type Event = {
     Phone: string;
   };
   Location: string;
+  Coordinates: string; // Added coordinates property
   Date: string;
   Time: string;
   Images: string[];
@@ -59,6 +61,7 @@ const eventsData: Event[] = [
       Phone: "+1 (555) 123-4567"
     },
     Location: "San Francisco, CA",
+    Coordinates: "37.7749,-122.4194", // Added coordinates
     Date: "2025-04-15",
     Time: "09:00 AM - 05:00 PM",
     Images: [
@@ -81,6 +84,7 @@ const eventsData: Event[] = [
       Phone: "+1 (555) 987-6543"
     },
     Location: "Austin, TX",
+    Coordinates: "30.2672,-97.7431", // Added coordinates
     Date: "2025-06-20",
     Time: "12:00 PM - 11:00 PM",
     Images: [
@@ -103,6 +107,7 @@ const eventsData: Event[] = [
       Phone: "+1 (555) 234-5678"
     },
     Location: "New York, NY",
+    Coordinates: "40.7128,-74.0060", // Added coordinates
     Date: "2025-05-10",
     Time: "08:30 AM - 04:30 PM",
     Images: [
@@ -125,6 +130,7 @@ const eventsData: Event[] = [
       Phone: "+1 (555) 876-5432"
     },
     Location: "Chicago, IL",
+    Coordinates: "41.8781,-87.6298", // Added coordinates
     Date: "2025-07-08",
     Time: "11:00 AM - 08:00 PM",
     Images: [
@@ -245,6 +251,15 @@ const EventList: React.FC = () => {
     ? filteredEvents.find(event => event.ID === selectedEventId) 
     : null;
   
+  // Handle Navigate Me button click
+  const handleNavigateMe = () => {
+    if (selectedEvent?.Coordinates) {
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${selectedEvent.Coordinates}`, '_blank');
+    } else {
+      alert("Navigation coordinates are not available for this event.");
+    }
+  };
+  
   // Handle booking button click
   const handleBookNow = () => {
     if (!selectedEvent) return;
@@ -289,9 +304,6 @@ const EventList: React.FC = () => {
       }
     };
     sendBookingData();
-    
-    // You could also navigate to a confirmation page:
-    // navigate("/confirmation");
   };
   
   // Calculate if the book now button should be disabled
@@ -521,6 +533,24 @@ const EventList: React.FC = () => {
                               Official Event Website
                             </a>
                           </Typography>
+                        </Box>
+                        {/* Added Navigate Me button */}
+                        <Box className="contact-item" sx={{ mt: 2 }}>
+                          <Button
+                            variant="contained"
+                            startIcon={<NavigationIcon />}
+                            onClick={handleNavigateMe}
+                            sx={{
+                              backgroundColor: "#70c9c2",
+                              "&:hover": { backgroundColor: "#5bb8b1" },
+                              color: "white",
+                              width: "40%",
+                              textTransform: "uppercase",
+                              fontWeight: 500
+                            }}
+                          >
+                            NAVIGATE ME
+                          </Button>
                         </Box>
                       </Box>
                     </Box>

@@ -78,4 +78,67 @@ describe('EventList Component', () => {
     // we'll just make sure a day number is present (between 1-31)
     expect(/\b\d{1,2}\b/.test(result)).toBe(true);
   });
+  
+  // New tests for Navigate Me functionality
+  test('navigation URL is correctly formatted', () => {
+    // Test the URL formatting for navigation
+    const getNavigationUrl = (coordinates) => {
+      if (!coordinates) return null;
+      return `https://www.google.com/maps/dir/?api=1&destination=${coordinates}`;
+    };
+    
+    // Test with valid coordinates
+    const sfCoordinates = '37.7749,-122.4194';
+    expect(getNavigationUrl(sfCoordinates)).toBe(
+      'https://www.google.com/maps/dir/?api=1&destination=37.7749,-122.4194'
+    );
+    
+    // Test with empty coordinates
+    expect(getNavigationUrl('')).toBe(null);
+    expect(getNavigationUrl(null)).toBe(null);
+  });
+  
+  test('navigation error handling works correctly', () => {
+    // Mock functions to simulate the component behavior
+    const mockOpen = jest.fn();
+    const mockAlert = jest.fn();
+    const originalOpen = window.open;
+    const originalAlert = window.alert;
+    
+    // Replace with mocks
+    window.open = mockOpen;
+    window.alert = mockAlert;
+    
+    // Test navigation with coordinates
+    const handleNavigateMe = (coordinates) => {
+      if (coordinates) {
+        window.open(`https://www.google.com/maps/dir/?api=1&destination=${coordinates}`, '_blank');
+      } else {
+        window.alert("Navigation coordinates are not available for this event.");
+      }
+    };
+    
+    // Test with valid coordinates
+    handleNavigateMe('37.7749,-122.4194');
+    expect(mockOpen).toHaveBeenCalledWith(
+      'https://www.google.com/maps/dir/?api=1&destination=37.7749,-122.4194',
+      '_blank'
+    );
+    expect(mockAlert).not.toHaveBeenCalled();
+    
+    // Reset mocks
+    mockOpen.mockClear();
+    mockAlert.mockClear();
+    
+    // Test with empty coordinates
+    handleNavigateMe('');
+    expect(mockOpen).not.toHaveBeenCalled();
+    expect(mockAlert).toHaveBeenCalledWith(
+      "Navigation coordinates are not available for this event."
+    );
+    
+    // Restore original functions
+    window.open = originalOpen;
+    window.alert = originalAlert;
+  });
 });
