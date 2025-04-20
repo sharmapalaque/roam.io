@@ -87,7 +87,15 @@ func HashPassword(password string) (string, error) {
 }
 
 func CreateUser(name, email, username, password string, dob time.Time, db *gorm.DB) (id int, err error) {
-	user := models.User{Name: name, Email: email, Username: username, Password: password, Dob: dob}
+	user := models.User{
+		Name:     name,
+		Email:    email,
+		Username: username,
+		Password: password,
+		Dob:      dob,
+		AvatarID: "Marshmallow", // Explicitly set the default avatar ID
+	}
+
 	result := db.Create(&user)
 	if result.Error != nil {
 		return 0, result.Error

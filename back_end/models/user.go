@@ -10,4 +10,5 @@ type User struct {
 	Email    string    `gorm:"uniqueIndex"`
 	Dob      time.Time `gorm:"not null" json:"dob"` // date of birth cannot be null
 	Password string
+	AvatarID string `gorm:"default:Marshmallow:`
 }

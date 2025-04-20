@@ -12,7 +12,7 @@ import (
 type UserProfile struct {
 	Name          string                    `json:"name"`
 	Email         string                    `json:"email"`
-	AvatarURL     string                    `json:"avatar_url"`
+	AvatarID      string                    `json:"avatar_id"`
 	Bookings      []BookingWithDetails      `json:"bookings"`
 	EventBookings []EventBookingWithDetails `json:"event_bookings"`
 }
@@ -43,6 +43,16 @@ type EventDetails struct {
 	EventName string `json:"name"`
 	Location  string `json:"location"`
 	Image     string `json:"image"`
+}
+type UserReviewDetails struct {
+	AccommodationName string  `json:"accommodation_name"`
+	ReviewText        string  `json:"review_text"`
+	ReviewRating      float64 `json:"review_rating"`
+	ReviewDate        string  `json:"review_date"`
+}
+
+type UpdateAvatarRequest struct {
+	AvatarID string `json:"avatar_id"`
 }
 
 func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
@@ -88,7 +98,7 @@ func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
 		profile := UserProfile{
 			Name:          user.Name,
 			Email:         user.Email,
-			AvatarURL:     "https://example.com/avatars/default.png",
+			AvatarID:      user.AvatarID,
 			Bookings:      make([]BookingWithDetails, 0, len(bookings)),
 			EventBookings: make([]EventBookingWithDetails, 0, len(eventBookings)),
 		}
@@ -150,5 +160,95 @@ func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Error encoding response", http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+func GetUserReviewsHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := getSession(r, "session")
+		if err != nil {
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			return
+		}
+
+		userID, ok := session.Values["user_id"].(uint)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"message": "User not authenticated"})
+			return
+		}
+
+		var reviews []models.Review
+		// Get reviews for the current user, ordered by newest first
+		if result := db.Where("user_id = ?", userID).Order("id desc").Find(&reviews); result.Error != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Error fetching user reviews"})
+			return
+		}
+
+		userReviews := make([]UserReviewDetails, 0, len(reviews))
+		for _, review := range reviews {
+			var accommodation models.Accommodation
+			if result := db.First(&accommodation, review.AccommodationID); result.Error != nil {
+				// Skip this review if we can't find its accommodation
+				continue
+			}
+
+			userReviews = append(userReviews, UserReviewDetails{
+				AccommodationName: accommodation.Name,
+				ReviewText:        review.Comment,
+				ReviewRating:      review.Rating,
+				ReviewDate:        review.Date,
+			})
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(userReviews); err != nil {
+			http.Error(w, "Error encoding response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func UpdateUserAvatarHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get the current user from the session
+		session, err := getSession(r, "session")
+		if err != nil {
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			return
+		}
+
+		userID, ok := session.Values["user_id"].(uint)
+		if !ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"message": "User not authenticated"})
+			return
+		}
+
+		var updateRequest UpdateAvatarRequest
+		if err := json.NewDecoder(r.Body).Decode(&updateRequest); err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Invalid request format"})
+			return
+		}
+
+		// Update the avatar_id in the database
+		if result := db.Model(&models.User{}).Where("id = ?", userID).Update("avatar_id", updateRequest.AvatarID); result.Error != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Failed to update avatar"})
+			return
+		}
+
+		// Return success response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Avatar updated successfully"})
 	}
 }
