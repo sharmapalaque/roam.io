@@ -660,13 +660,8 @@ const AccommodationDetails: React.FC = () => {
                   readOnly
                   size="small"
                 />
-                <Typography
-                  variant="body2"
-                  className="rating-value"
-                  sx={{ ml: 1 }}
-                >
-                  {accommodation.Rating} ({accommodation.UserReviews.length}{" "}
-                  UserReviews)
+                <Typography variant="body2" className="rating-value" sx={{ ml: 1 }}>
+                  {accommodation.Rating} ({accommodation.UserReviews.length} User Reviews)
                 </Typography>
               </Box>
 
