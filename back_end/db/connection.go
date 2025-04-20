@@ -26,5 +26,21 @@ func MigrateDB(db *gorm.DB) {
 		panic("Failed to migrate database")
 	}
 
+	if !db.Migrator().HasColumn(&models.User{}, "avatar_id") {
+		// Add the column with default value
+		if err := db.Exec("ALTER TABLE users ADD COLUMN avatar_id VARCHAR(100) DEFAULT 'Marshmallow'").Error; err != nil {
+			fmt.Println("Error adding avatar_id column:", err)
+		} else {
+			fmt.Println("Added avatar_id column to users table")
+		}
+	} else {
+		// Set any NULL or empty avatar_ids to 'Marshmallow'
+		if err := db.Exec("UPDATE users SET avatar_id = 'Marshmallow' WHERE avatar_id IS NULL OR avatar_id = ''").Error; err != nil {
+			fmt.Println("Error updating empty avatar_id values:", err)
+		} else {
+			fmt.Println("Updated empty avatar_id values to 'Marshmallow'")
+		}
+	}
+
 	fmt.Println("Database migrated successfully")
 }
