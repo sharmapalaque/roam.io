@@ -84,6 +84,7 @@ func CreateAccommodation(db *gorm.DB) http.HandlerFunc {
 			OwnerID:       payload.OwnerID,
 			PricePerNight: payload.PricePerNight,
 			Rating:        payload.Rating, // Initial rating, could be updated based on reviews later
+			Coordinates:   payload.Coordinates,
 		}
 
 		result := db.Create(&accommodation)

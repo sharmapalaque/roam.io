@@ -17,6 +17,7 @@ type Event struct {
 	TotalSeats     uint
 	OfficialLink   string `gorm:type:text"`
 	OrganizerID    uint   `gorm:"not null"`
+	Coordinates    string `gorm:type:text`
 }
 
 type EventResponse struct {
@@ -32,4 +33,5 @@ type EventResponse struct {
 	TotalSeats     uint
 	OfficialLink   string    `gorm:"type:text"`
 	Organizer      Organizer `gorm:"type:json"`
+	Coordinates    string    `gorm:text"`
 }

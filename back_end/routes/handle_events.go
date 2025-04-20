@@ -22,7 +22,7 @@ func FetchEvents(db *gorm.DB) http.HandlerFunc {
 			response := []models.EventResponse{}
 			for _, event := range events {
 				organizer, _ := GetOrganizerByID(event.OrganizerID, db)
-				currEvent := models.EventResponse{ID: event.ID, Name: event.EventName, Location: event.Location, Images: pq.StringArray(event.Images), Description: event.Description, Date: event.Date, Time: event.Time, Price: event.Price, AvailableSeats: event.AvailableSeats, TotalSeats: event.TotalSeats, OfficialLink: event.OfficialLink, Organizer: *organizer}
+				currEvent := models.EventResponse{ID: event.ID, Name: event.EventName, Location: event.Location, Images: pq.StringArray(event.Images), Description: event.Description, Date: event.Date, Time: event.Time, Price: event.Price, AvailableSeats: event.AvailableSeats, TotalSeats: event.TotalSeats, Coordinates: event.Coordinates, OfficialLink: event.OfficialLink, Organizer: *organizer}
 				response = append(response, currEvent)
 			}
 			if err != nil {
@@ -54,7 +54,7 @@ func FetchEventById(db *gorm.DB) http.HandlerFunc {
 				return
 			}
 			organizer, _ := GetOrganizerByID(result.OrganizerID, db)
-			event := models.EventResponse{ID: result.ID, Name: result.EventName, Location: result.Location, Images: pq.StringArray(result.Images), Description: result.Description, Date: result.Date, Time: result.Time, Price: result.Price, AvailableSeats: result.AvailableSeats, TotalSeats: result.TotalSeats, OfficialLink: result.OfficialLink, Organizer: *organizer}
+			event := models.EventResponse{ID: result.ID, Name: result.EventName, Location: result.Location, Images: pq.StringArray(result.Images), Description: result.Description, Date: result.Date, Time: result.Time, Price: result.Price, AvailableSeats: result.AvailableSeats, TotalSeats: result.TotalSeats, Coordinates: result.Coordinates, OfficialLink: result.OfficialLink, Organizer: *organizer}
 			// Return response with the new user ID
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
@@ -77,7 +77,7 @@ func CreateEvent(db *gorm.DB) http.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-		event := models.Event{EventName: payload.EventName, Location: payload.Location, Images: pq.StringArray(payload.Images), Description: payload.Description, Date: payload.Date, Time: payload.Time, Price: payload.Price, AvailableSeats: payload.TotalSeats, TotalSeats: payload.TotalSeats, OfficialLink: payload.OfficialLink, OrganizerID: payload.OrganizerID}
+		event := models.Event{EventName: payload.EventName, Location: payload.Location, Images: pq.StringArray(payload.Images), Description: payload.Description, Date: payload.Date, Time: payload.Time, Price: payload.Price, AvailableSeats: payload.TotalSeats, TotalSeats: payload.TotalSeats, Coordinates: payload.Coordinates, OfficialLink: payload.OfficialLink, OrganizerID: payload.OrganizerID}
 		result := db.Create(&event)
 		if result.Error != nil {
 			fmt.Println(result.Error)

@@ -188,6 +188,7 @@ func TestCreateAccommodation(t *testing.T) {
 		ImageUrls:     pq.StringArray{"http://example.com/image.jpg"},
 		OwnerID:       1,
 		PricePerNight: 149.99,
+		Coordinates:   "41.40338, 2.17403",
 		Rating:        4.5,
 	}
 

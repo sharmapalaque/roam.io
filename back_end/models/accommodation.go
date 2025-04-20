@@ -26,4 +26,5 @@ type Accommodation struct {
 	PricePerNight float64        `json:"PricePerNight"`
 	Rating        float64        `json:"Rating"` // Consider calculating this based on Reviews
 	Owner         Owner          `gorm:"foreignKey:OwnerID" json:"Owner"`
+	Coordinates   string         `gorm:"type:text" json:"Coordinates"`
 }
