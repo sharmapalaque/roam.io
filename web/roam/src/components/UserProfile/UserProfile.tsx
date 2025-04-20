@@ -621,7 +621,6 @@ const UserProfile: React.FC = () => {
             >
               <Tab label="ACCOMMODATIONS" className="main-tab" />
               <Tab label="EVENTS" className="main-tab" />
-              <Tab label="SECURITY" className="main-tab" />
             </Tabs>
             
             {/* Accommodation Tab */}
@@ -696,7 +695,7 @@ const UserProfile: React.FC = () => {
               </Box>
             </TabPanel>
 
-            {/* Security Tab */}
+            {/* Security Tab commented out
             <TabPanel value={tabValue} index={2}>
               <Box className="tab-content">
                 <Typography variant="h6" className="section-title">
@@ -798,10 +797,10 @@ const UserProfile: React.FC = () => {
                       Update Password
                     </Button>
                   </Box>
-                  */}
+                  
                 </Box>
               </Box>
-            </TabPanel>
+            </TabPanel>*/}
           </Box>
         </Container>
       </Box>
