@@ -495,7 +495,7 @@ const AccommodationDetails: React.FC = () => {
                   size="small"
                 />
                 <Typography variant="body2" className="rating-value" sx={{ ml: 1 }}>
-                  {accommodation.Rating} ({accommodation.UserReviews.length} UserReviews)
+                  {accommodation.Rating} ({accommodation.UserReviews.length} User Reviews)
                 </Typography>
               </Box>
 
