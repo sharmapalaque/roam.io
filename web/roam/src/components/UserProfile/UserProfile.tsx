@@ -260,6 +260,13 @@ const UserProfile: React.FC = () => {
             // Assuming the profile endpoint returns an object with name and avatarId
             // setUserData({ name: result.name, avatarId: result.avatar_url }); 
 
+            const currentUser: UserData = {
+              name: result.name,
+              email: result.email,
+              avatarId: 'Marshmallow'
+            }
+            setUserData(currentUser)
+
             console.log(result.bookings);
             console.log(result.event_bookings);
 
@@ -430,7 +437,46 @@ const UserProfile: React.FC = () => {
   // Delete booking
   const handleDeleteBooking = (bookingId: number) => {
     // In a real app, this would call an API to delete the booking
-    alert(`Booking ${bookingId} would be deleted`);
+    // alert(`Booking ${bookingId} would be deleted`);
+    
+    // setup for doing a REST API call
+    // Construct query string with parameters
+    const queryParams = new URLSearchParams({
+      booking_id: bookingId.toString(),
+    });
+
+    // get data from backend based on REST API call
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/accommodations?${queryParams.toString()}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // Check if response status is NOT ok
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        // Log the raw response text before parsing
+        // we are doing so that next part of code waits while we fetch response from server
+        const responseText = await response.text();
+        console.log("Raw response text:", responseText);
+
+        alert(`Booking ${bookingId} would be deleted`);
+        setBookings(prev => prev.filter(b => b.id !== bookingId))
+      } catch (error) {
+        alert(error);
+      }
+    };
+
+    // this method has been defined above which deals with REST API call
+    fetchData();
   };
 
   // View booking details
