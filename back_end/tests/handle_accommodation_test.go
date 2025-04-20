@@ -161,14 +161,9 @@ func TestCreateAccommodation(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectExec("^INSERT INTO `accommodations` ").
 		WithArgs(
-			sqlmock.AnyArg(), // Let's use AnyArg for all arguments to be more flexible
-			sqlmock.AnyArg(),
-			sqlmock.AnyArg(),
-			sqlmock.AnyArg(),
-			sqlmock.AnyArg(),
-			sqlmock.AnyArg(),
-			sqlmock.AnyArg(),
-			sqlmock.AnyArg(),
+			sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
+			sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(),
+			sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), // Added extra arg for coordinates
 		).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
