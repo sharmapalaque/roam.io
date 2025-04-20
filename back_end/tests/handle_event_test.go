@@ -77,6 +77,7 @@ func TestCreateEvent(t *testing.T) {
 				Time:           "18:00",
 				Price:          "100",
 				AvailableSeats: 100,
+				Coordinates:    "41.003, 32.002",
 				TotalSeats:     100,
 				OfficialLink:   "https://test-event.com",
 				OrganizerID:    1,
@@ -215,6 +216,7 @@ func TestFetchEventById(t *testing.T) {
 				Time:           "18:00",
 				Price:          "100",
 				AvailableSeats: 100,
+				Coordinates:    "21.004, 32.003",
 				TotalSeats:     100,
 				OfficialLink:   "https://test-event.com",
 				Organizer: models.Organizer{

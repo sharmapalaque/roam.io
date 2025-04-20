@@ -240,7 +240,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/events/1",
+					"raw": "http://localhost:8080/events/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -248,7 +248,7 @@
 					"port": "8080",
 					"path": [
 						"events",
-						"1"
+						"2"
 					],
 					"query": [
 						{
@@ -296,7 +296,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"EventName\": \"Trekking\",\r\n    \"Location\": \"Miami\",\r\n    \"Images\": [\"image1\", \"image2\", \"image3\"],\r\n    \"Description\": \"Description of the event\",\r\n    \"Date\": \"2025-01-01\",\r\n    \"Time\": \"9:30\",\r\n    \"Price\": \"400\",\r\n    \"TotalSeats\": 200,\r\n    \"OfficialLink\": \"www.event.com\",\r\n    \"OrganizerID\": 1\r\n}",
+					"raw": "{\r\n    \"EventName\": \"Trekking\",\r\n    \"Location\": \"Miami\",\r\n    \"Images\": [\"image1\", \"image2\", \"image3\"],\r\n    \"Description\": \"Description of the event\",\r\n    \"Date\": \"2025-01-01\",\r\n    \"Time\": \"9:30\",\r\n    \"Price\": \"400\",\r\n    \"TotalSeats\": 200,\r\n    \"OfficialLink\": \"www.event.com\",\r\n    \"OrganizerID\": 1, \r\n    \"Coordinates\": \"41.40338, 2.17403\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
