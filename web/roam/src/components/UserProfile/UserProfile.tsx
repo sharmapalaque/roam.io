@@ -437,19 +437,30 @@ const UserProfile: React.FC = () => {
   // Delete booking
   const handleDeleteBooking = (bookingId: number) => {
     // In a real app, this would call an API to delete the booking
-    // alert(`Booking ${bookingId} would be deleted`);
     
     // setup for doing a REST API call
     // Construct query string with parameters
-    const queryParams = new URLSearchParams({
+    let queryParams = new URLSearchParams({
       booking_id: bookingId.toString(),
     });
+
+    // check if we are deleting accomodation or event booking
+    // set url accordingly
+    const item = bookings.find(obj => obj.id === bookingId)
+    let request_url = `http://localhost:8080/accommodations?${queryParams.toString()}`
+    if (item?.type === 'event') {
+      queryParams = new URLSearchParams({
+        event_booking_id: bookingId.toString(),
+      });
+
+      request_url = `http://localhost:8080/events?${queryParams.toString()}`
+    }
 
     // get data from backend based on REST API call
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/accommodations?${queryParams.toString()}`,
+          request_url,
           {
             method: "DELETE",
             headers: {
@@ -468,7 +479,7 @@ const UserProfile: React.FC = () => {
         const responseText = await response.text();
         console.log("Raw response text:", responseText);
 
-        alert(`Booking ${bookingId} would be deleted`);
+        alert(`Booking ID ${bookingId} has been deleted`);
         setBookings(prev => prev.filter(b => b.id !== bookingId))
       } catch (error) {
         alert(error);
