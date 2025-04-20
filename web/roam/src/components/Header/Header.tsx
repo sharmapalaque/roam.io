@@ -6,7 +6,7 @@ import './Header.css';
 // Define interface for user data
 interface UserData {
   name: string;
-  avatarId: string;
+  avatar_id: string;
 }
 
 // Define interface for avatar options
@@ -94,7 +94,7 @@ const Header: React.FC = () => {
           const result = JSON.parse(responseText);
           console.log("User profile response:", result);
           // Assuming the profile endpoint returns an object with name and avatarId
-          setUserData({ name: result.name, avatarId: result.avatar_url }); 
+          setUserData({ name: result.name, avatar_id: result.avatar_id }); 
           setIsLoading(false);
 
         } catch (error) {
@@ -118,8 +118,8 @@ const Header: React.FC = () => {
 
   // Find avatar by ID from userData
   useEffect(() => {
-    if (userData && userData.avatarId) {
-      const avatar = avatarOptions.find(avatar => avatar.id === userData.avatarId);
+    if (userData && userData.avatar_id) {
+      const avatar = avatarOptions.find(avatar => avatar.id === userData.avatar_id);
       setCurrentAvatar(avatar || null);
     }
   }, [userData]);
