@@ -259,14 +259,6 @@ const UserProfile: React.FC = () => {
             console.log("User profile response:", result);
             // Assuming the profile endpoint returns an object with name and avatarId
             // setUserData({ name: result.name, avatarId: result.avatar_url }); 
-
-            const currentUser: UserData = {
-              name: result.name,
-              email: result.email,
-              avatarId: result.avatarId
-            }
-            setUserData(currentUser)
-
             console.log(result.bookings);
             console.log(result.event_bookings);
 
