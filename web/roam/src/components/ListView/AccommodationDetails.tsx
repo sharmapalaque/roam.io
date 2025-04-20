@@ -315,7 +315,7 @@ const AccommodationDetails: React.FC = () => {
 
     // this method has been defined above which deals with REST API call
     fetchData();
-  }, []);
+  }, [accommodation]);
 
   // Handle check-in input click - focus on real input
   const handleCheckInClick = () => {
@@ -403,19 +403,46 @@ const AccommodationDetails: React.FC = () => {
     setIsSubmittingReview(true);
   
     try {
-      // TEMPORARY: Skip server request and use dummy data instead
-      console.log("Would submit to server:", {
-        accommodation_id: accommodation.ID,
-        rating: newReview.rating,
-        comment: newReview.comment
-      });
+      const data = {
+        Rating: newReview.rating,
+        Comment: newReview.comment
+      }
+      const fetchUserData = async () => {        
+        // try REST API call 
+        try {
+          const response = await fetch(`http://localhost:8080/accommodations/${id}/reviews`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data), // Send form data
+            credentials: 'include',
+          });
+
+          const result = await response.json() // response is in json format
+
+          // Check if the response is successful or has an error
+          if (response.ok) {
+            console.log("review added successfully")
+          } else {
+            alert(`Some technical problem... Error: ${result.message}`); // Error alert
+          }
+        } catch (error) {
+          // Handle netowork errors
+          alert('There was an error with the request');
+          console.log(error)
+        }
+      };
+  
+      fetchUserData();
       
       // Create a new review object based on the submitted data
-      const currentDate = new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const dd = String(today.getDate()).padStart(2, '0');
+      const currentDate = `${yyyy}-${mm}-${dd}`;
+      
       
       const newReviewObj: Review = {
         ID: Math.max(...accommodation.UserReviews.map((r) => r.ID), 0) + 1,
