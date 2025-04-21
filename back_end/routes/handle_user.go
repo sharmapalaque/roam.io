@@ -14,14 +14,24 @@ import (
 var currUserID string
 
 type UserRequest struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Dob      string `json:"dob"`
+	Name     string `json:"name" example:"John Doe"`
+	Username string `json:"username" example:"johndoe"`
+	Email    string `json:"email" example:"john@example.com"`
+	Password string `json:"password" example:"password123"`
+	Dob      string `json:"dob" example:"2000-01-01"`
 }
 
 // CreateUserHandler handles the user creation logic
+// @Summary Register a new user
+// @Description Create a new user account with provided details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body UserRequest true "User registration details"
+// @Success 201 {object} map[string]int "Returns user ID"
+// @Failure 400 {object} map[string]string "Invalid request format"
+// @Failure 500 {object} map[string]string "Server error"
+// @Router /users/register [post]
 func CreateUserHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Parse the incoming JSON into our custom request struct

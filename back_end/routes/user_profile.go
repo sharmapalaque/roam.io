@@ -52,9 +52,19 @@ type UserReviewDetails struct {
 }
 
 type UpdateAvatarRequest struct {
-	AvatarID string `json:"avatar_id"`
+	AvatarID string `json:"avatar_id" example:"Marshmallow"`
 }
 
+// GetUserProfileHandler retrieves the user profile information
+// @Summary Get user profile
+// @Description Retrieves user profile information including personal details, bookings, and event bookings
+// @Tags users
+// @Produce json
+// @Success 200 {object} UserProfile "User profile data including bookings"
+// @Failure 401 {object} map[string]string "User not authenticated"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Server error"
+// @Router /users/profile [get]
 func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := getSession(r, "session")
@@ -163,6 +173,15 @@ func GetUserProfileHandler(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+// GetUserReviewsHandler retrieves reviews made by the user
+// @Summary Get user reviews
+// @Description Retrieve all reviews submitted by the user
+// @Tags users
+// @Produce json
+// @Success 200 {array} UserReviewDetails "User reviews"
+// @Failure 401 {object} map[string]string "User not authenticated"
+// @Failure 500 {object} map[string]string "Server error"
+// @Router /users/reviews [get]
 func GetUserReviewsHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := getSession(r, "session")
@@ -213,6 +232,18 @@ func GetUserReviewsHandler(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+// UpdateUserAvatarHandler updates the user's avatar
+// @Summary Update user avatar
+// @Description Change the user's avatar image by setting a new avatar ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param avatar body UpdateAvatarRequest true "New avatar ID"
+// @Success 200 {object} map[string]string "Avatar updated successfully"
+// @Failure 400 {object} map[string]string "Invalid request format"
+// @Failure 401 {object} map[string]string "User not authenticated"
+// @Failure 500 {object} map[string]string "Failed to update avatar"
+// @Router /users/avatar [put]
 func UpdateUserAvatarHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get the current user from the session

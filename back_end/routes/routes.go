@@ -9,14 +9,26 @@ import (
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/gorm"
+	_ "roam.io/docs" // Import swagger generated docs
 )
 
 func NewRouter(db *gorm.DB) *mux.Router {
 	r := mux.NewRouter()
 
-	// Define user-related routes
-	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
+	// Serve swagger files
+	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"), // The URL pointing to API definition
+		httpSwagger.DeepLinking(true),
+		httpSwagger.DocExpansion("list"),
+		httpSwagger.DomID("swagger-ui"),
+	))
 
+	// Explicitly serve the swagger.json file
+	r.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./docs/swagger.json")
+	})
+
+	// Define user-related routes
 	r.HandleFunc("/users/register", CreateUserHandler(db)).Methods("POST")
 	r.HandleFunc("/users/login", LoginHandler(db)).Methods("POST")
 	r.HandleFunc("/users/logout", LogoutHandler(db)).Methods("POST")

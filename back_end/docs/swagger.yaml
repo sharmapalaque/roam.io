@@ -1,0 +1,335 @@
+basePath: /
+definitions:
+  routes.AccommodationDetails:
+    properties:
+      id:
+        type: integer
+      image_url:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+    type: object
+  routes.BookingWithDetails:
+    properties:
+      accommodation:
+        $ref: '#/definitions/routes.AccommodationDetails'
+      checkin_date:
+        type: string
+      checkout_date:
+        type: string
+      guests:
+        type: integer
+      id:
+        type: integer
+    type: object
+  routes.EventBookingWithDetails:
+    properties:
+      event:
+        $ref: '#/definitions/routes.EventDetails'
+      guests:
+        type: integer
+      id:
+        type: integer
+    type: object
+  routes.EventDetails:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+    type: object
+  routes.LoginRequest:
+    properties:
+      email:
+        example: john@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+    type: object
+  routes.UpdateAvatarRequest:
+    properties:
+      avatar_id:
+        example: Marshmallow
+        type: string
+    type: object
+  routes.UserProfile:
+    properties:
+      avatar_id:
+        type: string
+      bookings:
+        items:
+          $ref: '#/definitions/routes.BookingWithDetails'
+        type: array
+      email:
+        type: string
+      event_bookings:
+        items:
+          $ref: '#/definitions/routes.EventBookingWithDetails'
+        type: array
+      name:
+        type: string
+    type: object
+  routes.UserRequest:
+    properties:
+      dob:
+        example: "2000-01-01"
+        type: string
+      email:
+        example: john@example.com
+        type: string
+      name:
+        example: John Doe
+        type: string
+      password:
+        example: password123
+        type: string
+      username:
+        example: johndoe
+        type: string
+    type: object
+  routes.UserReviewDetails:
+    properties:
+      accommodation_name:
+        type: string
+      review_date:
+        type: string
+      review_rating:
+        type: number
+      review_text:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@roamio.com
+    name: API Support
+    url: http://www.roamio.com/support
+  description: Roam.io is a travel booking platform API for accommodations and events
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Roam.io API
+  version: "1.0"
+paths:
+  /users/avatar:
+    put:
+      consumes:
+      - application/json
+      description: Change the user's avatar image by setting a new avatar ID
+      parameters:
+      - description: New avatar ID
+        in: body
+        name: avatar
+        required: true
+        schema:
+          $ref: '#/definitions/routes.UpdateAvatarRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Avatar updated successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request format
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: User not authenticated
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to update avatar
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update user avatar
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user with email and password
+      parameters:
+      - description: User login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/routes.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful with user ID
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request format
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid password
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
+      tags:
+      - users
+  /users/logout:
+    post:
+      description: Clear user session and log out
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout successful
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Not logged in
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to logout
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User logout
+      tags:
+      - users
+  /users/profile:
+    get:
+      description: Retrieves user profile information including personal details,
+        bookings, and event bookings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile data including bookings
+          schema:
+            $ref: '#/definitions/routes.UserProfile'
+        "401":
+          description: User not authenticated
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user profile
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account with provided details
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/routes.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Returns user ID
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Invalid request format
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - users
+  /users/reviews:
+    get:
+      description: Retrieve all reviews submitted by the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User reviews
+          schema:
+            items:
+              $ref: '#/definitions/routes.UserReviewDetails'
+            type: array
+        "401":
+          description: User not authenticated
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user reviews
+      tags:
+      - users
+schemes:
+- http
+swagger: "2.0"
