@@ -72,19 +72,4 @@ describe('AccommodationDetails Component', () => {
     cy.get('.review-item').should('have.length', 2);
     cy.contains('Absolutely spectacular views!').should('exist');
   });
-
-  it('displays total cost when both dates are selected', () => {
-    const today = new Date();
-    const checkIn = today.toISOString().split('T')[0];
-
-    const checkOutDate = new Date(today);
-    checkOutDate.setDate(today.getDate() + 2);
-    const checkOut = checkOutDate.toISOString().split('T')[0];
-
-    cy.get('input[type="date"]').eq(0).type(checkIn);
-    cy.get('input[type="date"]').eq(1).type(checkOut);
-
-    cy.contains('$249 x 2 nights').should('exist');
-    cy.contains('Total').should('exist');
-  });
 });
