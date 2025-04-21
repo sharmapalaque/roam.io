@@ -203,6 +203,10 @@ const UserProfile: React.FC = () => {
   // State for current avatar
   const [currentAvatar, setCurrentAvatar] = useState<AvatarOption | null>(null);
 
+  // for storing user specific reviews
+  const [reviews, setReviews] = useState<Review[]>([]);
+  // let reviews: Review[] = []
+
   // Find avatar by ID from userData
   useEffect(() => {
     const avatar = avatarOptions.find(avatar => avatar.id === userData.avatarId);
@@ -327,8 +331,66 @@ const UserProfile: React.FC = () => {
           // setUserData(null);
         }
       };
+
+      // get data from backend based on REST API call
+      const fetchUserReviewData = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:8080/users/reviews`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include", // Ensure cookies (like session IDs) are sent
+            }
+          );
+
+          // Check if response status is NOT ok
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          // Log the raw response text before parsing
+          // we are doing so that next part of code waits while we fetch response from server
+          const responseText = await response.text();
+          console.log("Raw response text:", responseText);
+
+          // Try to parse the response as JSON
+          try {
+            const result= JSON.parse(responseText);
+            console.log("lets' see response");
+            console.log(result);
+            let fetchedReviews: Review[] = [];
+            let current_id = 0
+            result.forEach((element: any) => {
+              let review: Review = {
+                id: current_id,
+                itemId: 1,
+                itemType: 'accommodation',
+                itemName: element.accommodation_name,
+                rating: element.review_rating,
+                comment: element.review_text,
+                date: element.review_date
+              }
+              current_id += 1
+              fetchedReviews.push(review)
+            });
+            setReviews(fetchedReviews)
+            console.log("reviews array", )
+            
+
+          } catch (error) {
+            console.error("Error parsing JSON:", error);
+            alert("Failed to parse response");
+          }
+        } catch (error) {
+          alert(error);
+        };
+      };
   
       fetchUserData();
+      fetchUserReviewData()
     }, []);
 
   const [securityData, setSecurityData] = useState({
@@ -523,7 +585,7 @@ const UserProfile: React.FC = () => {
 
   // Filter reviews by type
   const getReviewsByType = (type: 'accommodation' | 'event') => {
-    return dummyReviews.filter(review => review.itemType === type);
+    return reviews.filter(review => review.itemType === type);
   };
 
   // Function to format date in a more readable format
@@ -755,6 +817,37 @@ const UserProfile: React.FC = () => {
                 >
                   <Tab label="BOOKINGS" className="sub-tab" />
                 </Tabs>
+
+                {/* Event Bookings */}
+                <TabPanel value={subtabValue} index={0}>
+                  <Box className="bookings-container">
+                    {getBookingsByType('event', 'upcoming').length > 0 && (
+                      <Box className="bookings-section">
+                        <Typography variant="h6" className="section-title">
+                          UPCOMING BOOKINGS
+                        </Typography>
+                        <Box className="bookings-list">
+                          {getBookingsByType('event', 'upcoming').map(renderBookingCard)}
+                        </Box>
+                      </Box>
+                    )}
+
+                    {getBookingsByType('event', 'past').length > 0 && (
+                      <Box className="bookings-section">
+                        <Typography variant="h6" className="section-title">
+                          PAST BOOKINGS
+                        </Typography>
+                        <Box className="bookings-list">
+                          {getBookingsByType('event', 'past').map(renderBookingCard)}
+                        </Box>
+                      </Box>
+                    )}
+
+                    {getBookingsByType('event').length === 0 && (
+                      renderEmptyState("You don't have any accommodation bookings yet.")
+                    )}
+                  </Box>
+                </TabPanel>
               </Box>
             </TabPanel>
 
