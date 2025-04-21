@@ -13,6 +13,12 @@ import (
 
 var store = sessions.NewCookieStore([]byte("secret-key"))
 
+// LoginRequest represents a login request body
+type LoginRequest struct {
+	Email    string `json:"email" example:"john@example.com"`
+	Password string `json:"password" example:"password123"`
+}
+
 // getSession returns a session from the store, using test helpers if in test mode
 func getSession(r *http.Request, name string) (*sessions.Session, error) {
 	if testStoreSet {
@@ -21,12 +27,22 @@ func getSession(r *http.Request, name string) (*sessions.Session, error) {
 	return store.Get(r, name)
 }
 
+// LoginHandler authenticates a user and creates a session
+// @Summary User login
+// @Description Authenticate a user with email and password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param credentials body LoginRequest true "User login credentials"
+// @Success 200 {object} map[string]interface{} "Login successful with user ID"
+// @Failure 400 {object} map[string]string "Invalid request format"
+// @Failure 401 {object} map[string]string "Invalid password"
+// @Failure 404 {object} map[string]string "User not found"
+// @Failure 500 {object} map[string]string "Server error"
+// @Router /users/login [post]
 func LoginHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req struct {
-			Email    string `json:"email"`
-			Password string `json:"password"`
-		}
+		var req LoginRequest
 
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
@@ -80,6 +96,14 @@ func LoginHandler(db *gorm.DB) http.HandlerFunc {
 }
 
 // LogoutHandler clears the user session
+// @Summary User logout
+// @Description Clear user session and log out
+// @Tags users
+// @Produce json
+// @Success 200 {object} map[string]string "Logout successful"
+// @Failure 401 {object} map[string]string "Not logged in"
+// @Failure 500 {object} map[string]string "Failed to logout"
+// @Router /users/logout [post]
 func LogoutHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, _ := getSession(r, "session")
