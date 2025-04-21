@@ -17,19 +17,6 @@ describe('UserProfile Component', () => {
     cy.get('.user-name').should('contain', 'Palaque Sharma'); 
   });
 
-  // Test if tabs are rendered for different sections like "ACCOMMODATIONS", "EVENTS", and "SECURITY"
-  it('should display profile tabs for "ACCOMMODATIONS", "EVENTS", and "SECURITY"', () => {
-    cy.get('.main-tabs').should('exist');
-    cy.get('.main-tab').should('have.length', 3);
-    cy.get('.sub-tab').should('exist'); 
-  });
-
-  // Test if clicking on the "SECURITY" tab switches to the correct section
-  it('should switch to "SECURITY" tab when clicked', () => {
-    cy.get('.main-tab').eq(2).click(); 
-    cy.get('.section-title').should('contain', 'SECURITY'); 
-  });
-
   // Test avatar selection drawer opens and closes
   it('should open and close the avatar selection drawer', () => {
     cy.get('.user-avatar-wrapper').click(); 

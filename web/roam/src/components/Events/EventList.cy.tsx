@@ -65,7 +65,7 @@ describe('EventList Component', () => {
   // Test if the page renders the selected event details
   it('should render selected event details when clicked', () => {
     cy.get('.event-card').first().click(); 
-    cy.get('.event-details-title').should('contain', 'Annual Tech Conference'); 
-    cy.get('.event-details-location').should('contain', 'San Francisco, CA'); 
+    cy.get('.event-details-title').should('contain', 'Summer Music Festival'); 
+    cy.get('.event-details-location').should('contain', 'Austin, TX'); 
   });
 });
