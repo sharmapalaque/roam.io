@@ -93,9 +93,9 @@ go run .               # Start the Go backend server
 
 ![Accommodation Listings](screenshots/Accommodations.png)
 
-![Accommodation Details View 1](screenshots/Accommodations_Details_1.png)
+![Accommodation Details View 1](screenshots/Accommodation_Details_1.png)
 
-![Accommodation Details View 2](screenshots/Accommodations_Details_2.png)
+![Accommodation Details View 2](screenshots/Accommodation_Details_2.png)
 
 ---
 
