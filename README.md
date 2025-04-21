@@ -58,9 +58,9 @@ npx cypress open       # Launch Cypress test runner
 ### 3. Database Setup
 Create a PostgreSQL user:
 
-**Username:** postgres. 
-**Password:** postgres. 
-**Database name:** mydb. 
+**Username:** postgres <br>
+**Password:** postgre <br>
+**Database name:** mydb <br>
 
 Tables will be auto-created when the backend server is started.
 
@@ -81,9 +81,9 @@ go run .               # Start the Go backend server
 
 > Users can create an account for themselves and login using the same as shown below.
 
-![Login Page](screenshots/Login.png)
-
 ![Register Page](screenshots/Register.png)
+
+![Login Page](screenshots/Login.png)
 
 ---
 
