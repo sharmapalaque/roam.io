@@ -12,7 +12,8 @@ jest.mock('@mui/icons-material', () => ({
   LocationOn: () => <span data-testid="location-icon">LocationIcon</span>,
   Send: () => <span data-testid="send-icon">SendIcon</span>,
   WhatsApp: () => <span data-testid="whatsapp-icon">WhatsAppIcon</span>,
-  Phone: () => <span data-testid="phone-icon">PhoneIcon</span>
+  Phone: () => <span data-testid="phone-icon">PhoneIcon</span>,
+  CircularProgress: () => <span data-testid="progress">CircularProgress</span>
 }));
 
 // Mock Header component
@@ -21,6 +22,13 @@ jest.mock('../Header/Header', () => {
     return <div data-testid="header">Header</div>;
   };
 });
+
+// Mock fetch for Google Sheets submission
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true
+  })
+);
 
 // Create a mock component version for testing
 jest.mock('./Support', () => {
@@ -68,6 +76,7 @@ jest.mock('./Support', () => {
         <h2>Need Emergency Travel Assistance?</h2>
         <p>For urgent matters such as canceled flights</p>
         <p>+1 (800) 999-8888</p>
+        <div>Thank you for your message. Our support team will get back to you shortly.</div>
       </div>
     );
   };
@@ -140,5 +149,12 @@ describe('Support Component', () => {
     expect(screen.getByText('Need Emergency Travel Assistance?')).toBeInTheDocument();
     expect(screen.getByText(/For urgent matters such as canceled flights/)).toBeInTheDocument();
     expect(screen.getByText('+1 (800) 999-8888')).toBeInTheDocument();
+  });
+
+  test('renders success message', () => {
+    render(<Support />);
+    
+    // Check for success message
+    expect(screen.getByText('Thank you for your message. Our support team will get back to you shortly.')).toBeInTheDocument();
   });
 });

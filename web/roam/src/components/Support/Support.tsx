@@ -12,7 +12,10 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  InputLabel
+  InputLabel,
+  CircularProgress,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import {
   Phone,
@@ -33,6 +36,15 @@ const Support: React.FC = () => {
     category: ''
   });
 
+  // New state for submission status
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Google Sheet script URL
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzOt79ETPK9Is4c9XHYYTHRMZn0XR4GCt5T9KVAPB7h36Mwc9501rV88_rbJUTyCRlwA/exec";
+
   // Handle contact form changes for text fields
   const handleFormChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setContactForm({
@@ -49,27 +61,62 @@ const Support: React.FC = () => {
     });
   };
 
+  // Handle snackbar close
+  const handleSnackbarClose = () => {
+    setSubmitSuccess(false);
+    setSubmitError(false);
+  };
+
   // Handle form submission
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // In a real app, this would send the form data to a server
-    console.log('Form submitted:', contactForm);
-    alert('Thank you for your message. Our support team will get back to you shortly.');
+    setIsSubmitting(true);
     
-    // Reset form
-    setContactForm({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-      category: ''
-    });
+    try {
+      // Add timestamp to form data
+      const formData = {
+        ...contactForm,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Prepare form data for submission
+      const formDataForSubmit = new FormData();
+      Object.keys(formData).forEach(key => {
+        formDataForSubmit.append(key, formData[key as keyof typeof formData]);
+      });
+      
+      // Send data to Google Sheets
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: formDataForSubmit,
+        mode: 'no-cors'
+      });
+      
+      // Due to CORS, we can't actually check the response status
+      // But we can assume it worked if no error was thrown
+      setSubmitSuccess(true);
+      
+      // Reset form
+      setContactForm({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        category: ''
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitError(true);
+      setErrorMessage('There was an error submitting your message. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="support-page-wrapper">
       <Header />
-      
+
       <Box className="support-page">
         {/* Teal header background matching profile page */}
         <Box className="teal-header support-header">
@@ -88,10 +135,14 @@ const Support: React.FC = () => {
         <Container maxWidth="lg" className="support-content-container">
           {/* Support Options */}
           <Box className="support-section">
-            <Typography variant="h4" className="support-section-title" sx={{ color: '#008080' }}>
+            <Typography
+              variant="h4"
+              className="support-section-title"
+              sx={{ color: "#008080" }}
+            >
               Contact Us
             </Typography>
-            
+
             <Grid container spacing={3} className="contact-options">
               <Grid item xs={12} md={6}>
                 <Card className="contact-card">
@@ -114,7 +165,7 @@ const Support: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              
+
               <Grid item xs={12} md={6}>
                 <Card className="contact-card">
                   <CardContent className="contact-card-content">
@@ -138,23 +189,27 @@ const Support: React.FC = () => {
               </Grid>
             </Grid>
           </Box>
-          
+
           {/* Office Locations */}
           <Box className="locations-section">
-            <Typography variant="h4" className="support-section-title" sx={{ color: '#008080' }}>
+            <Typography
+              variant="h4"
+              className="support-section-title"
+              sx={{ color: "#008080" }}
+            >
               Our Offices
             </Typography>
-            
+
             <Grid container spacing={3} className="office-locations">
               <Grid item xs={12} md={4}>
                 <Card className="location-card">
-                  <Box 
-                    className="location-image" 
+                  <Box
+                    className="location-image"
                     sx={{
                       backgroundImage: `url('/support/ny.jpg')`,
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center'
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center",
                     }}
                   />
                   <CardContent className="location-content">
@@ -164,7 +219,8 @@ const Support: React.FC = () => {
                     <Box className="location-address">
                       <LocationOn className="location-icon" />
                       <Typography variant="body2">
-                        123 Broadway, Suite 400<br />
+                        123 Broadway, Suite 400
+                        <br />
                         New York, NY 10010
                       </Typography>
                     </Box>
@@ -174,16 +230,16 @@ const Support: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              
+
               <Grid item xs={12} md={4}>
                 <Card className="location-card">
-                  <Box 
-                    className="location-image" 
+                  <Box
+                    className="location-image"
                     sx={{
                       backgroundImage: `url('/support/miami.jpg')`,
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center'
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center",
                     }}
                   />
                   <CardContent className="location-content">
@@ -193,7 +249,8 @@ const Support: React.FC = () => {
                     <Box className="location-address">
                       <LocationOn className="location-icon" />
                       <Typography variant="body2">
-                        456 Ocean Drive<br />
+                        456 Ocean Drive
+                        <br />
                         Miami, FL 33139
                       </Typography>
                     </Box>
@@ -203,16 +260,16 @@ const Support: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              
+
               <Grid item xs={12} md={4}>
                 <Card className="location-card">
-                  <Box 
-                    className="location-image" 
+                  <Box
+                    className="location-image"
                     sx={{
                       backgroundImage: `url('/support/sf.jpg')`,
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center'
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center",
                     }}
                   />
                   <CardContent className="location-content">
@@ -222,7 +279,8 @@ const Support: React.FC = () => {
                     <Box className="location-address">
                       <LocationOn className="location-icon" />
                       <Typography variant="body2">
-                        789 Market Street, Suite 300<br />
+                        789 Market Street, Suite 300
+                        <br />
                         San Francisco, CA 94103
                       </Typography>
                     </Box>
@@ -234,13 +292,17 @@ const Support: React.FC = () => {
               </Grid>
             </Grid>
           </Box>
-          
+
           {/* Contact Form */}
           <Box className="contact-form-section">
-            <Typography variant="h4" className="support-section-title" sx={{ color: '#008080' }}>
+            <Typography
+              variant="h4"
+              className="support-section-title"
+              sx={{ color: "#008080" }}
+            >
               Send us a Message
             </Typography>
-            
+
             <Card className="contact-form-card">
               <CardContent className="contact-form-content">
                 <form onSubmit={handleSubmit}>
@@ -252,11 +314,12 @@ const Support: React.FC = () => {
                         fullWidth
                         required
                         value={contactForm.name}
-                        onChange={handleFormChange('name')}
+                        onChange={handleFormChange("name")}
                         className="form-field"
+                        disabled={isSubmitting}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} md={6}>
                       <TextField
                         label="Your Email"
@@ -265,31 +328,40 @@ const Support: React.FC = () => {
                         required
                         type="email"
                         value={contactForm.email}
-                        onChange={handleFormChange('email')}
+                        onChange={handleFormChange("email")}
                         className="form-field"
+                        disabled={isSubmitting}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} md={6}>
-                      <FormControl variant="outlined" fullWidth className="form-field category-select">
-                        <InputLabel id="category-label">Inquiry Category</InputLabel>
+                      <FormControl
+                        variant="outlined"
+                        fullWidth
+                        className="form-field category-select"
+                        disabled={isSubmitting}
+                      >
+                        <InputLabel id="category-label">
+                          Inquiry Category
+                        </InputLabel>
                         <Select
                           labelId="category-label"
                           label="Inquiry Category"
                           value={contactForm.category}
-                          onChange={handleSelectChange('category')}
+                          onChange={handleSelectChange("category")}
                           required
                         >
                           <MenuItem value="booking">Booking Issues</MenuItem>
-                          <MenuItem value="cancel">Cancellation & Refunds</MenuItem>
+                          <MenuItem value="cancel">
+                            Cancellation & Refunds
+                          </MenuItem>
                           <MenuItem value="account">My Account</MenuItem>
-                          <MenuItem value="payment">Payment Problems</MenuItem>
                           <MenuItem value="info">General Information</MenuItem>
                           <MenuItem value="feedback">Feedback</MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>
-                    
+
                     <Grid item xs={12} md={6}>
                       <TextField
                         label="Subject"
@@ -297,11 +369,12 @@ const Support: React.FC = () => {
                         fullWidth
                         required
                         value={contactForm.subject}
-                        onChange={handleFormChange('subject')}
+                        onChange={handleFormChange("subject")}
                         className="form-field"
+                        disabled={isSubmitting}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <TextField
                         label="Your Message"
@@ -311,19 +384,27 @@ const Support: React.FC = () => {
                         multiline
                         rows={6}
                         value={contactForm.message}
-                        onChange={handleFormChange('message')}
+                        onChange={handleFormChange("message")}
                         className="form-field message-field"
+                        disabled={isSubmitting}
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12} className="submit-container">
                       <Button
                         type="submit"
                         variant="contained"
                         className="submit-button"
-                        startIcon={<Send />}
+                        startIcon={
+                          isSubmitting ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : (
+                            <Send />
+                          )
+                        }
+                        disabled={isSubmitting}
                       >
-                        Send Message
+                        {isSubmitting ? "Sending..." : "Send Message"}
                       </Button>
                     </Grid>
                   </Grid>
@@ -331,7 +412,7 @@ const Support: React.FC = () => {
               </CardContent>
             </Card>
           </Box>
-          
+
           {/* Emergency Support */}
           <Box className="emergency-section">
             <Card className="emergency-card">
@@ -339,21 +420,30 @@ const Support: React.FC = () => {
                 <Typography variant="h5" className="emergency-title">
                   Need Emergency Travel Assistance?
                 </Typography>
-                <Typography 
-                  variant="body1" 
-                  className="emergency-description" 
-                  sx={{ 
-                    textAlign: 'center !important',
-                    margin: '0 auto',
-                    display: 'block',
-                    paddingTop: '15px'
+                <Typography
+                  variant="body1"
+                  className="emergency-description"
+                  sx={{
+                    textAlign: "center !important",
+                    margin: "0 auto",
+                    display: "block",
+                    paddingTop: "15px",
                   }}
                 >
-                  For urgent matters such as canceled flights, lost documents, or medical emergencies while traveling, contact our dedicated 24/7 emergency line.
+                  For urgent matters such as canceled flights, lost documents,
+                  or medical emergencies while traveling, contact our dedicated
+                  24/7 emergency line.
                 </Typography>
                 <Box className="emergency-contact">
-                  <Phone className="emergency-icon" style={{ color: '#e57373' }} />
-                  <Typography variant="h6" className="emergency-number" style={{ color: '#e57373' }}>
+                  <Phone
+                    className="emergency-icon"
+                    style={{ color: "#e57373" }}
+                  />
+                  <Typography
+                    variant="h6"
+                    className="emergency-number"
+                    style={{ color: "#e57373" }}
+                  >
                     +1 (800) 999-8888
                   </Typography>
                 </Box>
@@ -362,6 +452,30 @@ const Support: React.FC = () => {
           </Box>
         </Container>
       </Box>
+
+      {/* Success/Error Messages */}
+      <Snackbar
+        open={submitSuccess}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} // This centers the Snackbar horizontally
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{
+            width: "100%",
+            "& .MuiAlert-message": {
+              // This centers the text inside the Alert
+              width: "100%",
+              textAlign: "center",
+            },
+          }}
+        >
+          Thank you for your message. Our support team will get back to you
+          shortly.
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
