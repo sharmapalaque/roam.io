@@ -22,8 +22,8 @@ div.support-page-wrapper div.support-page {
 /* Teal header with gradient ending - for support page only */
 div.support-page-wrapper div.support-page div.teal-header.support-header {
   color: white;
-  padding: 90px 0 30px;
-  margin-top: 0;
+  padding: 80px 0 30px !important;
+  margin-top: 0 !important;
   position: relative;
   border: none !important;
   box-shadow: none !important;
@@ -38,7 +38,7 @@ div.support-page-wrapper div.support-page div.teal-header.support-header {
     rgba(112, 201, 194, 0) 100%
   );
   width: 100%;
-  max-width: 1200px;
+  max-width: 1185px !important; 
   margin-left: auto;
   margin-right: auto;
 }
