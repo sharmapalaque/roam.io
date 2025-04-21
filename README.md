@@ -131,7 +131,7 @@ go run .               # Start the Go backend server
 
 ![Profile Reviews](screenshots/Profile_Reviews.png)
 
-![Profile Events](screenshots/Profile_Events.png)
+![Profile Events](screenshots/Events.png)
 
 
 ### 👨‍💻 Team Members
