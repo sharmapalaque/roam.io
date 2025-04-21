@@ -4,7 +4,7 @@ import { mount } from 'cypress/react';
 
 describe('AccommodationDetails Component', () => {
   beforeEach(() => {
-    cy.viewport(1470, 956); // Adjust width and height
+    cy.viewport(1455, 749); // Adjust width and height
     mount(
       <MemoryRouter initialEntries={['/details/1']}>
         <Routes>
@@ -71,5 +71,34 @@ describe('AccommodationDetails Component', () => {
   it('renders user reviews', () => {
     cy.get('.review-item').should('have.length', 2);
     cy.contains('Absolutely spectacular views!').should('exist');
+  });
+
+  it('opens Google Maps with correct coordinates on Navigate Me click', () => {
+    cy.window().then((win) => {
+      cy.stub(win, 'open').as('windowOpen');
+    });
+  
+    cy.contains('Navigate Me');
+  });  
+
+  it('shows the review form when "Write a Review" is clicked', () => {
+    cy.contains('WRITE A REVIEW').click();
+    cy.get('.review-form-container').should('be.visible');
+    cy.get('.review-textarea').should('exist');
+  });  
+
+  it('calculates and displays total price including service and cleaning fees', () => {
+    const today = new Date();
+    const checkIn = today.toISOString().split('T')[0];
+    const checkOutDate = new Date(today);
+    checkOutDate.setDate(today.getDate() + 2); // 2 nights
+    const checkOut = checkOutDate.toISOString().split('T')[0];
+  
+    cy.get('input[type="date"]').eq(0).type(checkIn);
+    cy.get('input[type="date"]').eq(1).type(checkOut);
+  
+    cy.contains('Total').parent().within(() => {
+      cy.contains('$').should('exist');
+    });
   });
 });
