@@ -11,7 +11,7 @@ import (
 
 // Connect establishes and returns a database connection
 func Connect() (*gorm.DB, error) {
-	dsn := "host=localhost user=postgres password=postgres dbname=mydb port=5432 sslmode=disable"
+	dsn := "host=host.docker.internal user=postgres password=postgres dbname=mydb port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to database!")
