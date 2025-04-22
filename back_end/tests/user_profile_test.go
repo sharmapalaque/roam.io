@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 
@@ -204,5 +205,266 @@ func TestGetUserProfile_Success(t *testing.T) {
 	// Check event bookings is an empty array
 	if len(profile.EventBookings) != 0 {
 		t.Errorf("expected empty event bookings, got %v", profile.EventBookings)
+	}
+}
+
+func TestGetUserReviews_Unauthenticated(t *testing.T) {
+	// Setup dummy DB and handler
+	db, _ := setupTestDB(t)
+	handler := routes.GetUserReviewsHandler(db)
+
+	req := httptest.NewRequest("GET", "/users/reviews", nil)
+	// Setup an empty session
+	session, _ := testStore.New(req, "session")
+	routes.SetStoreForTesting(testStore)
+	routes.SetSessionForTesting(req, session)
+
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusUnauthorized {
+		t.Errorf("expected status %d, got %d", http.StatusUnauthorized, status)
+	}
+
+	var resp map[string]string
+	if err := json.Unmarshal(rr.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to parse response: %v", err)
+	}
+	if msg, ok := resp["message"]; !ok || msg != "User not authenticated" {
+		t.Errorf("unexpected message: %v", resp)
+	}
+}
+
+func TestGetUserReviews_FetchError(t *testing.T) {
+	// Setup mock DB and handler
+	db, mock := setupTestDB(t)
+	handler := routes.GetUserReviewsHandler(db)
+
+	// Setup expectation: Error when fetching reviews
+	userID := uint(42)
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "reviews" WHERE user_id = $1 ORDER BY id desc`)).
+		WithArgs(userID).
+		WillReturnError(fmt.Errorf("database error"))
+
+	// Create request with session
+	req := httptest.NewRequest("GET", "/users/reviews", nil)
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Errorf("expected status %d, got %d", http.StatusInternalServerError, status)
+	}
+
+	var resp map[string]string
+	if err := json.Unmarshal(rr.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to parse response: %v", err)
+	}
+	if msg, ok := resp["message"]; !ok || msg != "Error fetching user reviews" {
+		t.Errorf("unexpected message: %v", resp)
+	}
+}
+
+func TestGetUserReviews_Success(t *testing.T) {
+	// Setup mock DB and handler
+	db, mock := setupTestDB(t)
+	handler := routes.GetUserReviewsHandler(db)
+
+	// Setup expectations: User has reviews
+	userID := uint(42)
+
+	// Mock review records
+	reviewDate := "2025-04-01"
+	reviewRows := sqlmock.NewRows([]string{"id", "user_id", "accommodation_id", "user_name", "rating", "date", "comment"}).
+		AddRow(1, userID, 100, "testuser", 4.5, reviewDate, "Great place!").
+		AddRow(2, userID, 101, "testuser", 3.5, reviewDate, "Nice location")
+
+	// Mock finding the reviews
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "reviews" WHERE user_id = $1 ORDER BY id desc`)).
+		WithArgs(userID).
+		WillReturnRows(reviewRows)
+
+	// Mock finding the accommodations for each review
+	accommodationRows1 := sqlmock.NewRows([]string{"id", "name", "location"}).
+		AddRow(100, "Beach House", "Miami, FL")
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "accommodations" WHERE "accommodations"."id" = $1 ORDER BY "accommodations"."id" LIMIT $2`)).
+		WithArgs(uint(100), 1).
+		WillReturnRows(accommodationRows1)
+
+	accommodationRows2 := sqlmock.NewRows([]string{"id", "name", "location"}).
+		AddRow(101, "Mountain Cabin", "Denver, CO")
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "accommodations" WHERE "accommodations"."id" = $1 ORDER BY "accommodations"."id" LIMIT $2`)).
+		WithArgs(uint(101), 1).
+		WillReturnRows(accommodationRows2)
+
+	// Create request with session
+	req := httptest.NewRequest("GET", "/users/reviews", nil)
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("expected status %d, got %d", http.StatusOK, status)
+	}
+
+	var reviews []routes.UserReviewDetails
+	if err := json.Unmarshal(rr.Body.Bytes(), &reviews); err != nil {
+		t.Fatalf("failed to parse response: %v", err)
+	}
+
+	// Check that we got the expected number of reviews
+	if len(reviews) != 2 {
+		t.Errorf("expected 2 reviews, got %d", len(reviews))
+	}
+
+	// Check details of the first review
+	if reviews[0].AccommodationName != "Beach House" {
+		t.Errorf("expected accommodation name %q, got %q", "Beach House", reviews[0].AccommodationName)
+	}
+	if reviews[0].ReviewText != "Great place!" {
+		t.Errorf("expected review text %q, got %q", "Great place!", reviews[0].ReviewText)
+	}
+	if reviews[0].ReviewRating != 4.5 {
+		t.Errorf("expected rating %v, got %v", 4.5, reviews[0].ReviewRating)
+	}
+}
+
+func TestUpdateUserAvatar_Unauthenticated(t *testing.T) {
+	// Setup dummy DB and handler
+	db, _ := setupTestDB(t)
+	handler := routes.UpdateUserAvatarHandler(db)
+
+	req := httptest.NewRequest("PUT", "/users/avatar", nil)
+	// Setup an empty session
+	session, _ := testStore.New(req, "session")
+	routes.SetStoreForTesting(testStore)
+	routes.SetSessionForTesting(req, session)
+
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusUnauthorized {
+		t.Errorf("expected status %d, got %d", http.StatusUnauthorized, status)
+	}
+
+	var resp map[string]string
+	if err := json.Unmarshal(rr.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to parse response: %v", err)
+	}
+	if msg, ok := resp["message"]; !ok || msg != "User not authenticated" {
+		t.Errorf("unexpected message: %v", resp)
+	}
+}
+
+func TestUpdateUserAvatar_InvalidRequest(t *testing.T) {
+	// Setup dummy DB and handler
+	db, _ := setupTestDB(t)
+	handler := routes.UpdateUserAvatarHandler(db)
+
+	// Invalid JSON payload
+	req := httptest.NewRequest("PUT", "/users/avatar", nil)
+	req.Body = http.NoBody // Empty body, invalid request
+
+	// Add session with user ID
+	userID := uint(42)
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusBadRequest {
+		t.Errorf("expected status %d, got %d", http.StatusBadRequest, status)
+	}
+
+	var resp map[string]string
+	if err := json.Unmarshal(rr.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to parse response: %v", err)
+	}
+	if msg, ok := resp["message"]; !ok || msg != "Invalid request format" {
+		t.Errorf("unexpected message: %v", resp)
+	}
+}
+
+func TestUpdateUserAvatar_UpdateError(t *testing.T) {
+	// Setup mock DB and handler
+	db, mock := setupTestDB(t)
+	handler := routes.UpdateUserAvatarHandler(db)
+
+	// Setup expectation: Database error when updating
+	userID := uint(42)
+
+	// Use a more flexible mock pattern that will match any arguments
+	mock.ExpectExec("UPDATE").
+		WithArgs("Bluey", userID).
+		WillReturnError(fmt.Errorf("database error"))
+
+	// Create request with valid payload
+	payload := `{"avatar_id": "Bluey"}`
+	req := httptest.NewRequest("PUT", "/users/avatar", strings.NewReader(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Add session with user ID
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Errorf("expected status %d, got %d", http.StatusInternalServerError, status)
+	}
+
+	var resp map[string]string
+	if err := json.Unmarshal(rr.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to parse response: %v", err)
+	}
+	if msg, ok := resp["message"]; !ok || msg != "Failed to update avatar" {
+		t.Errorf("unexpected message: %v", resp)
+	}
+}
+
+func TestUpdateUserAvatar_Success(t *testing.T) {
+	// Setup mock DB and handler
+	db, mock := setupTestDB(t)
+	handler := routes.UpdateUserAvatarHandler(db)
+
+	// Setup expectations: Avatar updated successfully within a transaction
+	userID := uint(42)
+	newAvatarID := "Marshmallow"
+
+	mock.ExpectBegin() // Expect transaction start
+	mock.ExpectExec(regexp.QuoteMeta(`UPDATE "users" SET "avatar_id"=$1 WHERE id = $2`)).
+		WithArgs(newAvatarID, userID).            // Match specific arguments
+		WillReturnResult(sqlmock.NewResult(1, 1)) // Expect 1 row affected
+	mock.ExpectCommit() // Expect transaction commit
+
+	// Create request with valid payload
+	payload := fmt.Sprintf(`{"avatar_id": "%s"}`, newAvatarID)
+	req := httptest.NewRequest("PUT", "/users/avatar", strings.NewReader(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Add session with user ID
+	req = addSessionToRequest(req, userID)
+
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("expected status %d, got %d. Body: %s", http.StatusOK, status, rr.Body.String())
+	}
+
+	var resp map[string]string
+	if err := json.Unmarshal(rr.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to parse response: %v", err)
+	}
+	if msg, ok := resp["message"]; !ok || msg != "Avatar updated successfully" {
+		t.Errorf("unexpected message: %v", resp)
+	}
+
+	// Verify all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
